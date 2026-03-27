@@ -1,0 +1,53 @@
+{
+  "common": {
+    "appName": "plonbli",
+    "loading": "Ladowanie...",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usun",
+    "edit": "Edytuj",
+    "back": "Wstecz",
+    "search": "Szukaj",
+    "error": "Cos poszlo nie tak"
+  },
+  "auth": {
+    "login": "Zaloguj sie",
+    "register": "Zarejestruj sie",
+    "logout": "Wyloguj sie",
+    "email": "Email",
+    "password": "Haslo",
+    "name": "Imie i nazwisko",
+    "role": "Rola",
+    "roleFarmer": "Rolnik",
+    "roleConsumer": "Konsument",
+    "roleBoth": "Rolnik i konsument",
+    "noAccount": "Nie masz konta?",
+    "hasAccount": "Masz juz konto?",
+    "loginError": "Nieprawidlowy email lub haslo",
+    "registerSuccess": "Konto utworzone. Zaloguj sie."
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Edytuj profil",
+    "location": "Lokalizacja",
+    "voivodeship": "Wojewodztwo",
+    "county": "Powiat",
+    "commune": "Gmina",
+    "postalCode": "Kod pocztowy",
+    "useGps": "Uzyj GPS",
+    "saved": "Profil zapisany"
+  },
+  "nav": {
+    "home": "Strona glowna",
+    "marketplace": "Rynek",
+    "social": "Spolecznosc",
+    "messages": "Wiadomosci",
+    "profile": "Profil"
+  },
+  "theme": {
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "Systemowy",
+    "toggle": "Zmien motyw"
+  }
+}
