@@ -5,7 +5,9 @@
       "Bash(timeout 15 npm run dev)",
       "Bash(npm install:*)",
       "Bash(npm test:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)"
     ]
   }
 }
