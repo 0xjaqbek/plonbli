@@ -75,6 +75,17 @@ export {
   type NewEventRsvp,
 } from "./event-rsvps";
 export {
+  cropLogs,
+  cropLogTypeEnum,
+  type CropLog,
+  type NewCropLog,
+} from "./crop-logs";
+export {
+  reviews,
+  type Review,
+  type NewReview,
+} from "./reviews";
+export {
   categoriesRelations,
   productsRelations,
   listingsRelations,
@@ -89,4 +100,6 @@ export {
   followsRelations,
   eventsRelations,
   eventRsvpsRelations,
+  cropLogsRelations,
+  reviewsRelations,
 } from "./relations";

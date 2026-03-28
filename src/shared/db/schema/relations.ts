@@ -14,6 +14,8 @@ import { reactions } from "./reactions";
 import { follows } from "./follows";
 import { events } from "./events";
 import { eventRsvps } from "./event-rsvps";
+import { cropLogs } from "./crop-logs";
+import { reviews } from "./reviews";
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
@@ -156,5 +158,33 @@ export const eventRsvpsRelations = relations(eventRsvps, ({ one }) => ({
   user: one(users, {
     fields: [eventRsvps.userId],
     references: [users.id],
+  }),
+}));
+
+export const cropLogsRelations = relations(cropLogs, ({ one }) => ({
+  farmer: one(users, {
+    fields: [cropLogs.farmerId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [cropLogs.productId],
+    references: [products.id],
+  }),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  reviewer: one(users, {
+    fields: [reviews.reviewerId],
+    references: [users.id],
+    relationName: "reviewer",
+  }),
+  target: one(users, {
+    fields: [reviews.targetId],
+    references: [users.id],
+    relationName: "reviewTarget",
+  }),
+  product: one(products, {
+    fields: [reviews.productId],
+    references: [products.id],
   }),
 }));
