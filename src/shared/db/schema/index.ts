@@ -39,10 +39,39 @@ export {
   type NewMessage,
 } from "./messages";
 export {
+  groups,
+  groupTypeEnum,
+  joinPolicyEnum,
+  type Group,
+  type NewGroup,
+} from "./groups";
+export {
+  groupMembers,
+  groupMemberRoleEnum,
+  type GroupMember,
+  type NewGroupMember,
+} from "./group-members";
+export {
+  posts,
+  postTypeEnum,
+  postVisibilityEnum,
+  type Post,
+  type NewPost,
+} from "./posts";
+export { comments, type Comment, type NewComment } from "./comments";
+export { reactions, type Reaction } from "./reactions";
+export { follows, type Follow } from "./follows";
+export {
   categoriesRelations,
   productsRelations,
   listingsRelations,
   conversationsRelations,
   conversationMembersRelations,
   messagesRelations,
+  groupsRelations,
+  groupMembersRelations,
+  postsRelations,
+  commentsRelations,
+  reactionsRelations,
+  followsRelations,
 } from "./relations";
