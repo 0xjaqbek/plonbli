@@ -62,6 +62,19 @@ export { comments, type Comment, type NewComment } from "./comments";
 export { reactions, type Reaction } from "./reactions";
 export { follows, type Follow } from "./follows";
 export {
+  events,
+  eventTypeEnum,
+  recurrenceEnum,
+  type Event,
+  type NewEvent,
+} from "./events";
+export {
+  eventRsvps,
+  rsvpStatusEnum,
+  type EventRsvp,
+  type NewEventRsvp,
+} from "./event-rsvps";
+export {
   categoriesRelations,
   productsRelations,
   listingsRelations,
@@ -74,4 +87,6 @@ export {
   commentsRelations,
   reactionsRelations,
   followsRelations,
+  eventsRelations,
+  eventRsvpsRelations,
 } from "./relations";

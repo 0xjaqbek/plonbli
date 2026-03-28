@@ -12,6 +12,8 @@ import { posts } from "./posts";
 import { comments } from "./comments";
 import { reactions } from "./reactions";
 import { follows } from "./follows";
+import { events } from "./events";
+import { eventRsvps } from "./event-rsvps";
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
@@ -131,5 +133,28 @@ export const followsRelations = relations(follows, ({ one }) => ({
     fields: [follows.followeeId],
     references: [users.id],
     relationName: "followee",
+  }),
+}));
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [events.creatorId],
+    references: [users.id],
+  }),
+  group: one(groups, {
+    fields: [events.groupId],
+    references: [groups.id],
+  }),
+  rsvps: many(eventRsvps),
+}));
+
+export const eventRsvpsRelations = relations(eventRsvps, ({ one }) => ({
+  event: one(events, {
+    fields: [eventRsvps.eventId],
+    references: [events.id],
+  }),
+  user: one(users, {
+    fields: [eventRsvps.userId],
+    references: [users.id],
   }),
 }));
