@@ -16,7 +16,7 @@ describe("login", () => {
       password: "",
     });
     expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.success) expect(result.error).toBeDefined();
   });
 
   it("calls signIn with credentials on valid input", async () => {
@@ -46,6 +46,6 @@ describe("login", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.success) expect(result.error).toBeDefined();
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { register } from "@/domains/auth/actions/register";
 
@@ -38,7 +39,7 @@ describe("register", () => {
       role: "CONSUMER",
     });
     expect(result.success).toBe(false);
-    expect(result.errors).toBeDefined();
+    if (!result.success) expect(result.errors).toBeDefined();
   });
 
   it("returns error when email already exists", async () => {
@@ -55,7 +56,7 @@ describe("register", () => {
       role: "CONSUMER",
     });
     expect(result.success).toBe(false);
-    expect(result.errors?.email).toBeDefined();
+    if (!result.success) expect(result.errors?.email).toBeDefined();
   });
 
   it("creates user with hashed password on valid input", async () => {
