@@ -3,6 +3,8 @@ import {
   createPostSchema,
   addCommentSchema,
   createGroupSchema,
+  createEventSchema,
+  rsvpEventSchema,
 } from "@/domains/social/schemas/validation";
 
 describe("createPostSchema", () => {
@@ -117,6 +119,95 @@ describe("createGroupSchema", () => {
       name: "Grupa",
       type: "INVALID",
       joinPolicy: "OPEN",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("createEventSchema", () => {
+  it("accepts valid event", () => {
+    const result = createEventSchema.safeParse({
+      title: "Targ rolny w Krakowie",
+      type: "MARKET",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts event with all fields", () => {
+    const result = createEventSchema.safeParse({
+      title: "Dzien otwarty",
+      description: "Zapraszamy na nasza farme",
+      type: "OPEN_DAY",
+      location: "ul. Polna 5, Krakow",
+      latitude: "50.0647",
+      longitude: "19.9450",
+      startDate: "2026-04-20T10:00:00Z",
+      endDate: "2026-04-20T18:00:00Z",
+      recurrence: "MONTHLY",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects empty title", () => {
+    const result = createEventSchema.safeParse({
+      title: "",
+      type: "MEETUP",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid event type", () => {
+    const result = createEventSchema.safeParse({
+      title: "Spotkanie",
+      type: "PARTY",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects missing startDate", () => {
+    const result = createEventSchema.safeParse({
+      title: "Spotkanie",
+      type: "MEETUP",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("rsvpEventSchema", () => {
+  it("accepts valid RSVP", () => {
+    const result = rsvpEventSchema.safeParse({
+      eventId: "event-1",
+      status: "GOING",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts INTERESTED status", () => {
+    const result = rsvpEventSchema.safeParse({
+      eventId: "event-1",
+      status: "INTERESTED",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid status", () => {
+    const result = rsvpEventSchema.safeParse({
+      eventId: "event-1",
+      status: "MAYBE",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects missing eventId", () => {
+    const result = rsvpEventSchema.safeParse({
+      status: "GOING",
     });
     expect(result.success).toBe(false);
   });

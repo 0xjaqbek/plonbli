@@ -22,6 +22,26 @@ export const createGroupSchema = z.object({
   commune: z.string().optional(),
 });
 
+export const createEventSchema = z.object({
+  title: z.string().min(1, "Tytul jest wymagany").max(200),
+  description: z.string().max(5000).default(""),
+  type: z.enum(["MARKET", "OPEN_DAY", "MEETUP", "OTHER"]),
+  groupId: z.string().optional(),
+  location: z.string().max(300).optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
+  startDate: z.string().min(1, "Data rozpoczecia jest wymagana"),
+  endDate: z.string().min(1, "Data zakonczenia jest wymagana"),
+  recurrence: z.enum(["WEEKLY", "BIWEEKLY", "MONTHLY"]).optional(),
+});
+
+export const rsvpEventSchema = z.object({
+  eventId: z.string().min(1),
+  status: z.enum(["GOING", "INTERESTED", "NOT_GOING"]),
+});
+
 export type CreatePostInput = z.input<typeof createPostSchema>;
 export type AddCommentInput = z.infer<typeof addCommentSchema>;
 export type CreateGroupInput = z.input<typeof createGroupSchema>;
+export type CreateEventInput = z.input<typeof createEventSchema>;
+export type RsvpEventInput = z.infer<typeof rsvpEventSchema>;
