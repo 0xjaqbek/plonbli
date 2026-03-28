@@ -21,7 +21,28 @@ export {
   type DeliveryOption,
 } from "./listings";
 export {
+  conversations,
+  conversationTypeEnum,
+  type Conversation,
+  type NewConversation,
+} from "./conversations";
+export {
+  conversationMembers,
+  memberRoleEnum,
+  type ConversationMember,
+  type NewConversationMember,
+} from "./conversation-members";
+export {
+  messages,
+  messageStatusEnum,
+  type Message,
+  type NewMessage,
+} from "./messages";
+export {
   categoriesRelations,
   productsRelations,
   listingsRelations,
+  conversationsRelations,
+  conversationMembersRelations,
+  messagesRelations,
 } from "./relations";
