@@ -233,5 +233,43 @@
     "confirmDeleteEvent": "Na pewno chcesz usunac to wydarzenie?",
     "upcoming": "Nadchodzace",
     "past": "Minione"
+  },
+  "farming": {
+    "cropLog": "Dziennik upraw",
+    "addEntry": "Dodaj wpis",
+    "typePlanting": "Sadzenie",
+    "typeGrowing": "Uprawa",
+    "typeTreatment": "Zabieg",
+    "typeHarvest": "Zbiory",
+    "typeOther": "Inne",
+    "description": "Opis",
+    "crop": "Roslina",
+    "area": "Powierzchnia",
+    "quantity": "Ilosc",
+    "method": "Metoda",
+    "images": "Zdjecia",
+    "product": "Produkt",
+    "noEntries": "Brak wpisow w dzienniku upraw",
+    "hashVerified": "Hash zweryfikowany",
+    "hashChain": "Lancuch hash",
+    "entryCreated": "Wpis dodany",
+    "selectProduct": "Wybierz produkt (opcjonalnie)"
+  },
+  "reputation": {
+    "reviews": "Opinie",
+    "addReview": "Dodaj opinie",
+    "rating": "Ocena",
+    "overall": "Ocena ogolna",
+    "comment": "Komentarz",
+    "quality": "Jakosc",
+    "communication": "Komunikacja",
+    "punctuality": "Punktualnosc",
+    "accuracy": "Zgodnosc z opisem",
+    "noReviews": "Brak opinii",
+    "averageRating": "Srednia ocena",
+    "reviewCount": "opinii",
+    "reviewCreated": "Opinia dodana",
+    "cannotReviewSelf": "Nie mozesz ocenic siebie",
+    "stars": "gwiazdek"
   }
 }
