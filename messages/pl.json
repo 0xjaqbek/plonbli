@@ -42,7 +42,8 @@
     "marketplace": "Rynek",
     "social": "Spolecznosc",
     "messages": "Wiadomosci",
-    "profile": "Profil"
+    "profile": "Profil",
+    "events": "Wydarzenia"
   },
   "theme": {
     "light": "Jasny",
@@ -196,5 +197,41 @@
     "myGroups": "Moje grupy",
     "allGroups": "Wszystkie grupy",
     "created": "Grupa utworzona"
+  },
+  "event": {
+    "events": "Wydarzenia",
+    "createEvent": "Utworz wydarzenie",
+    "eventTitle": "Tytul",
+    "eventDescription": "Opis",
+    "eventType": "Typ wydarzenia",
+    "typeMarket": "Targ",
+    "typeOpenDay": "Dzien otwarty",
+    "typeMeetup": "Spotkanie",
+    "typeOther": "Inne",
+    "location": "Lokalizacja",
+    "address": "Adres",
+    "startDate": "Data rozpoczecia",
+    "endDate": "Data zakonczenia",
+    "recurrence": "Powtarzalnosc",
+    "recurrenceNone": "Jednorazowe",
+    "recurrenceWeekly": "Co tydzien",
+    "recurrenceBiweekly": "Co dwa tygodnie",
+    "recurrenceMonthly": "Co miesiac",
+    "noEvents": "Brak wydarzen",
+    "listView": "Lista",
+    "calendarView": "Kalendarz",
+    "mapView": "Mapa",
+    "going": "Ide",
+    "interested": "Zainteresowany",
+    "notGoing": "Nie ide",
+    "attendees": "Uczestnicy",
+    "goingCount": "idzie",
+    "interestedCount": "zainteresowanych",
+    "organizer": "Organizator",
+    "eventCreated": "Wydarzenie utworzone",
+    "eventDeleted": "Wydarzenie usuniete",
+    "confirmDeleteEvent": "Na pewno chcesz usunac to wydarzenie?",
+    "upcoming": "Nadchodzace",
+    "past": "Minione"
   }
 }
