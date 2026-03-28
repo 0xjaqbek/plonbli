@@ -93,11 +93,13 @@ describe("createCollection", () => {
     } as any);
 
     const { db } = await import("@/shared/db");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(db.query.groupMembers.findFirst).mockResolvedValueOnce({
       groupId: "group-1",
       userId: "user-1",
       role: "MEMBER",
-    });
+      joinedAt: new Date(),
+    } as any);
 
     const result = await createCollection({
       groupId: "group-1",
@@ -159,11 +161,12 @@ describe("joinCollection", () => {
     } as any);
 
     const { db } = await import("@/shared/db");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(db.query.collections.findFirst).mockResolvedValueOnce({
       id: "col-1",
       status: "ORDERED",
       coordinatorId: "user-2",
-    });
+    } as any);
 
     const result = await joinCollection({
       collectionId: "col-1",
@@ -190,11 +193,12 @@ describe("updateCollectionStatus", () => {
     } as any);
 
     const { db } = await import("@/shared/db");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(db.query.collections.findFirst).mockResolvedValueOnce({
       id: "col-1",
       status: "COLLECTING",
       coordinatorId: "user-2",
-    });
+    } as any);
 
     const result = await updateCollectionStatus({
       collectionId: "col-1",
@@ -215,11 +219,12 @@ describe("updateCollectionStatus", () => {
     } as any);
 
     const { db } = await import("@/shared/db");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(db.query.collections.findFirst).mockResolvedValueOnce({
       id: "col-1",
       status: "COLLECTING",
       coordinatorId: "user-1",
-    });
+    } as any);
 
     const result = await updateCollectionStatus({
       collectionId: "col-1",
