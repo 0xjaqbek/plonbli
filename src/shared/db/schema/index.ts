@@ -86,6 +86,22 @@ export {
   type NewReview,
 } from "./reviews";
 export {
+  pickupPoints,
+  type PickupPoint,
+  type NewPickupPoint,
+} from "./pickup-points";
+export {
+  collections,
+  collectionStatusEnum,
+  type Collection,
+  type NewCollection,
+} from "./collections";
+export {
+  collectionItems,
+  type CollectionItem,
+  type NewCollectionItem,
+} from "./collection-items";
+export {
   categoriesRelations,
   productsRelations,
   listingsRelations,
@@ -102,4 +118,7 @@ export {
   eventRsvpsRelations,
   cropLogsRelations,
   reviewsRelations,
+  pickupPointsRelations,
+  collectionsRelations,
+  collectionItemsRelations,
 } from "./relations";

@@ -16,6 +16,9 @@ import { events } from "./events";
 import { eventRsvps } from "./event-rsvps";
 import { cropLogs } from "./crop-logs";
 import { reviews } from "./reviews";
+import { pickupPoints } from "./pickup-points";
+import { collections } from "./collections";
+import { collectionItems } from "./collection-items";
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
@@ -186,5 +189,39 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
   product: one(products, {
     fields: [reviews.productId],
     references: [products.id],
+  }),
+}));
+
+export const pickupPointsRelations = relations(pickupPoints, ({ one }) => ({
+  creator: one(users, {
+    fields: [pickupPoints.createdBy],
+    references: [users.id],
+  }),
+}));
+
+export const collectionsRelations = relations(collections, ({ one, many }) => ({
+  group: one(groups, {
+    fields: [collections.groupId],
+    references: [groups.id],
+  }),
+  listing: one(listings, {
+    fields: [collections.listingId],
+    references: [listings.id],
+  }),
+  coordinator: one(users, {
+    fields: [collections.coordinatorId],
+    references: [users.id],
+  }),
+  items: many(collectionItems),
+}));
+
+export const collectionItemsRelations = relations(collectionItems, ({ one }) => ({
+  collection: one(collections, {
+    fields: [collectionItems.collectionId],
+    references: [collections.id],
+  }),
+  user: one(users, {
+    fields: [collectionItems.userId],
+    references: [users.id],
   }),
 }));
