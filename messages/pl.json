@@ -40,6 +40,7 @@
   "nav": {
     "home": "Strona glowna",
     "marketplace": "Rynek",
+    "farmers": "Rolnicy",
     "social": "Spolecznosc",
     "messages": "Wiadomosci",
     "profile": "Profil",
@@ -117,7 +118,10 @@
     "listings": "Oferty",
     "memberSince": "Na plonbli od",
     "location": "Lokalizacja",
-    "noListings": "Ten rolnik nie ma jeszcze ofert"
+    "noListings": "Ten rolnik nie ma jeszcze ofert",
+    "allFarmers": "Wszyscy rolnicy",
+    "noFarmers": "Brak rolnikow",
+    "searchFarmers": "Szukaj rolnikow..."
   },
   "messaging": {
     "title": "Wiadomosci",
