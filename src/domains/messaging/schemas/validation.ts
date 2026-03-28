@@ -24,7 +24,7 @@ export const createConversationSchema = z
     }
   );
 
-export type SendMessageInput = z.infer<typeof sendMessageSchema>;
+export type SendMessageInput = z.input<typeof sendMessageSchema>;
 export type CreateConversationInput = z.infer<
   typeof createConversationSchema
 >;
