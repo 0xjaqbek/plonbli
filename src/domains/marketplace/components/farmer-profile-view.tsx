@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Star, Leaf } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
@@ -22,6 +24,8 @@ export function FarmerProfileView({
 }: FarmerProfileViewProps) {
   const t = useTranslations("farmer");
   const tAuth = useTranslations("auth");
+  const tRep = useTranslations("reputation");
+  const tFarm = useTranslations("farming");
 
   return (
     <div className="space-y-6">
@@ -29,7 +33,7 @@ export function FarmerProfileView({
         <CardHeader>
           <CardTitle className="text-2xl">{farmer.name}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-3">
           {farmer.voivodeship && (
             <p className="text-muted-foreground flex items-center gap-2">
               <MapPin className="h-4 w-4" />
@@ -52,6 +56,20 @@ export function FarmerProfileView({
                 ? tAuth("roleBoth")
                 : tAuth("roleConsumer")}
           </Badge>
+          <div className="flex gap-2 pt-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/social/users/${farmer.id}/reviews`}>
+                <Star className="h-4 w-4 mr-1" />
+                {tRep("reviews")}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/farmers/${farmer.id}/crop-log`}>
+                <Leaf className="h-4 w-4 mr-1" />
+                {tFarm("cropLog")}
+              </Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

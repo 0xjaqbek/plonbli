@@ -1,10 +1,13 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Star } from "lucide-react";
 import { auth } from "@/domains/auth/lib/auth";
 import { getUserProfile } from "@/domains/social/queries/get-user-profile";
 import { UserFollowButton } from "@/domains/social/components/user-follow-button";
 import { FeedList } from "@/domains/social/components/feed-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Button } from "@/shared/ui/button";
 
 export default async function UserProfilePage({
   params,
@@ -12,6 +15,7 @@ export default async function UserProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const t = await getTranslations("social");
+  const tRep = await getTranslations("reputation");
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -60,6 +64,15 @@ export default async function UserProfilePage({
             isFollowing={profile.isFollowing}
           />
         )}
+      </div>
+
+      <div className="flex gap-2">
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/social/users/${id}/reviews`}>
+            <Star className="h-4 w-4 mr-1" />
+            {tRep("reviews")}
+          </Link>
+        </Button>
       </div>
 
       <div>

@@ -35,7 +35,11 @@
     "commune": "Gmina",
     "postalCode": "Kod pocztowy",
     "useGps": "Uzyj GPS",
-    "saved": "Profil zapisany"
+    "saved": "Profil zapisany",
+    "myListings": "Moje oferty",
+    "myCropLog": "Dziennik upraw",
+    "myReviews": "Opinie o mnie",
+    "myGroups": "Moje grupy"
   },
   "nav": {
     "home": "Strona glowna",
