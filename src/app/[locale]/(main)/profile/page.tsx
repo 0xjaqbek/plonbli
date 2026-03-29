@@ -13,6 +13,7 @@ import { auth, signOut } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
 import { ProfileForm } from "@/domains/auth/components/profile-form";
+import { ThemeSelect } from "./theme-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Separator } from "@/shared/ui/separator";
 
@@ -76,6 +77,8 @@ export default async function ProfilePage() {
               </Link>
             ))}
           </nav>
+          <Separator className="my-3" />
+          <ThemeSelect />
         </CardContent>
       </Card>
 
