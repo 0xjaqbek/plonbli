@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Home, ShoppingBasket, Tractor, Users, MessageCircle, User } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/shared/lib/utils";
 
 const navItems = [
@@ -52,7 +51,6 @@ export function NavBar() {
             </Link>
           ))}
         </nav>
-        <ThemeToggle />
       </header>
 
       {/* Mobile bottom bar */}
