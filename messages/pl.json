@@ -8,7 +8,22 @@
     "edit": "Edytuj",
     "back": "Wstecz",
     "search": "Szukaj",
-    "error": "Cos poszlo nie tak"
+    "error": "Cos poszlo nie tak",
+    "showMore": "Pokaz wiecej"
+  },
+  "home": {
+    "hero": "Lokalna zywnosc prosto od rolnika",
+    "heroDescription": "Polacz sie z lokalnymi rolnikami, dolacz do grup zakupowych i kupuj swieze produkty bez posrednikow.",
+    "ctaRegister": "Dolacz do plonbli",
+    "ctaLogin": "Zaloguj sie",
+    "latestListings": "Najnowsze oferty",
+    "upcomingEvents": "Nadchodzace wydarzenia",
+    "yourFeed": "Aktualnosci",
+    "yourGroups": "Twoje grupy",
+    "noListings": "Brak ofert",
+    "noEvents": "Brak nadchodzacych wydarzen",
+    "noGroups": "Dolacz do grup aby zobaczyc zbiorki",
+    "welcome": "Witaj"
   },
   "auth": {
     "login": "Zaloguj sie",
