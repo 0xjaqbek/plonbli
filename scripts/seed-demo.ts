@@ -15,6 +15,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { like, sql } from "drizzle-orm";
 import { createHash } from "crypto";
 import * as schema from "../src/shared/db/schema";
+import type { DeliveryOption } from "../src/shared/db/schema/listings";
 
 const client = neon(process.env.DATABASE_URL!);
 const db = drizzle(client, { schema });
@@ -226,108 +227,116 @@ const PRODUCTS = [
   },
 ];
 
-const LISTINGS = [
+const LISTINGS: Array<{
+  id: string;
+  productId: string;
+  price: string;
+  unit: "KG" | "PIECE" | "LITER" | "BUNCH";
+  quantityAvailable: string;
+  availability: "AVAILABLE" | "SEASONAL" | "OUT_OF_STOCK";
+  deliveryOptions: DeliveryOption[];
+}> = [
   {
     id: demoId("list_pomidory"),
     productId: demoId("prod_pomidory"),
     price: "12.00",
-    unit: "KG" as const,
+    unit: "KG",
     quantityAvailable: "200.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Odbior z gospodarstwa w Garwolinie" },
-      { type: "DELIVERY", description: "Dowoz na terenie pow. garwolinskiego — 15 zl", price: 15 },
+      { type: "PICKUP", address: "ul. Polna 15, Garwolin", hours: "Pn-Sb 8-18" },
+      { type: "DELIVERY", address: "pow. garwolinski", cost: 15 },
     ],
   },
   {
     id: demoId("list_ogorki"),
     productId: demoId("prod_ogorki"),
     price: "8.00",
-    unit: "KG" as const,
+    unit: "KG",
     quantityAvailable: "150.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Odbior z gospodarstwa" },
+      { type: "PICKUP", address: "ul. Polna 15, Garwolin" },
     ],
   },
   {
     id: demoId("list_jablka"),
     productId: demoId("prod_jablka"),
     price: "5.50",
-    unit: "KG" as const,
+    unit: "KG",
     quantityAvailable: "500.00",
-    availability: "SEASONAL" as const,
+    availability: "SEASONAL",
     deliveryOptions: [
-      { type: "PICKUP", description: "Odbior z sadu" },
-      { type: "SHIPPING", description: "Wysylka kurierem — od 20 zl", price: 20 },
+      { type: "PICKUP", address: "Sad, Garwolin" },
+      { type: "DELIVERY", cost: 20, radius: 50 },
     ],
   },
   {
     id: demoId("list_ser"),
     productId: demoId("prod_ser"),
     price: "45.00",
-    unit: "KG" as const,
+    unit: "KG",
     quantityAvailable: "30.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Targ w Starym Saczu, soboty 8-13" },
+      { type: "PICKUP", address: "Targ w Starym Saczu", hours: "Sb 8-13" },
     ],
   },
   {
     id: demoId("list_dzem"),
     productId: demoId("prod_dzem"),
     price: "18.00",
-    unit: "PIECE" as const,
+    unit: "PIECE",
     quantityAvailable: "50.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Odbior osobisty" },
-      { type: "SHIPPING", description: "Wysylka — 12 zl", price: 12 },
+      { type: "PICKUP", address: "Stary Sacz" },
+      { type: "DELIVERY", cost: 12 },
     ],
   },
   {
     id: demoId("list_miod"),
     productId: demoId("prod_miod"),
     price: "55.00",
-    unit: "PIECE" as const,
+    unit: "PIECE",
     quantityAvailable: "80.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Pasieka w Pulawach" },
-      { type: "DELIVERY", description: "Dowoz Pulawy/Lublin — 10 zl", price: 10 },
+      { type: "PICKUP", address: "Pasieka, Pulawy" },
+      { type: "DELIVERY", address: "Pulawy/Lublin", cost: 10 },
     ],
   },
   {
     id: demoId("list_ziola"),
     productId: demoId("prod_ziola"),
     price: "12.00",
-    unit: "PIECE" as const,
+    unit: "PIECE",
     quantityAvailable: "100.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "SHIPPING", description: "Wysylka listem — 8 zl", price: 8 },
+      { type: "DELIVERY", cost: 8 },
     ],
   },
   {
     id: demoId("list_jaja"),
     productId: demoId("prod_jaja"),
     price: "1.50",
-    unit: "PIECE" as const,
+    unit: "PIECE",
     quantityAvailable: "300.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Tyczyn, codziennie 7-17" },
+      { type: "PICKUP", address: "Tyczyn", hours: "codziennie 7-17" },
     ],
   },
   {
     id: demoId("list_chleb"),
     productId: demoId("prod_chleb"),
     price: "14.00",
-    unit: "PIECE" as const,
+    unit: "PIECE",
     quantityAvailable: "20.00",
-    availability: "AVAILABLE" as const,
+    availability: "AVAILABLE",
     deliveryOptions: [
-      { type: "PICKUP", description: "Piekarnia w Tyczynie, sr-pt 6-14" },
+      { type: "PICKUP", address: "Piekarnia, Tyczyn", hours: "Sr-Pt 6-14" },
     ],
   },
 ];
