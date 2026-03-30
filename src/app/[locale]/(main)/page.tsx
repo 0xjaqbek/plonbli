@@ -60,9 +60,9 @@ async function GuestHome() {
             href="/marketplace"
             more={tc("showMore")}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {listings.slice(0, 4).map((item) => (
-              <ListingCard key={item.listing.id} item={item} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {listings.slice(0, 3).map((item) => (
+              <ListingCard key={item.listing.id} item={item} hideImage />
             ))}
           </div>
         </section>
@@ -96,9 +96,9 @@ async function AuthenticatedHome({ userId }: { userId: string }) {
         {listings.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noListings")}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {listings.slice(0, 4).map((item) => (
-              <ListingCard key={item.listing.id} item={item} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {listings.slice(0, 3).map((item) => (
+              <ListingCard key={item.listing.id} item={item} hideImage />
             ))}
           </div>
         )}
@@ -114,7 +114,7 @@ async function AuthenticatedHome({ userId }: { userId: string }) {
         {events.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("noEvents")}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {events.slice(0, 3).map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

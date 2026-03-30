@@ -19,16 +19,17 @@ const METHOD_COLORS: Record<string, string> = {
 
 interface ListingCardProps {
   item: ListingWithDetails;
+  hideImage?: boolean;
 }
 
-export function ListingCard({ item }: ListingCardProps) {
+export function ListingCard({ item, hideImage }: ListingCardProps) {
   const t = useTranslations("product");
   const { listing, product, farmer, category } = item;
 
   return (
     <Link href={`/marketplace/${listing.id}`}>
       <Card className="h-full hover:shadow-md transition-shadow">
-        {product.images.length > 0 ? (
+        {!hideImage && (product.images.length > 0 ? (
           <div className="aspect-[4/3] overflow-hidden rounded-t-lg relative">
             <Image
               src={product.images[0]}
@@ -41,7 +42,7 @@ export function ListingCard({ item }: ListingCardProps) {
           <div className="aspect-[4/3] rounded-t-lg bg-muted flex items-center justify-center">
             <span className="text-4xl text-muted-foreground">🌱</span>
           </div>
-        )}
+        ))}
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <span>{category.name}</span>
