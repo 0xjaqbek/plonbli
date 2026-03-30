@@ -64,7 +64,7 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
         </Button>
       </form>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
         <Select
           value={searchParams.get("category") ?? "all"}
           onValueChange={(v) => updateParams("category", v)}
