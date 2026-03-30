@@ -140,7 +140,11 @@
     "noListings": "Ten rolnik nie ma jeszcze ofert",
     "allFarmers": "Wszyscy rolnicy",
     "noFarmers": "Brak rolnikow",
-    "searchFarmers": "Szukaj rolnikow..."
+    "searchFarmers": "Szukaj rolnikow...",
+    "listView": "Lista",
+    "mapView": "Mapa",
+    "loadingMap": "Ladowanie mapy...",
+    "approximateLocation": "Lokalizacja przyblizona"
   },
   "messaging": {
     "title": "Wiadomosci",

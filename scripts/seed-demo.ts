@@ -79,6 +79,8 @@ const FARMERS = [
     county: "garwolinski",
     commune: "Garwolin",
     postalCode: "08-400",
+    latitude: "51.643",
+    longitude: "21.615",
   },
   {
     id: demoId("farmer_nowak"),
@@ -89,6 +91,8 @@ const FARMERS = [
     county: "nowosadecki",
     commune: "Stary Sacz",
     postalCode: "33-340",
+    latitude: "49.556",
+    longitude: "20.634",
   },
   {
     id: demoId("farmer_wisniewski"),
@@ -99,6 +103,8 @@ const FARMERS = [
     county: "puławski",
     commune: "Pulawy",
     postalCode: "24-100",
+    latitude: "51.417",
+    longitude: "21.969",
   },
   {
     id: demoId("farmer_zielinska"),
@@ -109,6 +115,8 @@ const FARMERS = [
     county: "rzeszowski",
     commune: "Tyczyn",
     postalCode: "36-020",
+    latitude: "49.960",
+    longitude: "22.027",
   },
 ];
 
