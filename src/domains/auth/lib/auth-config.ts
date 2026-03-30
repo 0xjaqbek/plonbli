@@ -62,7 +62,13 @@ export const authConfig: NextAuthConfig = {
       });
 
       if (existing) {
-        // Already linked — update user.id so JWT gets the DB id
+        // Already linked — update avatar from provider and set DB id
+        if (user.image) {
+          await db
+            .update(users)
+            .set({ avatar: user.image })
+            .where(eq(users.id, existing.userId));
+        }
         user.id = existing.userId;
         return true;
       }
@@ -84,6 +90,12 @@ export const authConfig: NextAuthConfig = {
           })
           .returning();
         dbUser = created;
+      } else if (user.image && !dbUser.avatar) {
+        // Existing user without avatar — set it from provider
+        await db
+          .update(users)
+          .set({ avatar: user.image })
+          .where(eq(users.id, dbUser.id));
       }
 
       // Link OAuth account
