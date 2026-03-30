@@ -102,6 +102,7 @@ export {
   type NewCollectionItem,
 } from "./collection-items";
 export {
+  authAccountsRelations,
   categoriesRelations,
   productsRelations,
   listingsRelations,

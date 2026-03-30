@@ -19,6 +19,14 @@ import { reviews } from "./reviews";
 import { pickupPoints } from "./pickup-points";
 import { collections } from "./collections";
 import { collectionItems } from "./collection-items";
+import { authAccounts } from "./auth-accounts";
+
+export const authAccountsRelations = relations(authAccounts, ({ one }) => ({
+  user: one(users, {
+    fields: [authAccounts.userId],
+    references: [users.id],
+  }),
+}));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
