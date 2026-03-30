@@ -7,6 +7,7 @@ import {
   Leaf,
   Star,
   Users,
+  FileText,
   ChevronRight,
 } from "lucide-react";
 import { auth, signOut } from "@/domains/auth/lib/auth";
@@ -46,6 +47,11 @@ export default async function ProfilePage() {
           },
         ]
       : []),
+    {
+      href: "/social/my-posts",
+      icon: FileText,
+      label: t("myPosts"),
+    },
     {
       href: `/social/users/${user.id}/reviews`,
       icon: Star,

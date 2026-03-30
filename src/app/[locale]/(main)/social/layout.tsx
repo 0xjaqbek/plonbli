@@ -7,6 +7,7 @@ import { cn } from "@/shared/lib/utils";
 
 const socialTabs = [
   { href: "/social", labelKey: "feed" as const, exact: true },
+  { href: "/social/my-posts", labelKey: "myPosts" as const, exact: false },
   { href: "/social/groups", labelKey: "groups" as const, exact: false },
   { href: "/social/events", labelKey: "events" as const, exact: false },
 ];
@@ -27,6 +28,7 @@ export default function SocialLayout({
 
   function getLabel(key: string) {
     if (key === "feed") return ts("feed");
+    if (key === "myPosts") return ts("myPosts");
     if (key === "groups") return tg("groups");
     if (key === "events") return te("events");
     return key;
@@ -40,13 +42,13 @@ export default function SocialLayout({
   return (
     <div>
       <nav className="border-b">
-        <div className="max-w-4xl mx-auto flex gap-1 px-4">
+        <div className="max-w-4xl mx-auto flex gap-1 px-4 overflow-x-auto scrollbar-none">
           {socialTabs.map(({ href, labelKey, exact }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                "px-4 py-3 text-sm font-medium border-b-2 transition-colors",
+                "whitespace-nowrap px-3 py-3 text-sm font-medium border-b-2 transition-colors",
                 isActive(href, exact)
                   ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"

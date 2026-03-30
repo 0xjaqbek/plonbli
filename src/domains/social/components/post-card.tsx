@@ -1,15 +1,18 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Heart, MessageCircle, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Trash2, Pencil, Check, X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
+import { Textarea } from "@/shared/ui/textarea";
 import { toggleReaction } from "../actions/toggle-reaction";
 import { deletePost } from "../actions/delete-post";
+import { updatePost } from "../actions/update-post";
 import type { FeedPost } from "../queries/get-feed";
 
 interface PostCardProps {
@@ -20,7 +23,12 @@ interface PostCardProps {
 
 export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
   const t = useTranslations("social");
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+
+  const isOwner = post.author.id === currentUserId;
 
   const initials = post.author.name
     .split(" ")
@@ -39,7 +47,34 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
     if (!confirm(t("confirmDelete"))) return;
     startTransition(async () => {
       const result = await deletePost(post.id);
-      if (result.success && onDeleted) onDeleted();
+      if (result.success) {
+        if (onDeleted) onDeleted();
+        router.refresh();
+      }
+    });
+  }
+
+  function handleEdit() {
+    setEditContent(post.content);
+    setEditing(true);
+  }
+
+  function handleCancelEdit() {
+    setEditing(false);
+    setEditContent(post.content);
+  }
+
+  function handleSaveEdit() {
+    if (!editContent.trim()) return;
+    startTransition(async () => {
+      const result = await updatePost({
+        postId: post.id,
+        content: editContent.trim(),
+      });
+      if (result.success) {
+        setEditing(false);
+        router.refresh();
+      }
     });
   }
 
@@ -81,22 +116,62 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
           </div>
         </Link>
 
-        {post.author.id === currentUserId && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={handleDelete}
-            disabled={isPending}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+        {isOwner && !editing && (
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={handleEdit}
+              disabled={isPending}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-destructive"
+              onClick={handleDelete}
+              disabled={isPending}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </div>
 
-      <Link href={`/social/posts/${post.id}`}>
-        <p className="text-sm whitespace-pre-wrap">{post.content}</p>
-      </Link>
+      {editing ? (
+        <div className="space-y-2">
+          <Textarea
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            rows={3}
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCancelEdit}
+              disabled={isPending}
+            >
+              <X className="h-4 w-4 mr-1" />
+              {t("cancelEdit")}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSaveEdit}
+              disabled={isPending || !editContent.trim()}
+            >
+              <Check className="h-4 w-4 mr-1" />
+              {t("saveEdit")}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Link href={`/social/posts/${post.id}`}>
+          <p className="text-sm whitespace-pre-wrap">{post.content}</p>
+        </Link>
+      )}
 
       <div className="flex items-center gap-4 pt-1">
         <Button

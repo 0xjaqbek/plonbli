@@ -53,6 +53,7 @@
     "saved": "Profil zapisany",
     "myListings": "Moje oferty",
     "myCropLog": "Dziennik upraw",
+    "myPosts": "Moje posty",
     "myReviews": "Opinie o mnie",
     "myGroups": "Moje grupy"
   },
@@ -203,7 +204,13 @@
     "unfollow": "Przestan obserwowac",
     "followers": "Obserwujacy",
     "following": "Obserwowani",
-    "posts": "Posty"
+    "posts": "Posty",
+    "myPosts": "Moje posty",
+    "editPost": "Edytuj",
+    "cancelEdit": "Anuluj",
+    "saveEdit": "Zapisz",
+    "postUpdated": "Post zaktualizowany",
+    "noMyPosts": "Nie masz jeszcze zadnych postow"
   },
   "group": {
     "groups": "Grupy",
