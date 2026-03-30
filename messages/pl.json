@@ -341,5 +341,140 @@
     "deliveryHours": "Godziny odbioru",
     "noDeliveryOptions": "Brak opcji dostawy",
     "progress": "Postep"
+  },
+  "legal": {
+    "privacyPolicy": "Polityka prywatnosci",
+    "termsOfService": "Regulamin",
+    "facebookDataDeletion": "Usuwanie danych Facebook",
+    "lastUpdated": "Ostatnia aktualizacja",
+    "privacy": {
+      "intro": {
+        "title": "Wprowadzenie",
+        "body": "Plonbli (\"Serwis\") szanuje prywatnosc swoich uzytkownikow. Niniejsza Polityka Prywatnosci wyjasnia, jakie dane osobowe zbieramy, w jaki sposob je wykorzystujemy oraz jakie prawa przysluguja uzytkownikom w zwiazku z przetwarzaniem ich danych."
+      },
+      "dataCollected": {
+        "title": "Jakie dane zbieramy",
+        "body": "W ramach korzystania z Serwisu mozemy zbierac nastepujace dane:",
+        "item1": "Dane konta: imie i nazwisko, adres e-mail, haslo (zaszyfrowane)",
+        "item2": "Dane profilu: wojewodztwo, powiat, gmina, kod pocztowy, avatar",
+        "item3": "Dane lokalizacyjne: wspolrzedne GPS (za zgoda uzytkownika), dane adresowe z profilu",
+        "item4": "Dane aktywnosci: oferty, posty, wiadomosci, opinie, czlonkostwo w grupach"
+      },
+      "purpose": {
+        "title": "Cel przetwarzania danych",
+        "body": "Dane osobowe przetwarzamy w celu:",
+        "item1": "Swiadczenia uslug platformy — laczenie rolnikow z konsumentami",
+        "item2": "Wyswietlania rolnikow na mapie i umozliwienia wyszukiwania najblizszych producentow",
+        "item3": "Obslugi wiadomosci i komunikacji miedzy uzytkownikami",
+        "item4": "Utrzymania systemu opinii i reputacji"
+      },
+      "thirdParty": {
+        "title": "Udostepnianie danych osobom trzecim",
+        "body": "Nie sprzedajemy danych osobowych. Dane moga byc udostepniane wylacznie: dostawcom uslug technicznych niezbednych do dzialania platformy (hosting, baza danych), organom publicznym na podstawie obowiazujacych przepisow prawa. W przypadku logowania przez Facebook lub Google, otrzymujemy jedynie podstawowe dane profilu (imie, e-mail, zdjecie) zgodnie z uprawnieniami udzielonymi przez uzytkownika."
+      },
+      "cookies": {
+        "title": "Pliki cookies",
+        "body": "Serwis uzywa plikow cookies wylacznie do utrzymania sesji logowania i zapamietania preferencji uzytkownika (np. wybrany motyw kolorystyczny). Nie stosujemy cookies reklamowych ani sledzacych."
+      },
+      "rights": {
+        "title": "Prawa uzytkownika",
+        "body": "Zgodnie z RODO, kazdy uzytkownik ma prawo do:",
+        "item1": "Dostepu do swoich danych osobowych",
+        "item2": "Sprostowania nieprawidlowych danych",
+        "item3": "Usuniecia danych (prawo do bycia zapomnianym)",
+        "item4": "Przenoszenia danych do innego administratora"
+      },
+      "retention": {
+        "title": "Okres przechowywania danych",
+        "body": "Dane osobowe przechowujemy przez okres korzystania z konta. Po usunieciu konta dane zostana trwale usuniete w ciagu 30 dni, z wyjatkiem danych wymaganych przepisami prawa."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "body": "W sprawach dotyczacych ochrony danych osobowych prosimy o kontakt pod adresem e-mail: privacy@plonbli.pl"
+      }
+    },
+    "terms": {
+      "general": {
+        "title": "Postanowienia ogolne",
+        "body": "Niniejszy Regulamin okresla zasady korzystania z platformy Plonbli — serwisu laczacego lokalnych rolnikow z konsumentami. Korzystanie z Serwisu oznacza akceptacje niniejszego Regulaminu."
+      },
+      "accounts": {
+        "title": "Konta uzytkownikow",
+        "body": "Rejestracja wymaga podania imienia, adresu e-mail oraz hasla. Uzytkownik jest odpowiedzialny za bezpieczenstwo swojego konta i nie powinien udostepniac danych logowania osobom trzecim. Mozliwe jest rowniez logowanie przez konta Facebook lub Google."
+      },
+      "roles": {
+        "title": "Role uzytkownikow",
+        "body": "W Serwisie dostepne sa trzy role: Rolnik (moze wystawiac oferty i prowadzic dziennik upraw), Konsument (moze przegladac oferty i kontaktowac sie z rolnikami) oraz Rolnik i Konsument (pelna funkcjonalnosc obu rol). Role mozna zmienic w ustawieniach profilu."
+      },
+      "content": {
+        "title": "Tresci uzytkownikow",
+        "body": "Uzytkownicy sa odpowiedzialni za tresci, ktore publikuja w Serwisie (oferty, posty, opinie, wiadomosci). Tresci musza byc zgodne z prawem, rzetelne i nie moga naruszac praw osob trzecich. Zastrzegamy sobie prawo do usuniecia tresci naruszajacych Regulamin."
+      },
+      "transactions": {
+        "title": "Transakcje",
+        "body": "Plonbli sluzy wylacznie do laczenia rolnikow z konsumentami. Serwis nie posredniczy w transakcjach finansowych — wszelkie ustalenia dotyczace ceny, platnosci i dostawy sa dokonywane bezposrednio miedzy stronami. Plonbli nie ponosi odpowiedzialnosci za przebieg transakcji."
+      },
+      "prohibited": {
+        "title": "Zabronione dzialania",
+        "body": "Zabrania sie:",
+        "item1": "Podawania falszywych informacji w ofertach lub profilu",
+        "item2": "Spamowania, publikowania tresci niezwiazanych z tematyka Serwisu",
+        "item3": "Proby uzyskania nieautoryzowanego dostepu do kont innych uzytkownikow",
+        "item4": "Wykorzystywania Serwisu do celow niezgodnych z prawem",
+        "item5": "Automatycznego zbierania danych z Serwisu (scraping)"
+      },
+      "liability": {
+        "title": "Odpowiedzialnosc",
+        "body": "Serwis jest udostepniany w stanie \"takim, jaki jest\". Plonbli doklada staran, aby Serwis dzialal prawidlowo, ale nie gwarantuje nieprzerwanego dostepu. Nie ponosimy odpowiedzialnosci za szkody wynikajace z transakcji miedzy uzytkownikami ani za tresci publikowane przez uzytkownikow."
+      },
+      "termination": {
+        "title": "Zawieszenie i usuniecie konta",
+        "body": "Zastrzegamy sobie prawo do zawieszenia lub usuniecia konta uzytkownika, ktory narusza Regulamin. Uzytkownik moze w kazdej chwili usunac swoje konto w ustawieniach profilu."
+      },
+      "changes": {
+        "title": "Zmiany Regulaminu",
+        "body": "Regulamin moze byc zmieniany. O istotnych zmianach uzytkownicy zostana poinformowani za posrednictwem Serwisu. Dalsze korzystanie z Serwisu po wprowadzeniu zmian oznacza ich akceptacje."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "body": "Pytania dotyczace Regulaminu prosimy kierowac na adres: contact@plonbli.pl"
+      }
+    },
+    "fbDeletion": {
+      "intro": {
+        "title": "Informacje ogolne",
+        "body": "Jezeli logujesz sie do Plonbli za pomoca konta Facebook, mozesz w kazdej chwili zazadac usuniecia swoich danych z naszego serwisu. Ponizej znajdziesz instrukcje, jak to zrobic."
+      },
+      "whatWeStore": {
+        "title": "Jakie dane przechowujemy z Facebooka",
+        "body": "Przy logowaniu przez Facebook otrzymujemy i przechowujemy wylacznie:",
+        "item1": "Identyfikator Facebook (Facebook ID)",
+        "item2": "Imie i nazwisko z profilu Facebook",
+        "item3": "Adres e-mail powiazany z kontem Facebook"
+      },
+      "howToDelete": {
+        "title": "Jak usunac dane z Plonbli",
+        "body": "Aby usunac swoje dane z naszego serwisu:",
+        "step1": "Zaloguj sie do Plonbli i przejdz do sekcji Profil",
+        "step2": "Skontaktuj sie z nami na adres privacy@plonbli.pl z prosba o usuniecie konta",
+        "step3": "Twoje dane zostana trwale usuniete w ciagu 30 dni od otrzymania zgloszenia"
+      },
+      "fromFacebook": {
+        "title": "Usuwanie dostepu z poziomu Facebooka",
+        "body": "Mozesz rowniez cofnac dostep Plonbli do Twojego konta Facebook:",
+        "step1": "Wejdz w Ustawienia na Facebooku",
+        "step2": "Przejdz do sekcji Aplikacje i strony internetowe",
+        "step3": "Znajdz \"Plonbli\" na liscie aktywnych aplikacji",
+        "step4": "Kliknij Usun, aby cofnac dostep i zazadac usuniecia danych"
+      },
+      "timeline": {
+        "title": "Czas realizacji",
+        "body": "Po otrzymaniu zadania usuniecia danych, wszystkie dane powiazane z Twoim kontem Facebook zostana trwale usuniete z naszych serwerow w ciagu 30 dni. Otrzymasz potwierdzenie na adres e-mail po zakonczeniu procesu."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "body": "W razie pytan dotyczacych usuwania danych prosimy o kontakt: privacy@plonbli.pl"
+      }
+    }
   }
 }

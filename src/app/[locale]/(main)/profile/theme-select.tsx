@@ -18,7 +18,7 @@ export function ThemeSelect() {
   return (
     <div className="px-3">
       <p className="text-sm text-muted-foreground mb-2">{t("toggle")}</p>
-      <div className="flex rounded-lg border p-1 gap-1">
+      <div className="flex flex-col sm:flex-row rounded-lg border p-1 gap-1">
         {themes.map(({ value, icon: Icon, labelKey }) => (
           <button
             key={value}
