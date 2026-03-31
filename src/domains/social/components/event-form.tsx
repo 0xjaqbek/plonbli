@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { ImageUpload } from "@/shared/ui/image-upload";
 import { createEvent } from "../actions/create-event";
 
 interface EventFormProps {
@@ -33,6 +34,7 @@ export function EventForm({ groupId }: EventFormProps) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [recurrence, setRecurrence] = useState<string>("");
+  const [coverImage, setCoverImage] = useState<string[]>([]);
   const [error, setError] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
@@ -46,6 +48,7 @@ export function EventForm({ groupId }: EventFormProps) {
         type,
         groupId,
         location: location.trim() || undefined,
+        coverImage: coverImage[0] || undefined,
         startDate,
         endDate,
         recurrence: recurrence
@@ -135,6 +138,16 @@ export function EventForm({ groupId }: EventFormProps) {
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>{t("coverImage")}</Label>
+        <ImageUpload
+          folder="events"
+          maxFiles={1}
+          value={coverImage}
+          onChange={setCoverImage}
+        />
       </div>
 
       <div className="space-y-2">

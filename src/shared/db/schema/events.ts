@@ -41,6 +41,7 @@ export const events = pgTable("events", {
   startDate: timestamp("start_date", { withTimezone: true }).notNull(),
   endDate: timestamp("end_date", { withTimezone: true }).notNull(),
   recurrence: recurrenceEnum("recurrence"),
+  coverImage: text("cover_image"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

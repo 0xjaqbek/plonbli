@@ -30,6 +30,7 @@ export const createEventSchema = z.object({
   location: z.string().max(300).optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional(),
+  coverImage: z.string().url().optional(),
   startDate: z.string().min(1, "Data rozpoczecia jest wymagana"),
   endDate: z.string().min(1, "Data zakonczenia jest wymagana"),
   recurrence: z.enum(["WEEKLY", "BIWEEKLY", "MONTHLY"]).optional(),

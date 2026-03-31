@@ -266,7 +266,8 @@
     "eventDeleted": "Wydarzenie usuniete",
     "confirmDeleteEvent": "Na pewno chcesz usunac to wydarzenie?",
     "upcoming": "Nadchodzace",
-    "past": "Minione"
+    "past": "Minione",
+    "coverImage": "Zdjecie okladkowe"
   },
   "farming": {
     "cropLog": "Dziennik upraw",
@@ -483,5 +484,14 @@
         "body": "W razie pytan dotyczacych usuwania danych prosimy o kontakt: privacy@plonbli.pl"
       }
     }
+  },
+  "images": {
+    "dropOrClick": "Przeciagnij lub kliknij aby dodac zdjecie",
+    "maxSize": "Max 5MB",
+    "invalidType": "Dozwolone formaty: JPG, PNG, WebP",
+    "tooLarge": "Plik jest za duzy (max 5MB)",
+    "uploadFailed": "Nie udalo sie wyslac zdjecia",
+    "photos": "Zdjecia",
+    "coverImage": "Zdjecie okladkowe"
   }
 }

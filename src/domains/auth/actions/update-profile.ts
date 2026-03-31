@@ -26,13 +26,14 @@ export async function updateProfile(
     };
   }
 
-  const { name, role, voivodeship, county, commune, postalCode, latitude, longitude } =
+  const { name, avatar, role, voivodeship, county, commune, postalCode, latitude, longitude } =
     parsed.data;
 
   await db
     .update(users)
     .set({
       name,
+      avatar: avatar ?? null,
       role,
       voivodeship: voivodeship ?? null,
       county: county ?? null,

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
+import { ImageUpload } from "@/shared/ui/image-upload";
 import { createPost } from "../actions/create-post";
 
 interface PostFormProps {
@@ -15,6 +16,7 @@ export function PostForm({ groupId }: PostFormProps) {
   const t = useTranslations("social");
   const router = useRouter();
   const [content, setContent] = useState("");
+  const [images, setImages] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit() {
@@ -23,12 +25,14 @@ export function PostForm({ groupId }: PostFormProps) {
     startTransition(async () => {
       const result = await createPost({
         content: content.trim(),
+        images,
         visibility: groupId ? "GROUP" : "PUBLIC",
         groupId,
       });
 
       if (result.success) {
         setContent("");
+        setImages([]);
         router.refresh();
       }
     });
@@ -41,6 +45,12 @@ export function PostForm({ groupId }: PostFormProps) {
         onChange={(e) => setContent(e.target.value)}
         placeholder={t("writePost")}
         rows={3}
+      />
+      <ImageUpload
+        folder="posts"
+        maxFiles={5}
+        value={images}
+        onChange={setImages}
       />
       <div className="flex justify-end">
         <Button

@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { ImageUpload } from "@/shared/ui/image-upload";
 import { createCropLog } from "../actions/create-crop-log";
 
 interface CropLogFormProps {
@@ -33,6 +34,7 @@ export function CropLogForm({ products }: CropLogFormProps) {
   const [area, setArea] = useState("");
   const [quantity, setQuantity] = useState("");
   const [method, setMethod] = useState("");
+  const [images, setImages] = useState<string[]>([]);
   const [error, setError] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
@@ -50,6 +52,7 @@ export function CropLogForm({ products }: CropLogFormProps) {
         type,
         description: description.trim(),
         productId: productId || undefined,
+        images,
         data: Object.keys(data).length > 0 ? data : undefined,
       });
 
@@ -60,6 +63,7 @@ export function CropLogForm({ products }: CropLogFormProps) {
         setArea("");
         setQuantity("");
         setMethod("");
+        setImages([]);
       } else if (result.error) {
         setError(result.error);
       }
@@ -119,6 +123,16 @@ export function CropLogForm({ products }: CropLogFormProps) {
           </Select>
         </div>
       )}
+
+      <div className="space-y-2">
+        <Label>{t("images")}</Label>
+        <ImageUpload
+          folder="crop-logs"
+          maxFiles={5}
+          value={images}
+          onChange={setImages}
+        />
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

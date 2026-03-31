@@ -41,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { ImageUpload } from "@/shared/ui/image-upload";
 import type { Category } from "@/shared/db/schema";
 
 interface ListingFormProps {
@@ -227,6 +228,25 @@ export function ListingForm({ categories }: ListingFormProps) {
                         .filter(Boolean)
                     )
                   }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("images")}</FormLabel>
+              <FormControl>
+                <ImageUpload
+                  folder="products"
+                  maxFiles={5}
+                  value={field.value ?? []}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />

@@ -28,6 +28,7 @@ export async function getEvents(options?: {
       startDate: events.startDate,
       endDate: events.endDate,
       recurrence: events.recurrence,
+      coverImage: events.coverImage,
       createdAt: events.createdAt,
       creator: {
         id: users.id,

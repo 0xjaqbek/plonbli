@@ -36,7 +36,14 @@ export function EventCard({ event }: EventCardProps) {
 
   return (
     <Link href={`/social/events/${event.id}`}>
-      <Card className="h-full hover:shadow-md transition-shadow">
+      <Card className="h-full hover:shadow-md transition-shadow overflow-hidden">
+        {event.coverImage && (
+          <img
+            src={event.coverImage}
+            alt=""
+            className="w-full aspect-[3/1] object-cover"
+          />
+        )}
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">{event.title}</CardTitle>

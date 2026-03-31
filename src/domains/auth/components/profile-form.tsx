@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { ImageUpload } from "@/shared/ui/image-upload";
 import type { User } from "@/shared/db/schema";
 
 interface ProfileFormProps {
@@ -40,6 +41,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user.name,
+      avatar: user.avatar,
       role: user.role,
       voivodeship: user.voivodeship as ProfileInput["voivodeship"],
       county: user.county,
@@ -69,6 +71,25 @@ export function ProfileForm({ user }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="avatar"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Avatar</FormLabel>
+              <FormControl>
+                <ImageUpload
+                  folder="avatars"
+                  maxFiles={1}
+                  value={field.value ? [field.value] : []}
+                  onChange={(urls) => field.onChange(urls[0] ?? null)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="name"
