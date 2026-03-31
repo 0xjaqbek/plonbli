@@ -49,6 +49,19 @@ export function CropLogCard({ entry }: CropLogCardProps) {
       <CardContent className="space-y-2">
         <p className="text-sm whitespace-pre-wrap">{entry.description}</p>
 
+        {entry.images && entry.images.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 rounded-md overflow-hidden">
+            {entry.images.map((url, i) => (
+              <img
+                key={i}
+                src={url}
+                alt=""
+                className="w-full aspect-square object-cover"
+              />
+            ))}
+          </div>
+        )}
+
         {entry.data && (
           <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
             {entry.data.crop && (
