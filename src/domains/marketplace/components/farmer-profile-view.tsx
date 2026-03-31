@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { ListingCard } from "./listing-card";
+import { ShareButton } from "@/domains/social/components/share-button";
 import type { User } from "@/shared/db/schema";
 import type { ListingWithDetails } from "../queries/get-listings";
 
@@ -69,6 +70,7 @@ export function FarmerProfileView({
                 {tFarm("cropLog")}
               </Link>
             </Button>
+            <ShareButton entityType="FARMER" entityId={farmer.id} />
           </div>
         </CardContent>
       </Card>

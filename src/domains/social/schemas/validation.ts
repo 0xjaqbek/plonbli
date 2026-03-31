@@ -6,6 +6,10 @@ export const createPostSchema = z.object({
   groupId: z.string().optional(),
   type: z.enum(["POST", "ANNOUNCEMENT"]).default("POST"),
   visibility: z.enum(["PUBLIC", "GROUP", "FOLLOWERS"]),
+  sharedEntityType: z
+    .enum(["FARMER", "EVENT", "CROP_LOG", "PRODUCT"])
+    .optional(),
+  sharedEntityId: z.string().optional(),
 });
 
 export const addCommentSchema = z.object({

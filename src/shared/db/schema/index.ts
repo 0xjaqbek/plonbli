@@ -55,6 +55,7 @@ export {
   posts,
   postTypeEnum,
   postVisibilityEnum,
+  sharedEntityTypeEnum,
   type Post,
   type NewPost,
 } from "./posts";

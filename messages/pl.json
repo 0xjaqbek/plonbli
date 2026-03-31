@@ -210,7 +210,8 @@
     "cancelEdit": "Anuluj",
     "saveEdit": "Zapisz",
     "postUpdated": "Post zaktualizowany",
-    "noMyPosts": "Nie masz jeszcze zadnych postow"
+    "noMyPosts": "Nie masz jeszcze zadnych postow",
+    "sharedFarmer": "Rolnik"
   },
   "group": {
     "groups": "Grupy",

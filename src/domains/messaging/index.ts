@@ -15,3 +15,4 @@ export {
   getMessages,
   type MessageWithSender,
 } from "./queries/get-messages";
+export { hasUnreadMessages } from "./queries/has-unread-messages";

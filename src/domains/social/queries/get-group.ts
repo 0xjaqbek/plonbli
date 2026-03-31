@@ -8,6 +8,7 @@ import {
   reactions,
   comments,
 } from "@/shared/db/schema";
+import { resolveSharedEntity, type SharedEntityData } from "./resolve-shared-entity";
 
 export async function getGroup(groupId: string, currentUserId?: string) {
   const group = await db.query.groups.findFirst({
@@ -48,6 +49,8 @@ export async function getGroup(groupId: string, currentUserId?: string) {
         name: users.name,
         avatar: users.avatar,
       },
+      sharedEntityType: posts.sharedEntityType,
+      sharedEntityId: posts.sharedEntityId,
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
@@ -79,7 +82,12 @@ export async function getGroup(groupId: string, currentUserId?: string) {
         liked = !!userReaction;
       }
 
-      return { ...post, reactionCount, commentCount, liked, groupId: null, groupName: null };
+      let sharedEntity: SharedEntityData | null = null;
+      if (post.sharedEntityType && post.sharedEntityId) {
+        sharedEntity = await resolveSharedEntity(post.sharedEntityType, post.sharedEntityId);
+      }
+
+      return { ...post, reactionCount, commentCount, liked, groupId: null, groupName: null, sharedEntity };
     })
   );
 

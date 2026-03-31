@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
+import { ShareButton } from "@/domains/social/components/share-button";
 import type { FarmerCropLog } from "../queries/get-crop-logs";
 
 interface CropLogCardProps {
@@ -73,15 +74,18 @@ export function CropLogCard({ entry }: CropLogCardProps) {
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground">
-          {new Date(entry.createdAt).toLocaleDateString("pl-PL", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            {new Date(entry.createdAt).toLocaleDateString("pl-PL", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+          <ShareButton entityType="CROP_LOG" entityId={entry.id} size="sm" />
+        </div>
       </CardContent>
     </Card>
   );

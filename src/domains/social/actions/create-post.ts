@@ -29,7 +29,7 @@ export async function createPost(
     };
   }
 
-  const { content, images, groupId, type, visibility } = parsed.data;
+  const { content, images, groupId, type, visibility, sharedEntityType, sharedEntityId } = parsed.data;
 
   // If posting to a group, verify membership
   if (groupId) {
@@ -54,6 +54,8 @@ export async function createPost(
       images,
       type,
       visibility: groupId ? "GROUP" : visibility,
+      sharedEntityType: sharedEntityType ?? null,
+      sharedEntityId: sharedEntityId ?? null,
     })
     .returning({ id: posts.id });
 

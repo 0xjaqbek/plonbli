@@ -7,6 +7,7 @@ import {
   reactions,
   comments,
 } from "@/shared/db/schema";
+import { resolveSharedEntity, type SharedEntityData } from "./resolve-shared-entity";
 
 export async function getUserProfile(
   userId: string,
@@ -50,6 +51,8 @@ export async function getUserProfile(
       type: posts.type,
       visibility: posts.visibility,
       createdAt: posts.createdAt,
+      sharedEntityType: posts.sharedEntityType,
+      sharedEntityId: posts.sharedEntityId,
     })
     .from(posts)
     .where(
@@ -81,11 +84,17 @@ export async function getUserProfile(
         liked = !!userReaction;
       }
 
+      let sharedEntity: SharedEntityData | null = null;
+      if (post.sharedEntityType && post.sharedEntityId) {
+        sharedEntity = await resolveSharedEntity(post.sharedEntityType, post.sharedEntityId);
+      }
+
       return {
         ...post,
         reactionCount,
         commentCount,
         liked,
+        sharedEntity,
         author: {
           id: user.id,
           name: user.name,

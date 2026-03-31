@@ -13,6 +13,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { toggleReaction } from "../actions/toggle-reaction";
 import { deletePost } from "../actions/delete-post";
 import { updatePost } from "../actions/update-post";
+import { SharedEntityPreview } from "./shared-entity-preview";
 import type { FeedPost } from "../queries/get-feed";
 
 interface PostCardProps {
@@ -189,6 +190,10 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
             />
           ))}
         </div>
+      )}
+
+      {post.sharedEntity && (
+        <SharedEntityPreview entity={post.sharedEntity} />
       )}
 
       <div className="flex items-center gap-4 pt-1">

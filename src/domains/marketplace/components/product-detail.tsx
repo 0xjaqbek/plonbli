@@ -16,6 +16,7 @@ import {
 } from "@/shared/ui/card";
 import { MapPin, Truck, Package, User } from "lucide-react";
 import { deleteListing } from "../actions/delete-listing";
+import { ShareButton } from "@/domains/social/components/share-button";
 import type { ListingDetail } from "../queries/get-listing";
 
 const DELIVERY_ICONS: Record<string, typeof MapPin> = {
@@ -102,7 +103,10 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
           </Badge>
         </div>
 
-        <h1 className="text-2xl font-bold">{product.name}</h1>
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">{product.name}</h1>
+          <ShareButton entityType="PRODUCT" entityId={product.id} />
+        </div>
 
         <p className="text-3xl font-bold text-primary mt-2">
           {Number(listing.price).toFixed(2)} zl

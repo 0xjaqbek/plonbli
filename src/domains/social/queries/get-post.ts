@@ -7,6 +7,7 @@ import {
   comments,
   reactions,
 } from "@/shared/db/schema";
+import { resolveSharedEntity } from "./resolve-shared-entity";
 
 export async function getPost(postId: string, currentUserId?: string) {
   const [post] = await db
@@ -24,6 +25,8 @@ export async function getPost(postId: string, currentUserId?: string) {
       },
       groupId: posts.groupId,
       groupName: groups.name,
+      sharedEntityType: posts.sharedEntityType,
+      sharedEntityId: posts.sharedEntityId,
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
@@ -68,12 +71,18 @@ export async function getPost(postId: string, currentUserId?: string) {
     liked = !!userReaction;
   }
 
+  const sharedEntity =
+    post.sharedEntityType && post.sharedEntityId
+      ? await resolveSharedEntity(post.sharedEntityType, post.sharedEntityId)
+      : null;
+
   return {
     ...post,
     comments: postComments,
     reactionCount,
     commentCount: postComments.length,
     liked,
+    sharedEntity,
   };
 }
 

@@ -20,7 +20,11 @@ const topRightItems = [
 
 const allNavItems = [...bottomNavItems, ...topRightItems];
 
-export function NavBar() {
+interface NavBarProps {
+  hasUnread?: boolean;
+}
+
+export function NavBar({ hasUnread }: NavBarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
@@ -51,7 +55,12 @@ export function NavBar() {
                   : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <span className="relative">
+                <Icon className="h-4 w-4" />
+                {hasUnread && href === "/messages" && (
+                  <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
+                )}
+              </span>
               {t(labelKey)}
             </Link>
           ))}
@@ -69,13 +78,16 @@ export function NavBar() {
               key={href}
               href={href}
               className={cn(
-                "p-2 rounded-md transition-colors",
+                "relative p-2 rounded-md transition-colors",
                 isActive(href)
                   ? "text-primary"
                   : "text-muted-foreground"
               )}
             >
               <Icon className="h-5 w-5" />
+              {hasUnread && href === "/messages" && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
+              )}
             </Link>
           ))}
         </div>

@@ -9,6 +9,7 @@ import {
   reactions,
   comments,
 } from "@/shared/db/schema";
+import { resolveSharedEntity, type SharedEntityData } from "./resolve-shared-entity";
 
 const POSTS_PER_PAGE = 20;
 
@@ -78,6 +79,8 @@ export async function getFeed(userId: string, page = 1) {
       },
       groupId: posts.groupId,
       groupName: groups.name,
+      sharedEntityType: posts.sharedEntityType,
+      sharedEntityId: posts.sharedEntityId,
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
@@ -108,11 +111,20 @@ export async function getFeed(userId: string, page = 1) {
         ),
       });
 
+      let sharedEntity: SharedEntityData | null = null;
+      if (post.sharedEntityType && post.sharedEntityId) {
+        sharedEntity = await resolveSharedEntity(
+          post.sharedEntityType,
+          post.sharedEntityId
+        );
+      }
+
       return {
         ...post,
         reactionCount,
         commentCount,
         liked: !!userReaction,
+        sharedEntity,
       };
     })
   );

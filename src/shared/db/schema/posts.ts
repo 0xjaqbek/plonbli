@@ -9,6 +9,12 @@ export const postVisibilityEnum = pgEnum("post_visibility", [
   "GROUP",
   "FOLLOWERS",
 ]);
+export const sharedEntityTypeEnum = pgEnum("shared_entity_type", [
+  "FARMER",
+  "EVENT",
+  "CROP_LOG",
+  "PRODUCT",
+]);
 
 export const posts = pgTable("posts", {
   id: text("id")
@@ -24,6 +30,8 @@ export const posts = pgTable("posts", {
   images: text("images").array().notNull().default([]),
   type: postTypeEnum("type").notNull().default("POST"),
   visibility: postVisibilityEnum("visibility").notNull().default("PUBLIC"),
+  sharedEntityType: sharedEntityTypeEnum("shared_entity_type"),
+  sharedEntityId: text("shared_entity_id"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

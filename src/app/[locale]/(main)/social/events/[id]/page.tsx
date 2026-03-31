@@ -13,6 +13,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { getEvent } from "@/domains/social/queries/get-event";
 import { RsvpButton } from "@/domains/social/components/rsvp-button";
+import { ShareButton } from "@/domains/social/components/share-button";
 import { DeleteEventButton } from "./delete-button";
 
 const typeKeys: Record<string, string> = {
@@ -76,7 +77,10 @@ export default async function EventDetailPage({
             </Badge>
           )}
         </div>
-        {isCreator && <DeleteEventButton eventId={event.id} />}
+        <div className="flex items-center gap-2">
+          <ShareButton entityType="EVENT" entityId={event.id} />
+          {isCreator && <DeleteEventButton eventId={event.id} />}
+        </div>
       </div>
 
       {event.description && (
