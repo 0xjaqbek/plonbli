@@ -1,8 +1,18 @@
 "use client";
 
+import "leaflet/dist/leaflet.css";
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
+import L from "leaflet";
 import { useTranslations } from "next-intl";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 import type { EventWithDetails } from "../queries/get-events";
 
 interface EventMapProps {
