@@ -22,6 +22,7 @@ export type SharedEntityData =
   | {
       type: "CROP_LOG";
       id: string;
+      farmerId: string;
       logType: string;
       description: string;
       image: string | null;
@@ -79,6 +80,7 @@ export async function resolveSharedEntity(
       const log = await db
         .select({
           id: cropLogs.id,
+          farmerId: cropLogs.farmerId,
           logType: cropLogs.type,
           description: cropLogs.description,
           images: cropLogs.images,
@@ -92,6 +94,7 @@ export async function resolveSharedEntity(
       return {
         type: "CROP_LOG",
         id: log[0].id,
+        farmerId: log[0].farmerId,
         logType: log[0].logType,
         description: log[0].description,
         image: log[0].images[0] ?? null,

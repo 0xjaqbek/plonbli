@@ -145,7 +145,7 @@ function CropLogPreview({
   const t = useTranslations("farming");
 
   return (
-    <Link href={`/farming/logs`}>
+    <Link href={`/farmers/${entity.farmerId}/crop-log`}>
       <div className="flex gap-3 border rounded-lg p-3 bg-muted/30 hover:bg-muted/50 transition-colors">
         {entity.image && (
           <img
