@@ -3,18 +3,15 @@ import { eq } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { auth, signOut } from "@/domains/auth/lib/auth";
+import { auth } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
 import { ProfileForm } from "@/domains/auth/components/profile-form";
-import { ThemeSelect } from "../theme-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Separator } from "@/shared/ui/separator";
 import { Button } from "@/shared/ui/button";
 
 export default async function SettingsPage() {
   const t = await getTranslations("profile");
-  const tAuth = await getTranslations("auth");
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -37,24 +34,8 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>{t("settings")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <ThemeSelect />
-          <Separator />
+        <CardContent>
           <ProfileForm user={user} />
-          <Separator />
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <button
-              type="submit"
-              className="text-sm text-destructive hover:underline"
-            >
-              {tAuth("logout")}
-            </button>
-          </form>
         </CardContent>
       </Card>
     </div>

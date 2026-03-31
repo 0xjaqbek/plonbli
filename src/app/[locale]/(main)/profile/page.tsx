@@ -11,15 +11,17 @@ import {
   Settings,
   ChevronRight,
 } from "lucide-react";
-import { auth } from "@/domains/auth/lib/auth";
+import { auth, signOut } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Separator } from "@/shared/ui/separator";
+import { ThemeSelect } from "./theme-select";
 
 export default async function ProfilePage() {
   const t = await getTranslations("profile");
+  const tAuth = await getTranslations("auth");
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -123,6 +125,22 @@ export default async function ProfilePage() {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>
           </nav>
+          <Separator className="my-3" />
+          <ThemeSelect />
+          <Separator className="my-3" />
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}
+          >
+            <button
+              type="submit"
+              className="text-sm text-destructive hover:underline px-3"
+            >
+              {tAuth("logout")}
+            </button>
+          </form>
         </CardContent>
       </Card>
     </div>
