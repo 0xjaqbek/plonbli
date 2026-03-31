@@ -86,7 +86,27 @@ async function AuthenticatedHome({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-10 py-6">
-      {/* Latest listings */}
+      {/* Feed / Aktualności */}
+      {feed.length > 0 && (
+        <section className="max-w-2xl mx-auto px-4 space-y-4">
+          <SectionHeader
+            title={t("yourFeed")}
+            href="/social"
+            more={tc("showMore")}
+          />
+          <div className="space-y-4">
+            {feed.slice(0, 3).map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUserId={userId}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Latest listings / Najnowsze produkty */}
       <section className="max-w-7xl mx-auto px-4 space-y-4">
         <SectionHeader
           title={t("latestListings")}
@@ -133,26 +153,6 @@ async function AuthenticatedHome({ userId }: { userId: string }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {myGroups.slice(0, 3).map((group) => (
               <GroupCard key={group.id} group={group} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Feed preview */}
-      {feed.length > 0 && (
-        <section className="max-w-2xl mx-auto px-4 space-y-4">
-          <SectionHeader
-            title={t("yourFeed")}
-            href="/social"
-            more={tc("showMore")}
-          />
-          <div className="space-y-4">
-            {feed.slice(0, 3).map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                currentUserId={userId}
-              />
             ))}
           </div>
         </section>
