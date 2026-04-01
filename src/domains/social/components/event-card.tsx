@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { CalendarDays, MapPin, Users } from "lucide-react";
@@ -8,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
+import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import type { EventWithDetails } from "../queries/get-events";
 
 interface EventCardProps {
@@ -38,11 +41,19 @@ export function EventCard({ event }: EventCardProps) {
     <Link href={`/social/events/${event.id}`}>
       <Card className="h-full hover:shadow-md transition-shadow overflow-hidden">
         {event.coverImage && (
-          <img
-            src={event.coverImage}
-            alt=""
-            className="w-full aspect-[3/1] object-cover"
-          />
+          <ImageLightbox images={[event.coverImage]}>
+            {(onOpen) => (
+              <img
+                src={event.coverImage!}
+                alt=""
+                className="w-full aspect-[3/1] object-cover cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onOpen(0);
+                }}
+              />
+            )}
+          </ImageLightbox>
         )}
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">

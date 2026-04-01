@@ -17,6 +17,7 @@ import {
 import { MapPin, Truck, Package, User } from "lucide-react";
 import { deleteListing } from "../actions/delete-listing";
 import { ShareButton } from "@/domains/social/components/share-button";
+import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import type { ListingDetail } from "../queries/get-listing";
 
 const DELIVERY_ICONS: Record<string, typeof MapPin> = {
@@ -56,18 +57,26 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
   return (
     <div className="space-y-6">
       {product.images.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {product.images.map((url, i) => (
-            <div key={i} className="aspect-square overflow-hidden rounded-lg relative">
-              <Image
-                src={url}
-                alt={`${product.name} ${i + 1}`}
-                fill
-                className="object-cover"
-              />
+        <ImageLightbox images={product.images}>
+          {(onOpen) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {product.images.map((url, i) => (
+                <div
+                  key={i}
+                  className="aspect-square overflow-hidden rounded-lg relative cursor-pointer"
+                  onClick={() => onOpen(i)}
+                >
+                  <Image
+                    src={url}
+                    alt={`${product.name} ${i + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+        </ImageLightbox>
       ) : (
         <div className="aspect-[2/1] rounded-lg bg-muted flex items-center justify-center">
           <span className="text-6xl">🌱</span>

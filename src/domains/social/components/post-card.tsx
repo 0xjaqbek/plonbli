@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Textarea } from "@/shared/ui/textarea";
+import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { toggleReaction } from "../actions/toggle-reaction";
 import { deletePost } from "../actions/delete-post";
 import { updatePost } from "../actions/update-post";
@@ -175,21 +176,26 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
       )}
 
       {post.images && post.images.length > 0 && (
-        <div className={cn(
-          "grid gap-1 rounded-md overflow-hidden",
-          post.images.length === 1 && "grid-cols-1",
-          post.images.length === 2 && "grid-cols-2",
-          post.images.length >= 3 && "grid-cols-2 sm:grid-cols-3"
-        )}>
-          {post.images.map((url, i) => (
-            <img
-              key={i}
-              src={url}
-              alt=""
-              className="w-full aspect-square object-cover"
-            />
-          ))}
-        </div>
+        <ImageLightbox images={post.images}>
+          {(onOpen) => (
+            <div className={cn(
+              "grid gap-1 rounded-md overflow-hidden",
+              post.images.length === 1 && "grid-cols-1",
+              post.images.length === 2 && "grid-cols-2",
+              post.images.length >= 3 && "grid-cols-2 sm:grid-cols-3"
+            )}>
+              {post.images.map((url, i) => (
+                <img
+                  key={i}
+                  src={url}
+                  alt=""
+                  className="w-full aspect-square object-cover cursor-pointer"
+                  onClick={() => onOpen(i)}
+                />
+              ))}
+            </div>
+          )}
+        </ImageLightbox>
       )}
 
       {post.sharedEntity && (

@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
+import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { ShareButton } from "@/domains/social/components/share-button";
 import type { FarmerCropLog } from "../queries/get-crop-logs";
 
@@ -50,16 +51,21 @@ export function CropLogCard({ entry }: CropLogCardProps) {
         <p className="text-sm whitespace-pre-wrap">{entry.description}</p>
 
         {entry.images && entry.images.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 rounded-md overflow-hidden">
-            {entry.images.map((url, i) => (
-              <img
-                key={i}
-                src={url}
-                alt=""
-                className="w-full aspect-square object-cover"
-              />
-            ))}
-          </div>
+          <ImageLightbox images={entry.images}>
+            {(onOpen) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 rounded-md overflow-hidden">
+                {entry.images.map((url, i) => (
+                  <img
+                    key={i}
+                    src={url}
+                    alt=""
+                    className="w-full aspect-square object-cover cursor-pointer"
+                    onClick={() => onOpen(i)}
+                  />
+                ))}
+              </div>
+            )}
+          </ImageLightbox>
         )}
 
         {entry.data && (
