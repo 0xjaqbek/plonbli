@@ -26,7 +26,7 @@ export async function updateProfile(
     };
   }
 
-  const { name, avatar, role, voivodeship, county, commune, postalCode, latitude, longitude } =
+  const { name, avatar, bio, role, voivodeship, county, commune, postalCode, latitude, longitude } =
     parsed.data;
 
   await db
@@ -34,6 +34,7 @@ export async function updateProfile(
     .set({
       name,
       avatar: avatar ?? null,
+      bio: bio ?? null,
       role,
       voivodeship: voivodeship ?? null,
       county: county ?? null,

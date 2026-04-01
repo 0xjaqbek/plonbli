@@ -16,6 +16,7 @@ export const loginSchema = z.object({
 export const profileSchema = z.object({
   name: z.string().min(1, "Imie jest wymagane").max(255),
   avatar: z.string().url().nullable().optional(),
+  bio: z.string().max(500).nullable().optional(),
   role: z.enum(["FARMER", "CONSUMER", "BOTH"]),
   voivodeship: z.enum(VOIVODESHIPS).nullable().optional(),
   county: z.string().max(100).nullable().optional(),

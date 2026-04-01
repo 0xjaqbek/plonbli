@@ -56,7 +56,9 @@
     "myPosts": "Moje posty",
     "myReviews": "Opinie o mnie",
     "myGroups": "Moje grupy",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "bio": "O mnie",
+    "bioPlaceholder": "Opowiedz o swoim gospodarstwie, metodach upraw, doswiadczeniu..."
   },
   "nav": {
     "home": "Strona glowna",
@@ -146,7 +148,14 @@
     "listView": "Lista",
     "mapView": "Mapa",
     "loadingMap": "Ladowanie mapy...",
-    "approximateLocation": "Lokalizacja przyblizona"
+    "approximateLocation": "Lokalizacja przyblizona",
+    "followers": "obserwujacych",
+    "logEntries": "wpisow w dzienniku",
+    "farmingMethods": "Metody upraw",
+    "methodEco": "Ekologiczna",
+    "methodConventional": "Konwencjonalna",
+    "methodOther": "Inna",
+    "productCategories": "Kategorie produktow"
   },
   "messaging": {
     "title": "Wiadomosci",

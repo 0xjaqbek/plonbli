@@ -9,6 +9,7 @@ import { updateProfile } from "../actions/update-profile";
 import { VOIVODESHIPS } from "@/domains/geo";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
 import {
   Form,
   FormControl,
@@ -42,6 +43,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     defaultValues: {
       name: user.name,
       avatar: user.avatar,
+      bio: user.bio,
       role: user.role,
       voivodeship: user.voivodeship as ProfileInput["voivodeship"],
       county: user.county,
@@ -98,6 +100,26 @@ export function ProfileForm({ user }: ProfileFormProps) {
               <FormLabel>{tAuth("name")}</FormLabel>
               <FormControl>
                 <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("bio")}</FormLabel>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  placeholder={t("bioPlaceholder")}
+                  rows={3}
+                  maxLength={500}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
