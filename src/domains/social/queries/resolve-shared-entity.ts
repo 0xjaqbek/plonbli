@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { users, products, events, cropLogs, listings } from "@/shared/db/schema";
+import { users, products, events, cropLogs, listings, proxyFarmers } from "@/shared/db/schema";
 
 export type SharedEntityData =
   | {
@@ -38,6 +38,13 @@ export type SharedEntityData =
       price: string | null;
       unit: string | null;
       farmerName: string;
+    }
+  | {
+      type: "PROXY_FARMER";
+      id: string;
+      name: string;
+      avatar: string | null;
+      location: string | null;
     };
 
 export async function resolveSharedEntity(
@@ -129,6 +136,22 @@ export async function resolveSharedEntity(
         price: result[0].price,
         unit: result[0].unit,
         farmerName: result[0].farmerName,
+      };
+    }
+    case "PROXY_FARMER": {
+      const pf = await db.query.proxyFarmers.findFirst({
+        where: eq(proxyFarmers.id, entityId),
+      });
+      if (!pf) return null;
+      const locationParts: string[] = [];
+      if (pf.commune) locationParts.push(pf.commune);
+      if (pf.voivodeship) locationParts.push(pf.voivodeship);
+      return {
+        type: "PROXY_FARMER",
+        id: pf.id,
+        name: pf.name,
+        avatar: pf.avatar,
+        location: locationParts.join(", ") || null,
       };
     }
     default:

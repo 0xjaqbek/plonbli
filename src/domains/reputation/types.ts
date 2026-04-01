@@ -1,6 +1,7 @@
 export interface ReviewEntry {
   reviewerId: string;
-  targetId: string;
+  targetId: string | null;
+  proxyFarmerId?: string | null;
   productId?: string;
   overall: number;
   dimensions?: {

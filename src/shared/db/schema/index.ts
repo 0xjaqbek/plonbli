@@ -61,7 +61,19 @@ export {
 } from "./posts";
 export { comments, type Comment, type NewComment } from "./comments";
 export { reactions, type Reaction } from "./reactions";
-export { follows, type Follow } from "./follows";
+export {
+  follows,
+  proxyFarmerFollows,
+  type Follow,
+  type ProxyFarmerFollow,
+} from "./follows";
+export {
+  proxyFarmers,
+  type ProxyFarmer,
+  type NewProxyFarmer,
+  type ProxyContactMethod,
+  type ProxyProduct,
+} from "./proxy-farmers";
 export {
   events,
   eventTypeEnum,
@@ -123,4 +135,6 @@ export {
   pickupPointsRelations,
   collectionsRelations,
   collectionItemsRelations,
+  proxyFarmersRelations,
+  proxyFarmerFollowsRelations,
 } from "./relations";

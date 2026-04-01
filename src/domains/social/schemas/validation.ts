@@ -7,7 +7,7 @@ export const createPostSchema = z.object({
   type: z.enum(["POST", "ANNOUNCEMENT"]).default("POST"),
   visibility: z.enum(["PUBLIC", "GROUP", "FOLLOWERS"]),
   sharedEntityType: z
-    .enum(["FARMER", "EVENT", "CROP_LOG", "PRODUCT"])
+    .enum(["FARMER", "EVENT", "CROP_LOG", "PRODUCT", "PROXY_FARMER"])
     .optional(),
   sharedEntityId: z.string().optional(),
 });

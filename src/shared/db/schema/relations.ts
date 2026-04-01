@@ -11,7 +11,8 @@ import { groupMembers } from "./group-members";
 import { posts } from "./posts";
 import { comments } from "./comments";
 import { reactions } from "./reactions";
-import { follows } from "./follows";
+import { follows, proxyFarmerFollows } from "./follows";
+import { proxyFarmers } from "./proxy-farmers";
 import { events } from "./events";
 import { eventRsvps } from "./event-rsvps";
 import { cropLogs } from "./crop-logs";
@@ -194,9 +195,32 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
     references: [users.id],
     relationName: "reviewTarget",
   }),
+  proxyFarmer: one(proxyFarmers, {
+    fields: [reviews.proxyFarmerId],
+    references: [proxyFarmers.id],
+  }),
   product: one(products, {
     fields: [reviews.productId],
     references: [products.id],
+  }),
+}));
+
+export const proxyFarmersRelations = relations(proxyFarmers, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [proxyFarmers.creatorId],
+    references: [users.id],
+  }),
+  follows: many(proxyFarmerFollows),
+}));
+
+export const proxyFarmerFollowsRelations = relations(proxyFarmerFollows, ({ one }) => ({
+  follower: one(users, {
+    fields: [proxyFarmerFollows.followerId],
+    references: [users.id],
+  }),
+  proxyFarmer: one(proxyFarmers, {
+    fields: [proxyFarmerFollows.proxyFarmerId],
+    references: [proxyFarmers.id],
   }),
 }));
 

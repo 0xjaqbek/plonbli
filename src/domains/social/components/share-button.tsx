@@ -6,7 +6,7 @@ import { Share2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 
 interface ShareButtonProps {
-  entityType: "FARMER" | "EVENT" | "CROP_LOG" | "PRODUCT";
+  entityType: "FARMER" | "EVENT" | "CROP_LOG" | "PRODUCT" | "PROXY_FARMER";
   entityId: string;
   variant?: "default" | "ghost" | "outline";
   size?: "default" | "sm" | "icon";

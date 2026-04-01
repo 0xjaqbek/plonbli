@@ -14,6 +14,7 @@ export const sharedEntityTypeEnum = pgEnum("shared_entity_type", [
   "EVENT",
   "CROP_LOG",
   "PRODUCT",
+  "PROXY_FARMER",
 ]);
 
 export const posts = pgTable("posts", {

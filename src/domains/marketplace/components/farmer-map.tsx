@@ -43,8 +43,10 @@ const POLAND_CENTER: [number, number] = [51.92, 19.15];
 const POLAND_ZOOM = 6;
 const USER_ZOOM = 10;
 
+type FarmerMapEntry = FarmerForMap & { isProxy?: boolean };
+
 interface FarmerMapProps {
-  farmers: FarmerForMap[];
+  farmers: FarmerMapEntry[];
 }
 
 type ResolvedFarmer = {
@@ -52,10 +54,11 @@ type ResolvedFarmer = {
   name: string;
   position: [number, number];
   isApproximate: boolean;
+  isProxy: boolean;
   location: string;
 };
 
-function resolveFarmers(farmers: FarmerForMap[]): ResolvedFarmer[] {
+function resolveFarmers(farmers: FarmerMapEntry[]): ResolvedFarmer[] {
   const resolved: ResolvedFarmer[] = [];
 
   for (const f of farmers) {
@@ -84,6 +87,7 @@ function resolveFarmers(farmers: FarmerForMap[]): ResolvedFarmer[] {
         name: f.name,
         position,
         isApproximate,
+        isProxy: !!(f as FarmerMapEntry).isProxy,
         location: locationParts.join(", ") || "",
       });
     }
@@ -159,10 +163,11 @@ export function FarmerMap({ farmers }: FarmerMapProps) {
             <Popup>
               <div className="space-y-1">
                 <a
-                  href={`/farmers/${farmer.id}`}
+                  href={farmer.isProxy ? `/farmers/proxy/${farmer.id}` : `/farmers/${farmer.id}`}
                   className="font-medium text-sm hover:underline"
                 >
                   {farmer.name}
+                  {farmer.isProxy && " (ambasador)"}
                 </a>
                 {farmer.location && (
                   <p className="text-xs text-muted-foreground">

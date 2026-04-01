@@ -9,7 +9,7 @@ import type {
 
 export async function computeReviewHash(input: {
   reviewerId: string;
-  targetId: string;
+  targetId: string | null;
   dimensions?: Record<string, number | undefined>;
   timestamp: string;
 }): Promise<string> {

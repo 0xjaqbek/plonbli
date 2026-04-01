@@ -3,53 +3,101 @@ import { getTranslations } from "next-intl/server";
 import { or, eq, desc } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { MapPin } from "lucide-react";
 import { getFarmersForMap } from "@/domains/marketplace/queries/get-farmers-for-map";
+import {
+  getProxyFarmersForList,
+  getProxyFarmersForMap,
+} from "@/domains/marketplace/queries/get-proxy-farmer";
 import { FarmersTabs } from "@/domains/marketplace/components/farmers-tabs";
 import { geocodeFarmersWithoutCoords } from "@/domains/geo/actions/geocode-farmers";
 
 export default async function FarmersPage() {
   const t = await getTranslations("farmer");
+  const tProxy = await getTranslations("proxyFarmer");
 
-  // Geocode farmers without coords (lazy, one-time per farmer)
   await geocodeFarmersWithoutCoords();
 
-  const [farmers, farmersForMap] = await Promise.all([
-    db
-      .select({
-        id: users.id,
-        name: users.name,
-        avatar: users.avatar,
-        voivodeship: users.voivodeship,
-        createdAt: users.createdAt,
-      })
-      .from(users)
-      .where(or(eq(users.role, "FARMER"), eq(users.role, "BOTH")))
-      .orderBy(desc(users.createdAt)),
-    getFarmersForMap(),
-  ]);
+  const [regularFarmers, proxyFarmers, farmersForMap, proxyForMap] =
+    await Promise.all([
+      db
+        .select({
+          id: users.id,
+          name: users.name,
+          avatar: users.avatar,
+          voivodeship: users.voivodeship,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(or(eq(users.role, "FARMER"), eq(users.role, "BOTH")))
+        .orderBy(desc(users.createdAt)),
+      getProxyFarmersForList(),
+      getFarmersForMap(),
+      getProxyFarmersForMap(),
+    ]);
+
+  // Merge regular and proxy farmers for list
+  type FarmerItem = {
+    id: string;
+    name: string;
+    avatar: string | null;
+    voivodeship: string | null;
+    createdAt: Date;
+    isProxy: boolean;
+  };
+
+  const allFarmers: FarmerItem[] = [
+    ...regularFarmers.map((f) => ({ ...f, isProxy: false })),
+    ...proxyFarmers.map((f) => ({ ...f, isProxy: true })),
+  ].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // Merge map data
+  const allForMap = [
+    ...farmersForMap.map((f) => ({ ...f, isProxy: false })),
+    ...proxyForMap,
+  ];
 
   const listContent =
-    farmers.length === 0 ? (
+    allFarmers.length === 0 ? (
       <p className="text-center text-muted-foreground py-12">
         {t("noFarmers")}
       </p>
     ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {farmers.map((farmer) => (
-          <Link key={farmer.id} href={`/farmers/${farmer.id}`}>
+        {allFarmers.map((farmer) => (
+          <Link
+            key={`${farmer.isProxy ? "proxy-" : ""}${farmer.id}`}
+            href={
+              farmer.isProxy
+                ? `/farmers/proxy/${farmer.id}`
+                : `/farmers/${farmer.id}`
+            }
+          >
             <Card className="h-full hover:shadow-md transition-shadow">
               <CardContent className="flex items-center gap-4 p-4">
                 <Avatar className="h-12 w-12">
+                  <AvatarImage src={farmer.avatar ?? undefined} />
                   <AvatarFallback>
                     {farmer.name?.charAt(0) ?? "?"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="font-medium truncate">{farmer.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-medium truncate">{farmer.name}</p>
+                    {farmer.isProxy && (
+                      <Badge
+                        variant="outline"
+                        className="text-[9px] shrink-0 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700"
+                      >
+                        {tProxy("ambassadorBadge")}
+                      </Badge>
+                    )}
+                  </div>
                   {farmer.voivodeship && (
                     <p className="flex items-center gap-1 text-xs text-muted-foreground">
                       <MapPin className="h-3 w-3" />
@@ -74,7 +122,7 @@ export default async function FarmersPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("allFarmers")}</h1>
-      <FarmersTabs farmers={farmersForMap} listContent={listContent} />
+      <FarmersTabs farmers={allForMap} listContent={listContent} />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { products } from "./products";
+import { proxyFarmers } from "./proxy-farmers";
 
 export const reviews = pgTable("reviews", {
   id: text("id")
@@ -18,8 +19,9 @@ export const reviews = pgTable("reviews", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   targetId: text("target_id")
-    .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  proxyFarmerId: text("proxy_farmer_id")
+    .references(() => proxyFarmers.id, { onDelete: "cascade" }),
   productId: text("product_id").references(() => products.id, {
     onDelete: "set null",
   }),

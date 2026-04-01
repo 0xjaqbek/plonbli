@@ -47,6 +47,8 @@ export function SharedEntityPreview({ entity }: SharedEntityPreviewProps) {
       return <CropLogPreview entity={entity} />;
     case "PRODUCT":
       return <ProductPreview entity={entity} />;
+    case "PROXY_FARMER":
+      return <ProxyFarmerPreview entity={entity} />;
   }
 }
 
@@ -84,6 +86,49 @@ function FarmerPreview({
         </div>
         <Badge variant="outline" className="text-[10px] shrink-0">
           {t("sharedFarmer")}
+        </Badge>
+      </div>
+    </Link>
+  );
+}
+
+function ProxyFarmerPreview({
+  entity,
+}: {
+  entity: Extract<SharedEntityData, { type: "PROXY_FARMER" }>;
+}) {
+  const t = useTranslations("proxyFarmer");
+  const initials = entity.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <Link href={`/farmers/proxy/${entity.id}`}>
+      <div className="flex items-center gap-3 border rounded-lg p-3 bg-muted/30 hover:bg-muted/50 transition-colors">
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={entity.avatar ?? undefined} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Tractor className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <p className="text-sm font-medium truncate">{entity.name}</p>
+          </div>
+          {entity.location && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{entity.location}</span>
+            </div>
+          )}
+        </div>
+        <Badge
+          variant="outline"
+          className="text-[10px] shrink-0 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700"
+        >
+          {t("ambassadorBadge")}
         </Badge>
       </div>
     </Link>
