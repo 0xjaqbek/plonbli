@@ -57,7 +57,7 @@ export function FarmerProfileView({
                 ? tAuth("roleBoth")
                 : tAuth("roleConsumer")}
           </Badge>
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
             <Button asChild variant="outline" size="sm">
               <Link href={`/social/users/${farmer.id}/reviews`}>
                 <Star className="h-4 w-4 mr-1" />

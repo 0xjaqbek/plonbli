@@ -58,21 +58,21 @@ export default async function UserProfilePage({
             </span>
           </div>
         </div>
-        {!isOwnProfile && (
-          <UserFollowButton
-            targetUserId={id}
-            isFollowing={profile.isFollowing}
-          />
-        )}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Button asChild variant="outline" size="sm">
           <Link href={`/social/users/${id}/reviews`}>
             <Star className="h-4 w-4 mr-1" />
             {tRep("reviews")}
           </Link>
         </Button>
+        {!isOwnProfile && (
+          <UserFollowButton
+            targetUserId={id}
+            isFollowing={profile.isFollowing}
+          />
+        )}
       </div>
 
       <div>
