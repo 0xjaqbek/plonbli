@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { Sprout, ShieldCheck } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
