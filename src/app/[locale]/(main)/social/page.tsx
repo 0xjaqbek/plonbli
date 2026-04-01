@@ -23,7 +23,7 @@ export default async function SocialFeedPage({
   const posts = await getFeed(session.user.id);
 
   return (
-    <div className="max-w-2xl mx-auto py-6 space-y-6">
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("feed")}</h1>
       <PostForm shareType={shareType} shareId={shareId} />
       <FeedList posts={posts} currentUserId={session.user.id} />

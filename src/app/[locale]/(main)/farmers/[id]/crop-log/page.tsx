@@ -16,7 +16,7 @@ export default async function CropLogPage({
   const isOwner = session?.user?.id === id;
 
   return (
-    <div className="max-w-2xl mx-auto py-6 space-y-6">
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("cropLog")}</h1>
 
       {isOwner && <CropLogForm />}

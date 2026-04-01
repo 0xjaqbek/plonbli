@@ -31,7 +31,7 @@ export default async function CollectionDetailPage({
   );
 
   return (
-    <div className="max-w-2xl mx-auto py-6 space-y-6">
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
       <CollectionDetail collection={collection} />
 
       {collection.status === "COLLECTING" && !hasJoined && (

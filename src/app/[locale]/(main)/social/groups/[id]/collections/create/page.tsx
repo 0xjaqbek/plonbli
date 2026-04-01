@@ -18,7 +18,7 @@ export default async function CreateCollectionPage({
   const { id } = await params;
 
   return (
-    <div className="max-w-lg mx-auto py-6 space-y-6">
+    <div className="max-w-lg mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("createCollection")}</h1>
       <CollectionForm groupId={id} />
     </div>
