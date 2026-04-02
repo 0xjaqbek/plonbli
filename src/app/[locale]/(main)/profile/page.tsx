@@ -108,13 +108,13 @@ export default async function ProfilePage() {
       {/* Proxy farmer profiles */}
       <Card>
         <CardContent className="pt-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col gap-2 mb-4">
             <span className="flex items-center gap-2 text-sm font-medium">
               <UserPlus className="h-4 w-4 text-muted-foreground" />
               {tProxy("myProxyProfiles")}
             </span>
             {proxyProfiles.length < 3 && (
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="w-fit">
                 <Link href="/farmers/proxy/create">
                   <Plus className="h-3.5 w-3.5 mr-1" />
                   {tProxy("createProfile")}
