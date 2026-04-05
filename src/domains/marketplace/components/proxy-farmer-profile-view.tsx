@@ -94,16 +94,13 @@ export function ProxyFarmerProfileView({
                 {t("ambassadorBadge")}
               </Badge>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {isCreator && (
-                <Button asChild variant="outline" size="icon">
-                  <Link href={`/farmers/proxy/${profile.id}/edit`}>
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
-              )}
-              <ShareButton entityType="PROXY_FARMER" entityId={profile.id} />
-            </div>
+            {isCreator && (
+              <Button asChild variant="outline" size="icon" className="shrink-0">
+                <Link href={`/farmers/proxy/${profile.id}/edit`}>
+                  <Pencil className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
           </div>
 
           {profile.voivodeship && (
@@ -178,6 +175,7 @@ export function ProxyFarmerProfileView({
             isFollowing={profile.isFollowing}
           />
         )}
+        <ShareButton entityType="PROXY_FARMER" entityId={profile.id} />
       </div>
 
       {/* Contact methods */}
