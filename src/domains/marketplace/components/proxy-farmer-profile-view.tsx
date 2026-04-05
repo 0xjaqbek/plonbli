@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { ShareButton } from "@/domains/social/components/share-button";
+import { ProxyFarmerFollowButton } from "@/domains/social/components/proxy-farmer-follow-button";
 import type { ProxyFarmerDetail } from "../queries/get-proxy-farmer";
 
 interface ProxyFarmerProfileViewProps {
@@ -161,6 +162,22 @@ export function ProxyFarmerProfileView({
             {t("products")}
           </span>
         </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/farmers/proxy/${profile.id}/reviews`}>
+            <Star className="h-4 w-4 mr-1" />
+            {tRep("reviews")}
+          </Link>
+        </Button>
+        {currentUserId && !isCreator && (
+          <ProxyFarmerFollowButton
+            proxyFarmerId={profile.id}
+            isFollowing={profile.isFollowing}
+          />
+        )}
       </div>
 
       {/* Contact methods */}

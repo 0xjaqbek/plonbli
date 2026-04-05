@@ -27,14 +27,23 @@ export async function createReview(
     };
   }
 
-  if (parsed.data.targetId === session.user.id) {
+  if (parsed.data.targetId && parsed.data.targetId === session.user.id) {
     return { success: false, error: "Nie mozesz ocenic siebie" };
+  }
+
+  if (!parsed.data.targetId && !parsed.data.proxyFarmerId) {
+    return { success: false, error: "Brak celu opinii" };
   }
 
   const repo = new PostgresReviewRepository();
   const record = await repo.create({
     reviewerId: session.user.id,
-    ...parsed.data,
+    targetId: parsed.data.targetId ?? null,
+    proxyFarmerId: parsed.data.proxyFarmerId ?? null,
+    productId: parsed.data.productId,
+    overall: parsed.data.overall,
+    dimensions: parsed.data.dimensions,
+    comment: parsed.data.comment,
   });
 
   return { success: true, reviewId: record.id };

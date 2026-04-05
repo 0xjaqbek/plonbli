@@ -1,8 +1,8 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { proxyFarmers, users, proxyFarmerFollows, reviews } from "@/shared/db/schema";
 
-export async function getProxyFarmer(id: string) {
+export async function getProxyFarmer(id: string, currentUserId?: string | null) {
   const pf = await db.query.proxyFarmers.findFirst({
     where: eq(proxyFarmers.id, id),
   });
@@ -27,6 +27,17 @@ export async function getProxyFarmer(id: string) {
     .from(reviews)
     .where(eq(reviews.proxyFarmerId, id));
 
+  let isFollowing = false;
+  if (currentUserId) {
+    const follow = await db.query.proxyFarmerFollows.findFirst({
+      where: and(
+        eq(proxyFarmerFollows.followerId, currentUserId),
+        eq(proxyFarmerFollows.proxyFarmerId, id)
+      ),
+    });
+    isFollowing = !!follow;
+  }
+
   return {
     ...pf,
     creator: creator!,
@@ -35,6 +46,7 @@ export async function getProxyFarmer(id: string) {
       ? parseFloat(repStats.averageRating)
       : 0,
     reviewCount: repStats.reviewCount,
+    isFollowing,
   };
 }
 

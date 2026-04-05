@@ -11,11 +11,12 @@ import { cn } from "@/shared/lib/utils";
 import { createReview } from "../actions/create-review";
 
 interface ReviewFormProps {
-  targetId: string;
+  targetId?: string;
+  proxyFarmerId?: string;
   productId?: string;
 }
 
-export function ReviewForm({ targetId, productId }: ReviewFormProps) {
+export function ReviewForm({ targetId, proxyFarmerId, productId }: ReviewFormProps) {
   const t = useTranslations("reputation");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -40,7 +41,8 @@ export function ReviewForm({ targetId, productId }: ReviewFormProps) {
 
     startTransition(async () => {
       const result = await createReview({
-        targetId,
+        targetId: targetId ?? null,
+        proxyFarmerId: proxyFarmerId ?? null,
         productId,
         overall,
         dimensions:

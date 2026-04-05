@@ -51,6 +51,7 @@ export class PostgresReviewRepository implements ReviewRepository {
       .values({
         reviewerId: entry.reviewerId,
         targetId: entry.targetId,
+        proxyFarmerId: entry.proxyFarmerId ?? null,
         productId: entry.productId,
         overall: entry.overall,
         dimensions: entry.dimensions,

@@ -10,7 +10,7 @@ export default async function ProxyFarmerPage({
 }) {
   const { id } = await params;
   const session = await auth();
-  const profile = await getProxyFarmer(id);
+  const profile = await getProxyFarmer(id, session?.user?.id);
 
   if (!profile) {
     notFound();
