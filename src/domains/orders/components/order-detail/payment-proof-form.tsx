@@ -40,7 +40,7 @@ export function PaymentProofForm({ orderId }: PaymentProofFormProps) {
       if (result.success) {
         router.refresh();
       } else {
-        setError(result.error ?? "Wystapil blad");
+        setError(result.error ?? t("error"));
       }
     });
   }
@@ -88,21 +88,21 @@ export function PaymentProofForm({ orderId }: PaymentProofFormProps) {
 
       {(type === "SCREENSHOT" || type === "BANK_TRANSFER") && (
         <div>
-          <Label>URL obrazka</Label>
+          <Label>{t("imageUrl")}</Label>
           <Input
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://..."
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Przeslij zrzut ekranu przez upload obrazka i wklej URL
+            {t("imageUrlHint")}
           </p>
         </div>
       )}
 
       {type === "BLOCKCHAIN_LINK" && (
         <div>
-          <Label>URL transakcji</Label>
+          <Label>{t("transactionUrl")}</Label>
           <Input
             value={transactionUrl}
             onChange={(e) => setTransactionUrl(e.target.value)}
@@ -112,7 +112,7 @@ export function PaymentProofForm({ orderId }: PaymentProofFormProps) {
       )}
 
       <div>
-        <Label>Opis (opcjonalnie)</Label>
+        <Label>{t("descriptionOptional")}</Label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}

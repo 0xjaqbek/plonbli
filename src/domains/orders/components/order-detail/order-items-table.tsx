@@ -17,7 +17,7 @@ export function OrderItemsTable({ items, showModified = false }: OrderItemsTable
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b">
-            <th className="text-left py-2">Produkt</th>
+            <th className="text-left py-2">{t("product")}</th>
             <th className="text-right py-2">{t("quantity")}</th>
             <th className="text-right py-2">{t("pricePerUnit")}</th>
             <th className="text-right py-2">{t("total")}</th>

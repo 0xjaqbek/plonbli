@@ -24,6 +24,7 @@ interface OrderDetailProps {
 
 export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
   const t = useTranslations("orders");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showCancel, setShowCancel] = useState(false);
@@ -42,6 +43,12 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
       if (result.success) router.refresh();
     });
   }
+
+  const PROOF_TYPE_LABELS: Record<string, string> = {
+    SCREENSHOT: t("proofScreenshot"),
+    BANK_TRANSFER: t("proofBankTransfer"),
+    BLOCKCHAIN_LINK: t("proofBlockchain"),
+  };
 
   const showPaymentForm = isCustomer && order.status === "CONFIRMED" && order.paymentRequired === "PREPAID";
   const showModificationReview = isCustomer && order.status === "MODIFIED";
@@ -68,7 +75,9 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
         <ModificationReview
           orderId={order.id}
           items={order.items}
-          originalTotal={order.totalAmount}
+          originalTotal={order.items.reduce((sum, item) =>
+            sum + Number(item.quantity) * Number(item.pricePerUnit), 0
+          ).toFixed(2)}
           newTotal={order.totalAmount}
           farmerNote={order.farmerNote}
         />
@@ -77,7 +86,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
       {/* Items */}
       <Card>
         <CardHeader>
-          <CardTitle>Pozycje</CardTitle>
+          <CardTitle>{t("items")}</CardTitle>
         </CardHeader>
         <CardContent>
           <OrderItemsTable items={order.items} showModified={order.status !== "PENDING"} />
@@ -130,7 +139,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
             {/* Show farmer payment methods */}
             {order.farmerPaymentMethods.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium">{t("paymentMethods")} rolnika:</p>
+                <p className="text-sm font-medium">{t("farmerPaymentMethodsLabel")}</p>
                 {order.farmerPaymentMethods.map((method) => (
                   <div key={method.id} className="text-sm p-2 bg-muted rounded">
                     <span className="font-medium">{method.label}:</span> {method.details}
@@ -156,7 +165,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
                 <Badge variant={proof.verified ? "default" : "outline"}>
                   {proof.verified ? t("paymentVerified") : t("paymentPending")}
                 </Badge>
-                <span className="text-sm">{proof.type}</span>
+                <span className="text-sm">{PROOF_TYPE_LABELS[proof.type] ?? proof.type}</span>
                 {proof.transactionUrl && (
                   <a href={proof.transactionUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary flex items-center gap-1">
                     Link <ExternalLink className="h-3 w-3" />
@@ -171,7 +180,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
       {/* Timeline */}
       <Card>
         <CardHeader>
-          <CardTitle>Historia</CardTitle>
+          <CardTitle>{t("history")}</CardTitle>
         </CardHeader>
         <CardContent>
           <OrderTimeline history={order.statusHistory} />
@@ -215,7 +224,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
                 {t("cancel")}
               </Button>
               <Button variant="ghost" onClick={() => setShowCancel(false)}>
-                {t("back" as any)}
+                {tCommon("back")}
               </Button>
             </div>
           </CardContent>

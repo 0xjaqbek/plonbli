@@ -629,6 +629,17 @@
     "filterCompleted": "Zakonczone",
     "filterCancelled": "Anulowane",
     "paymentReminder": "Pamietaj o zwrocie platnosci klientowi",
-    "waitingForAcceptance": "Oczekuje na akceptacje klienta"
+    "waitingForAcceptance": "Oczekuje na akceptacje klienta",
+    "product": "Produkt",
+    "items": "Pozycje zamowienia",
+    "history": "Historia zamowienia",
+    "farmerPaymentMethodsLabel": "Metody platnosci rolnika",
+    "imageUrl": "URL zdjecia",
+    "imageUrlHint": "Przeslij zrzut ekranu przez upload obrazka i wklej URL",
+    "transactionUrl": "URL transakcji",
+    "descriptionOptional": "Opis (opcjonalnie)",
+    "modificationRejected": "Odrzucono modyfikacje",
+    "proofTypeLabel": "Typ dowodu platnosci",
+    "error": "Wystapil blad"
   }
 }

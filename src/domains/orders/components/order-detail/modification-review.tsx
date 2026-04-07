@@ -36,7 +36,7 @@ export function ModificationReview({
 
   function handleReject() {
     startTransition(async () => {
-      const result = await cancelOrder({ orderId, reason: "Odrzucono modyfikacje" });
+      const result = await cancelOrder({ orderId, reason: t("modificationRejected") });
       if (result.success) router.refresh();
     });
   }
