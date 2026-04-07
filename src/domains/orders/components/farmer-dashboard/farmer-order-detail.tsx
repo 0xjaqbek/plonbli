@@ -39,6 +39,18 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
     BLOCKCHAIN_LINK: t("proofBlockchain"),
   };
 
+  const STATUS_LABELS: Record<string, string> = {
+    PENDING: t("statusPending"),
+    MODIFIED: t("statusModified"),
+    CONFIRMED: t("statusConfirmed"),
+    PAID: t("statusPaid"),
+    PREPARING: t("statusPreparing"),
+    SHIPPED: t("statusShipped"),
+    READY_FOR_PICKUP: t("statusReadyForPickup"),
+    COMPLETED: t("statusCompleted"),
+    CANCELLED: t("statusCancelled"),
+  };
+
   function handleConfirm() {
     startTransition(async () => {
       const result = await confirmOrder(order.id);
@@ -95,7 +107,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
           </p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-1">
-          {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase())}` as any)}
+          {STATUS_LABELS[order.status] ?? order.status}
         </Badge>
       </div>
 
