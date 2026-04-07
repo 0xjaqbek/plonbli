@@ -640,6 +640,18 @@
     "descriptionOptional": "Opis (opcjonalnie)",
     "modificationRejected": "Odrzucono modyfikacje",
     "proofTypeLabel": "Typ dowodu platnosci",
-    "error": "Wystapil blad"
+    "error": "Wystapil blad",
+    "actions": "Akcje",
+    "modifyHint": "Modyfikuj ilosci/ceny pozycji, koszt wysylki i ustal metode platnosci. Po zapisaniu klient zobaczy zmiany i bedzie musial je zaakceptowac.",
+    "modifyFormPlaceholder": "Formularz edycji zamowienia",
+    "defaultMethod": "Domyslna",
+    "paymentType": "Typ platnosci",
+    "daySunday": "Niedziela",
+    "dayMonday": "Poniedzialek",
+    "dayTuesday": "Wtorek",
+    "dayWednesday": "Sroda",
+    "dayThursday": "Czwartek",
+    "dayFriday": "Piatek",
+    "daySaturday": "Sobota"
   }
 }
