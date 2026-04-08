@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { orders, orderStatusHistory, paymentProofs } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
@@ -33,7 +33,7 @@ export async function verifyPayment(orderId: string, proofId: string): Promise<V
     await tx
       .update(paymentProofs)
       .set({ verified: true })
-      .where(eq(paymentProofs.id, proofId));
+      .where(and(eq(paymentProofs.id, proofId), eq(paymentProofs.orderId, orderId)));
 
     await tx
       .update(orders)

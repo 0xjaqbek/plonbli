@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { orders, orderItems, orderStatusHistory } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
@@ -46,7 +46,7 @@ export async function modifyOrder(input: ModifyOrderInput): Promise<ModifyOrderR
             modifiedQuantity: item.modifiedQuantity !== undefined ? String(item.modifiedQuantity) : null,
             modifiedPricePerUnit: item.modifiedPricePerUnit !== undefined ? String(item.modifiedPricePerUnit) : null,
           })
-          .where(eq(orderItems.id, item.orderItemId));
+          .where(and(eq(orderItems.id, item.orderItemId), eq(orderItems.orderId, orderId)));
       }
     }
 
