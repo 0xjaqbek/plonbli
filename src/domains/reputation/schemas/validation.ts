@@ -3,7 +3,7 @@ import { z } from "zod";
 const dimensionScore = z.number().int().min(1).max(5).optional();
 
 export const createReviewSchema = z.object({
-  targetId: z.string().min(1).nullable().optional(),
+  targetId: z.string().min(1),
   proxyFarmerId: z.string().min(1).nullable().optional(),
   productId: z.string().optional(),
   overall: z.number().int().min(1).max(5),
