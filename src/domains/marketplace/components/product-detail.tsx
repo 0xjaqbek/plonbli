@@ -16,8 +16,10 @@ import {
 } from "@/shared/ui/card";
 import { MapPin, Truck, Package, User } from "lucide-react";
 import { deleteListing } from "../actions/delete-listing";
+import { addToCart } from "@/domains/orders/actions/add-to-cart";
 import { ShareButton } from "@/domains/social/components/share-button";
 import { ImageLightbox } from "@/shared/ui/image-lightbox";
+import { Input } from "@/shared/ui/input";
 import type { ListingDetail } from "../queries/get-listing";
 
 const DELIVERY_ICONS: Record<string, typeof MapPin> = {
@@ -35,6 +37,7 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
   const t = useTranslations("product");
   const tCommon = useTranslations("common");
   const tMarketplace = useTranslations("marketplace");
+  const tOrders = useTranslations("orders");
 
   function unitLabel(unit: string) {
     return unit === "KG" ? t("unitKg") : unit === "PIECE" ? t("unitPiece") : unit === "LITER" ? t("unitLiter") : t("unitBunch");
@@ -42,6 +45,8 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [cartQty, setCartQty] = useState(1);
+  const [cartSuccess, setCartSuccess] = useState(false);
 
   const { product } = listing;
 
@@ -50,6 +55,16 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
       const result = await deleteListing(listing.id);
       if (result.success) {
         router.push("/marketplace");
+      }
+    });
+  }
+
+  function handleAddToCart() {
+    startTransition(async () => {
+      const result = await addToCart({ listingId: listing.id, quantity: cartQty });
+      if (result.success) {
+        setCartSuccess(true);
+        setTimeout(() => setCartSuccess(false), 3000);
       }
     });
   }
@@ -203,6 +218,21 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
           })}
         </div>
       </div>
+
+      {!isOwner && (
+        <div className="flex items-center gap-3">
+          <Input
+            type="number"
+            min={1}
+            value={cartQty}
+            onChange={(e) => setCartQty(Number(e.target.value))}
+            className="w-20"
+          />
+          <Button onClick={handleAddToCart} disabled={isPending}>
+            {cartSuccess ? tOrders("addedToCart") : tOrders("addToCart")}
+          </Button>
+        </div>
+      )}
 
       <Separator />
       <Card>

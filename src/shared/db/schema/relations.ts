@@ -21,6 +21,10 @@ import { pickupPoints } from "./pickup-points";
 import { collections } from "./collections";
 import { collectionItems } from "./collection-items";
 import { authAccounts } from "./auth-accounts";
+import { orders, orderItems, orderStatusHistory } from "./orders";
+import { paymentProofs, farmerPaymentMethods } from "./payments";
+import { pickupSlots } from "./pickup-slots";
+import { cartItems } from "./cart-items";
 
 export const authAccountsRelations = relations(authAccounts, ({ one }) => ({
   user: one(users, {
@@ -256,4 +260,41 @@ export const collectionItemsRelations = relations(collectionItems, ({ one }) => 
     fields: [collectionItems.userId],
     references: [users.id],
   }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  customer: one(users, { fields: [orders.customerId], references: [users.id], relationName: "customerOrders" }),
+  farmer: one(users, { fields: [orders.farmerId], references: [users.id], relationName: "farmerOrders" }),
+  pickupSlot: one(pickupSlots, { fields: [orders.pickupSlotId], references: [pickupSlots.id] }),
+  items: many(orderItems),
+  statusHistory: many(orderStatusHistory),
+  paymentProofs: many(paymentProofs),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, { fields: [orderItems.orderId], references: [orders.id] }),
+  listing: one(listings, { fields: [orderItems.listingId], references: [listings.id] }),
+}));
+
+export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one }) => ({
+  order: one(orders, { fields: [orderStatusHistory.orderId], references: [orders.id] }),
+  createdByUser: one(users, { fields: [orderStatusHistory.createdBy], references: [users.id] }),
+}));
+
+export const paymentProofsRelations = relations(paymentProofs, ({ one }) => ({
+  order: one(orders, { fields: [paymentProofs.orderId], references: [orders.id] }),
+}));
+
+export const farmerPaymentMethodsRelations = relations(farmerPaymentMethods, ({ one }) => ({
+  farmer: one(users, { fields: [farmerPaymentMethods.farmerId], references: [users.id] }),
+}));
+
+export const pickupSlotsRelations = relations(pickupSlots, ({ one }) => ({
+  farmer: one(users, { fields: [pickupSlots.farmerId], references: [users.id] }),
+  order: one(orders, { fields: [pickupSlots.orderId], references: [orders.id] }),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  user: one(users, { fields: [cartItems.userId], references: [users.id] }),
+  listing: one(listings, { fields: [cartItems.listingId], references: [listings.id] }),
 }));
