@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { auth } from "@/domains/auth/lib/auth";
+import { db } from "@/shared/db";
+import { users } from "@/shared/db/schema";
 import { getCustomerOrders } from "@/domains/orders/queries/get-customer-orders";
 import { OrderList } from "@/domains/orders/components/order-list/order-list";
 import { getTranslations } from "next-intl/server";
@@ -12,6 +15,15 @@ export default async function OrdersPage({
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+    columns: { role: true },
+  });
+
+  if (user?.role === "FARMER" || user?.role === "BOTH") {
+    redirect("/farmer/orders");
+  }
 
   const t = await getTranslations("orders");
   const params = await searchParams;
