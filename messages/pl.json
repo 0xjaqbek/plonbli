@@ -67,7 +67,9 @@
     "social": "Spolecznosc",
     "messages": "Wiadomosci",
     "profile": "Profil",
-    "events": "Wydarzenia"
+    "events": "Wydarzenia",
+    "cart": "Koszyk",
+    "orders": "Zamowienia"
   },
   "theme": {
     "light": "Jasny",
@@ -551,6 +553,7 @@
     "shippingCost": "Koszt wysylki",
     "subtotal": "Podsumowanie",
     "addToCart": "Dodaj do koszyka",
+    "addedToCart": "Dodano do koszyka!",
     "quantity": "Ilosc",
     "placeOrder": "Zloz zamowienie",
     "delivery": "Dostawa",

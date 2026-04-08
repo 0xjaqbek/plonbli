@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Home, ShoppingBasket, Tractor, Users, MessageCircle, User } from "lucide-react";
+import { Home, ShoppingBasket, Tractor, Users, MessageCircle, User, ShoppingCart, Package } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const bottomNavItems = [
@@ -11,9 +11,11 @@ const bottomNavItems = [
   { href: "/marketplace", icon: ShoppingBasket, labelKey: "marketplace" as const },
   { href: "/farmers", icon: Tractor, labelKey: "farmers" as const },
   { href: "/social", icon: Users, labelKey: "social" as const },
+  { href: "/orders", icon: Package, labelKey: "orders" as const },
 ];
 
 const topRightItems = [
+  { href: "/marketplace/cart", icon: ShoppingCart, labelKey: "cart" as const },
   { href: "/messages", icon: MessageCircle, labelKey: "messages" as const },
   { href: "/profile", icon: User, labelKey: "profile" as const },
 ];
