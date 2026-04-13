@@ -87,9 +87,6 @@ export function FarmerProfileView({
                     : tAuth("roleConsumer")}
               </Badge>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <ShareButton entityType="FARMER" entityId={farmer.id} />
-            </div>
           </div>
 
           {farmer.voivodeship && (
@@ -180,6 +177,7 @@ export function FarmerProfileView({
             isFollowing={isFollowing}
           />
         )}
+        <ShareButton entityType="FARMER" entityId={farmer.id} />
       </div>
 
       {/* Farming methods + categories */}
