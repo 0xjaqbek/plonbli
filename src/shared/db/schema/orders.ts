@@ -1,4 +1,4 @@
-import { pgTable, text, numeric, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, numeric, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { listings } from "./listings";
@@ -57,6 +57,8 @@ export const orders = pgTable("orders", {
   farmerNote: text("farmer_note"),
   cancellationReason: text("cancellation_reason"),
   cancelledBy: cancelledByEnum("cancelled_by"),
+  customerHasSeen: boolean("customer_has_seen").notNull().default(true),
+  farmerHasSeen: boolean("farmer_has_seen").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
