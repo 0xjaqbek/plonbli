@@ -64,6 +64,11 @@ Query zwracająca `boolean` — czy istnieje co najmniej jedno zamówienie z nie
 export async function hasUnseenOrderChanges(userId: string): Promise<boolean>
 ```
 
+Użytkownik może mieć trzy role: `klient`, `rolnik`, lub `klient i rolnik`. W każdym przypadku ta sama query działa poprawnie:
+- Klient: ma zamówienia jako `customerId` → sprawdza pierwszą gałąź OR
+- Rolnik: ma zamówienia jako `farmerId` → sprawdza drugą gałąź OR
+- Klient i rolnik: ma zamówienia w obu rolach → OR zwraca `true` jeśli którakolwiek strona ma niewidziane zmiany
+
 Logika:
 - `(customerId = userId AND customerHasSeen = false) OR (farmerId = userId AND farmerHasSeen = false)`
 - `.limit(1)` — wystarczy jeden wynik
@@ -71,6 +76,11 @@ Logika:
 ### `src/domains/orders/actions/mark-order-seen.ts`
 
 Server Action aktualizująca flagę widzenia dla konkretnego zamówienia. Weryfikuje że `userId` jest faktycznie uczestnikiem zamówienia (IDOR protection).
+
+Logika:
+- Jeśli `order.customerId === userId` → `customerHasSeen = true`
+- Jeśli `order.farmerId === userId` → `farmerHasSeen = true`
+- Warunki są niezależne — użytkownik z rolą "klient i rolnik" otwierający swoje zamówienie jako klient oznaczy tylko `customerHasSeen`
 
 ## Zmodyfikowane pliki
 
