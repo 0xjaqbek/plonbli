@@ -35,3 +35,6 @@ export { addPaymentMethod, updatePaymentMethod, deletePaymentMethod } from "./ac
 export { addPickupSlot, updatePickupSlot, deletePickupSlot } from "./actions/manage-pickup-slots";
 
 export type { OrderStatus, DeliveryMethod, PaymentMethod } from "./types";
+
+export { hasUnseenOrderChanges } from "./queries/has-unseen-order-changes";
+export { markOrderSeen } from "./actions/mark-order-seen";

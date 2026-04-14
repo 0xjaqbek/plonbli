@@ -24,9 +24,10 @@ const allNavItems = [...bottomNavItems, ...topRightItems];
 
 interface NavBarProps {
   hasUnread?: boolean;
+  hasUnseenOrders?: boolean;
 }
 
-export function NavBar({ hasUnread }: NavBarProps) {
+export function NavBar({ hasUnread, hasUnseenOrders }: NavBarProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
@@ -62,6 +63,9 @@ export function NavBar({ hasUnread }: NavBarProps) {
                 {hasUnread && href === "/messages" && (
                   <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
                 )}
+                {hasUnseenOrders && href === "/orders" && (
+                  <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
+                )}
               </span>
               {t(labelKey)}
             </Link>
@@ -88,6 +92,9 @@ export function NavBar({ hasUnread }: NavBarProps) {
             >
               <Icon className="h-5 w-5" />
               {hasUnread && href === "/messages" && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
+              )}
+              {hasUnseenOrders && href === "/orders" && (
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
               )}
             </Link>
