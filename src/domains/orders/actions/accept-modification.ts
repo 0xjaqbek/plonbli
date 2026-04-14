@@ -51,7 +51,7 @@ export async function acceptModification(orderId: string): Promise<AcceptModific
 
     await tx
       .update(orders)
-      .set({ status: "CONFIRMED" })
+      .set({ status: "CONFIRMED", farmerHasSeen: false })
       .where(eq(orders.id, orderId));
 
     await tx.insert(orderStatusHistory).values({

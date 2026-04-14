@@ -50,5 +50,10 @@ export async function submitPaymentProof(input: SubmitPaymentProofInput): Promis
     })
     .returning({ id: paymentProofs.id });
 
+  await db
+    .update(orders)
+    .set({ farmerHasSeen: false })
+    .where(eq(orders.id, orderId));
+
   return { success: true, proofId: proof.id };
 }

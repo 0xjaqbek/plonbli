@@ -75,6 +75,7 @@ export async function modifyOrder(input: ModifyOrderInput): Promise<ModifyOrderR
         paymentRequired: paymentRequired as "PREPAID" | "ON_PICKUP",
         farmerNote: farmerNote ?? order.farmerNote,
         totalAmount: String(newTotal),
+        customerHasSeen: false,
       })
       .where(eq(orders.id, orderId));
 

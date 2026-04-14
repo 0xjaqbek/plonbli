@@ -47,7 +47,7 @@ export async function updateOrderStatus(input: UpdateOrderStatusInput): Promise<
   await db.transaction(async (tx) => {
     await tx
       .update(orders)
-      .set({ status: status as any })
+      .set({ status: status as any, customerHasSeen: false })
       .where(eq(orders.id, orderId));
 
     await tx.insert(orderStatusHistory).values({
@@ -97,6 +97,7 @@ export async function markAsShipped(input: ShippingInfoInput): Promise<StatusRes
         status: "SHIPPED",
         trackingNumber,
         trackingUrl: trackingUrl ?? null,
+        customerHasSeen: false,
       })
       .where(eq(orders.id, orderId));
 

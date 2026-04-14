@@ -51,7 +51,7 @@ export async function confirmOrder(orderId: string): Promise<ConfirmOrderResult>
 
     await tx
       .update(orders)
-      .set({ status: "CONFIRMED" })
+      .set({ status: "CONFIRMED", customerHasSeen: false })
       .where(eq(orders.id, orderId));
 
     await tx.insert(orderStatusHistory).values({

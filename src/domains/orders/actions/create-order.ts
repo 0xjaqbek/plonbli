@@ -94,6 +94,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
         shippingCost,
         totalAmount: String(itemsTotal),
         customerNote: customerNote ?? null,
+        farmerHasSeen: false,
       })
       .returning({ id: orders.id });
 

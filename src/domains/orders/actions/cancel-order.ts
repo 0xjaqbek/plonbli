@@ -81,6 +81,8 @@ export async function cancelOrder(input: CancelOrderInput): Promise<CancelResult
         status: "CANCELLED",
         cancellationReason: reason ?? null,
         cancelledBy: isFarmer ? "FARMER" : "CUSTOMER",
+        customerHasSeen: isFarmer ? false : true,
+        farmerHasSeen: isCustomer ? false : true,
       })
       .where(eq(orders.id, orderId));
 
