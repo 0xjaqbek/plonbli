@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { auth } from "@/domains/auth/lib/auth";
 import { getOrder } from "@/domains/orders/queries/get-order";
+import { markOrderSeen } from "@/domains/orders/actions/mark-order-seen";
 import { FarmerOrderDetail } from "@/domains/orders/components/farmer-dashboard/farmer-order-detail";
 
 export default async function FarmerOrderDetailPage({
@@ -16,6 +17,8 @@ export default async function FarmerOrderDetailPage({
 
   if (!order) notFound();
   if (order.farmerId !== session.user.id) notFound();
+
+  await markOrderSeen(id);
 
   return (
     <div className="max-w-2xl mx-auto p-4">
