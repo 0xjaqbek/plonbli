@@ -26,7 +26,11 @@ import {
 } from "@/shared/ui/select";
 import Link from "next/link";
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  inviteCode?: string;
+}
+
+export function RegisterForm({ inviteCode }: RegisterFormProps) {
   const t = useTranslations("auth");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -39,6 +43,7 @@ export function RegisterForm() {
       email: "",
       password: "",
       role: "CONSUMER",
+      inviteCode: inviteCode ?? "",
     },
   });
 

@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { users } from "@/shared/db/schema";
+import { users, invitations } from "@/shared/db/schema";
 import { registerSchema, type RegisterInput } from "../schemas/validation";
 import { hashPassword } from "../lib/passwords";
 
@@ -19,7 +19,7 @@ export async function register(input: RegisterInput): Promise<RegisterResult> {
     };
   }
 
-  const { name, email, password, role } = parsed.data;
+  const { name, email, password, role, inviteCode } = parsed.data;
 
   const existing = await db.query.users.findFirst({
     where: eq(users.email, email),
@@ -38,6 +38,18 @@ export async function register(input: RegisterInput): Promise<RegisterResult> {
     .insert(users)
     .values({ name, email, passwordHash, role })
     .returning({ id: users.id });
+
+  if (inviteCode) {
+    const invitation = await db.query.invitations.findFirst({
+      where: eq(invitations.code, inviteCode),
+    });
+    if (invitation) {
+      await db
+        .update(users)
+        .set({ invitedById: invitation.userId })
+        .where(eq(users.id, newUser.id));
+    }
+  }
 
   return { success: true, userId: newUser.id };
 }

@@ -7,16 +7,24 @@ vi.mock("@/shared/db", () => {
     insert: vi.fn().mockReturnThis(),
     values: vi.fn().mockReturnThis(),
     returning: vi.fn(),
+    update: vi.fn(),
     query: {
       users: {
         findFirst: vi.fn(),
       },
+      invitations: {
+        findFirst: vi.fn(),
+      },
     },
   };
-  // Chain insert().values().returning()
   mockDb.insert.mockReturnValue({
     values: vi.fn().mockReturnValue({
       returning: mockDb.returning,
+    }),
+  });
+  mockDb.update.mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn().mockResolvedValue(undefined),
     }),
   });
   return { db: mockDb };
@@ -76,5 +84,50 @@ describe("register", () => {
 
     expect(hashPassword).toHaveBeenCalledWith("SecurePass123!");
     expect(result.success).toBe(true);
+  });
+
+  it("sets invitedById when valid inviteCode is provided", async () => {
+    const { db } = await import("@/shared/db");
+
+    vi.mocked(db.query.users.findFirst).mockResolvedValueOnce(undefined);
+    vi.mocked(db.query.invitations.findFirst).mockResolvedValueOnce({
+      id: "inv-1",
+      userId: "inviter-id",
+      code: "validcode",
+      createdAt: new Date(),
+    } as any);
+    vi.mocked(db.insert({} as any).values({} as any).returning)
+      .mockResolvedValueOnce([{ id: "new-id" }] as any);
+
+    const result = await register({
+      name: "Nowy Uzytkownik",
+      email: "nowy@example.com",
+      password: "SecurePass123!",
+      role: "CONSUMER",
+      inviteCode: "validcode",
+    });
+
+    expect(result.success).toBe(true);
+    expect(db.update).toHaveBeenCalled();
+  });
+
+  it("ignores invalid inviteCode and registers successfully", async () => {
+    const { db } = await import("@/shared/db");
+
+    vi.mocked(db.query.users.findFirst).mockResolvedValueOnce(undefined);
+    vi.mocked(db.query.invitations.findFirst).mockResolvedValueOnce(undefined);
+    vi.mocked(db.insert({} as any).values({} as any).returning)
+      .mockResolvedValueOnce([{ id: "new-id" }] as any);
+
+    const result = await register({
+      name: "Nowy Uzytkownik",
+      email: "nowy2@example.com",
+      password: "SecurePass123!",
+      role: "CONSUMER",
+      inviteCode: "bogusCode",
+    });
+
+    expect(result.success).toBe(true);
+    expect(db.update).not.toHaveBeenCalled();
   });
 });
