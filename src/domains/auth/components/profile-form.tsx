@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileInput } from "../schemas/validation";
 import { updateProfile } from "../actions/update-profile";
-import { VOIVODESHIPS } from "@/domains/geo";
+import { LocationCascade } from "@/domains/geo";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
@@ -151,63 +151,27 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         <h3 className="text-lg font-medium">{t("location")}</h3>
 
-        <FormField
-          control={form.control}
-          name="voivodeship"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("voivodeship")}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value ?? undefined}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("voivodeship")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {VOIVODESHIPS.map((v) => (
-                    <SelectItem key={v} value={v}>
-                      {v}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+        <LocationCascade
+          mode="form"
+          value={{
+            voivodeship: form.watch("voivodeship") ?? null,
+            county: form.watch("county") ?? null,
+            commune: form.watch("commune") ?? null,
+          }}
+          onChange={({ voivodeship, county, commune }) => {
+            form.setValue(
+              "voivodeship",
+              voivodeship as ProfileInput["voivodeship"]
+            );
+            form.setValue("county", county);
+            form.setValue("commune", commune);
+          }}
+          labels={{
+            voivodeship: t("voivodeship"),
+            county: t("county"),
+            commune: t("commune"),
+          }}
         />
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="county"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("county")}</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="commune"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("commune")}</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
 
         <FormField
           control={form.control}

@@ -32,6 +32,12 @@ export async function getListings(filters: SearchListingsInput) {
   if (filters.voivodeship) {
     conditions.push(eq(users.voivodeship, filters.voivodeship));
   }
+  if (filters.county) {
+    conditions.push(eq(users.county, filters.county));
+  }
+  if (filters.commune) {
+    conditions.push(eq(users.commune, filters.commune));
+  }
   if (filters.minPrice !== undefined) {
     conditions.push(gte(listings.price, String(filters.minPrice)));
   }

@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Button } from "@/shared/ui/button";
-import { VOIVODESHIPS } from "@/domains/geo";
+import { LocationCascade, type LocationValue } from "@/domains/geo";
 import type { Category } from "@/shared/db/schema";
 
 interface SearchFiltersProps {
@@ -50,6 +50,27 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
     router.push(pathname);
   }
 
+  function handleLocationChange(loc: LocationValue) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (loc.voivodeship) {
+      params.set("voivodeship", loc.voivodeship);
+    } else {
+      params.delete("voivodeship");
+    }
+    if (loc.county) {
+      params.set("county", loc.county);
+    } else {
+      params.delete("county");
+    }
+    if (loc.commune) {
+      params.set("commune", loc.commune);
+    } else {
+      params.delete("commune");
+    }
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
   return (
     <div className="space-y-4">
       <form onSubmit={handleSearch} className="flex gap-2">
@@ -64,7 +85,7 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
         </Button>
       </form>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
         <Select
           value={searchParams.get("category") ?? "all"}
           onValueChange={(v) => updateParams("category", v)}
@@ -82,22 +103,15 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
           </SelectContent>
         </Select>
 
-        <Select
-          value={searchParams.get("voivodeship") ?? "all"}
-          onValueChange={(v) => updateParams("voivodeship", v)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t("allRegions")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("allRegions")}</SelectItem>
-            {VOIVODESHIPS.map((v) => (
-              <SelectItem key={v} value={v}>
-                {v}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <LocationCascade
+          mode="filter"
+          value={{
+            voivodeship: searchParams.get("voivodeship"),
+            county: searchParams.get("county"),
+            commune: searchParams.get("commune"),
+          }}
+          onChange={handleLocationChange}
+        />
 
         <Select
           value={searchParams.get("method") ?? "all"}

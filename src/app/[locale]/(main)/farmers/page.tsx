@@ -1,45 +1,43 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { or, eq, desc } from "drizzle-orm";
-import { db } from "@/shared/db";
-import { users } from "@/shared/db/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { MapPin } from "lucide-react";
+import { getFarmers } from "@/domains/marketplace/queries/get-farmers";
 import { getFarmersForMap } from "@/domains/marketplace/queries/get-farmers-for-map";
 import {
   getProxyFarmersForList,
   getProxyFarmersForMap,
 } from "@/domains/marketplace/queries/get-proxy-farmer";
 import { FarmersTabs } from "@/domains/marketplace/components/farmers-tabs";
+import { FarmersFilter } from "@/domains/marketplace/components/farmers-filter";
 import { geocodeFarmersWithoutCoords } from "@/domains/geo/actions/geocode-farmers";
+import { searchFarmersSchema } from "@/domains/marketplace/schemas/validation";
 
-export default async function FarmersPage() {
+export default async function FarmersPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const t = await getTranslations("farmer");
   const tProxy = await getTranslations("proxyFarmer");
 
   await geocodeFarmersWithoutCoords();
 
+  const params = await searchParams;
+  const parsed = searchFarmersSchema.safeParse(params);
+  const filters = parsed.success ? parsed.data : {};
+
   const [regularFarmers, proxyFarmers, farmersForMap, proxyForMap] =
     await Promise.all([
-      db
-        .select({
-          id: users.id,
-          name: users.name,
-          avatar: users.avatar,
-          voivodeship: users.voivodeship,
-          createdAt: users.createdAt,
-        })
-        .from(users)
-        .where(or(eq(users.role, "FARMER"), eq(users.role, "BOTH")))
-        .orderBy(desc(users.createdAt)),
+      getFarmers(filters),
       getProxyFarmersForList(),
       getFarmersForMap(),
       getProxyFarmersForMap(),
     ]);
 
-  // Merge regular and proxy farmers for list
   type FarmerItem = {
     id: string;
     name: string;
@@ -56,7 +54,6 @@ export default async function FarmersPage() {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  // Merge map data
   const allForMap = [
     ...farmersForMap.map((f) => ({ ...f, isProxy: false })),
     ...proxyForMap,
@@ -122,6 +119,9 @@ export default async function FarmersPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("allFarmers")}</h1>
+      <Suspense>
+        <FarmersFilter />
+      </Suspense>
       <FarmersTabs farmers={allForMap} listContent={listContent} />
     </div>
   );
