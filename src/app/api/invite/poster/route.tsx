@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
+import fs from "fs";
+import path from "path";
 import { auth } from "@/domains/auth/lib/auth";
 import { getOrCreateInvitation } from "@/domains/invitations";
 import { InvitationPoster } from "@/domains/invitations/lib/poster";
@@ -22,11 +24,17 @@ export async function GET(request: NextRequest) {
     color: { dark: "#1a1a1a", light: "#ffffff" },
   });
 
+  const logoBuffer = fs.readFileSync(
+    path.join(process.cwd(), "public", "plonbliLogoBezTla-removebg-preview.png")
+  );
+  const logoSrc = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+
   const buffer = await renderToBuffer(
     <InvitationPoster
       userName={session.user.name}
       qrDataUrl={qrDataUrl}
       inviteUrl={inviteUrl}
+      logoSrc={logoSrc}
     />
   );
 
