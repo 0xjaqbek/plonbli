@@ -14,6 +14,7 @@ import {
   Plus,
   Pencil,
   MapPin,
+  Send,
 } from "lucide-react";
 import { auth, signOut } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
@@ -182,6 +183,16 @@ export default async function ProfilePage() {
               </Link>
             ))}
             <Separator className="my-1" />
+            <Link
+              href="/profile/invite"
+              className="flex items-center justify-between px-3 py-2.5 rounded-md hover:bg-accent transition-colors"
+            >
+              <span className="flex items-center gap-3 text-sm">
+                <Send className="h-4 w-4 text-muted-foreground" />
+                Zaproś znajomych
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
             <Link
               href="/profile/settings"
               className="flex items-center justify-between px-3 py-2.5 rounded-md hover:bg-accent transition-colors"
