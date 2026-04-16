@@ -43,6 +43,13 @@
       "when": 1776105110030,
       "tag": "0005_closed_lady_ursula",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1776334982279,
+      "tag": "0006_oval_cloak",
+      "breakpoints": true
     }
   ]
 }

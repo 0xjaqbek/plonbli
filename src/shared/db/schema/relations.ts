@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { users } from "./users";
+import { invitations } from "./invitations";
 import { categories } from "./categories";
 import { products } from "./products";
 import { listings } from "./listings";
@@ -297,4 +298,11 @@ export const pickupSlotsRelations = relations(pickupSlots, ({ one }) => ({
 export const cartItemsRelations = relations(cartItems, ({ one }) => ({
   user: one(users, { fields: [cartItems.userId], references: [users.id] }),
   listing: one(listings, { fields: [cartItems.listingId], references: [listings.id] }),
+}));
+
+export const invitationsRelations = relations(invitations, ({ one }) => ({
+  user: one(users, {
+    fields: [invitations.userId],
+    references: [users.id],
+  }),
 }));

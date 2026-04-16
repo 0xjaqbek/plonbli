@@ -172,4 +172,12 @@ export {
   ordersRelations, orderItemsRelations, orderStatusHistoryRelations,
   paymentProofsRelations, farmerPaymentMethodsRelations,
   pickupSlotsRelations, cartItemsRelations,
+  invitationsRelations,
 } from "./relations";
+
+// Invitations
+export {
+  invitations,
+  type Invitation,
+  type NewInvitation,
+} from "./invitations";

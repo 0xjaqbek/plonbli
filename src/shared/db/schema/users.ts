@@ -4,6 +4,7 @@ import {
   timestamp,
   pgEnum,
   varchar,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -29,6 +30,10 @@ export const users = pgTable("users", {
   postalCode: varchar("postal_code", { length: 10 }),
   latitude: text("latitude"),
   longitude: text("longitude"),
+  invitedById: text("invited_by_id").references(
+    (): AnyPgColumn => users.id,
+    { onDelete: "set null" }
+  ),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
