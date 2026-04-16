@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   createListingSchema,
   searchListingsSchema,
+  searchFarmersSchema,
 } from "@/domains/marketplace/schemas/validation";
 
 describe("createListingSchema", () => {
@@ -116,5 +117,33 @@ describe("searchListingsSchema", () => {
   it("rejects invalid sort", () => {
     const result = searchListingsSchema.safeParse({ sort: "random" });
     expect(result.success).toBe(false);
+  });
+
+  it("accepts county and commune filters", () => {
+    const result = searchListingsSchema.safeParse({
+      voivodeship: "malopolskie",
+      county: "krakowski",
+      commune: "Wieliczka",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.county).toBe("krakowski");
+      expect(result.data.commune).toBe("Wieliczka");
+    }
+  });
+});
+
+describe("searchFarmersSchema", () => {
+  it("accepts empty input", () => {
+    expect(searchFarmersSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("accepts full location filters", () => {
+    const result = searchFarmersSchema.safeParse({
+      voivodeship: "mazowieckie",
+      county: "warszawski zachodni",
+      commune: "Błonie",
+    });
+    expect(result.success).toBe(true);
   });
 });

@@ -32,6 +32,8 @@ export const searchListingsSchema = z.object({
   q: z.string().optional(),
   category: z.string().optional(),
   voivodeship: z.string().optional(),
+  county: z.string().optional(),
+  commune: z.string().optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   method: z.enum(["ECO", "CONVENTIONAL", "OTHER"]).optional(),
@@ -41,6 +43,13 @@ export const searchListingsSchema = z.object({
   page: z.coerce.number().default(1),
 });
 
+export const searchFarmersSchema = z.object({
+  voivodeship: z.string().optional(),
+  county: z.string().optional(),
+  commune: z.string().optional(),
+});
+
 export type CreateListingInput = z.infer<typeof createListingSchema>;
 export type SearchListingsInput = z.infer<typeof searchListingsSchema>;
 export type DeliveryOptionInput = z.infer<typeof deliveryOptionSchema>;
+export type SearchFarmersInput = z.infer<typeof searchFarmersSchema>;
