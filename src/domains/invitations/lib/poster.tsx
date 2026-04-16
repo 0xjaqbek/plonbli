@@ -5,7 +5,6 @@ Font.register({
   fonts: [
     { src: "https://cdn.jsdelivr.net/npm/roboto-fontface@0.10.0/fonts/roboto/Roboto-Regular.ttf" },
     { src: "https://cdn.jsdelivr.net/npm/roboto-fontface@0.10.0/fonts/roboto/Roboto-Bold.ttf", fontWeight: "bold" },
-    { src: "https://cdn.jsdelivr.net/npm/roboto-fontface@0.10.0/fonts/roboto/Roboto-Italic.ttf", fontStyle: "italic" },
   ],
 });
 
@@ -38,7 +37,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 14,
     color: "#2d8c2d",
-    fontStyle: "italic",
     fontFamily: "Roboto",
   },
   description: {
