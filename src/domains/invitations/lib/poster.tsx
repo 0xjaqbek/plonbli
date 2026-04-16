@@ -4,8 +4,8 @@ import { Document, Page, Text, View, Image, StyleSheet, Font } from "@react-pdf/
 Font.register({
   family: "Roboto",
   fonts: [
-    { src: path.join(process.cwd(), "public/fonts/Roboto-Regular.woff2") },
-    { src: path.join(process.cwd(), "public/fonts/Roboto-Bold.woff2"), fontWeight: "bold" },
+    { src: path.join(process.cwd(), "public/fonts/Roboto-Regular.woff") },
+    { src: path.join(process.cwd(), "public/fonts/Roboto-Bold.woff"), fontWeight: "bold" },
   ],
 });
 
