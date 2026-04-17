@@ -260,35 +260,42 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
       {isOwner && (
         <>
           <Separator />
-          {!showConfirm ? (
-            <Button
-              variant="destructive"
-              onClick={() => setShowConfirm(true)}
-            >
-              {tCommon("delete")}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" asChild>
+              <Link href={`/marketplace/${listing.id}/edit`}>
+                {tCommon("edit")}
+              </Link>
             </Button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-destructive">
-                {t("confirmDelete")}
-              </p>
+            {!showConfirm ? (
               <Button
                 variant="destructive"
-                size="sm"
-                onClick={handleDelete}
-                disabled={isPending}
+                onClick={() => setShowConfirm(true)}
               >
                 {tCommon("delete")}
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowConfirm(false)}
-              >
-                {tCommon("cancel")}
-              </Button>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-destructive">
+                  {t("confirmDelete")}
+                </p>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleDelete}
+                  disabled={isPending}
+                >
+                  {tCommon("delete")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowConfirm(false)}
+                >
+                  {tCommon("cancel")}
+                </Button>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
