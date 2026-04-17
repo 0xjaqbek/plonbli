@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createListing } from "../actions/create-listing";
+import { updateListing } from "../actions/update-listing";
 import { z } from "zod";
+import type { CreateListingInput } from "../schemas/validation";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nazwa jest wymagana").max(255),
@@ -46,40 +48,68 @@ import type { Category } from "@/shared/db/schema";
 
 interface ListingFormProps {
   categories: Category[];
+  listingId?: string;
+  initialValues?: CreateListingInput;
 }
 
-export function ListingForm({ categories }: ListingFormProps) {
+export function ListingForm({ categories, listingId, initialValues }: ListingFormProps) {
   const t = useTranslations("product");
   const tMarketplace = useTranslations("marketplace");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const [pickupEnabled, setPickupEnabled] = useState(false);
-  const [deliveryEnabled, setDeliveryEnabled] = useState(false);
-  const [dropPointEnabled, setDropPointEnabled] = useState(false);
+  const initialPickup = initialValues?.deliveryOptions?.find((o) => o.type === "PICKUP");
+  const initialDelivery = initialValues?.deliveryOptions?.find((o) => o.type === "DELIVERY");
+  const initialDropPoint = initialValues?.deliveryOptions?.find((o) => o.type === "DROP_POINT");
 
-  const [pickupAddress, setPickupAddress] = useState("");
-  const [pickupHours, setPickupHours] = useState("");
-  const [deliveryRadius, setDeliveryRadius] = useState("");
-  const [deliveryCost, setDeliveryCost] = useState("");
-  const [deliveryMinAmount, setDeliveryMinAmount] = useState("");
-  const [dropPointAddress, setDropPointAddress] = useState("");
+  const [pickupEnabled, setPickupEnabled] = useState(!!initialPickup);
+  const [deliveryEnabled, setDeliveryEnabled] = useState(!!initialDelivery);
+  const [dropPointEnabled, setDropPointEnabled] = useState(!!initialDropPoint);
+
+  const [pickupAddress, setPickupAddress] = useState(initialPickup?.address ?? "");
+  const [pickupHours, setPickupHours] = useState(initialPickup?.hours ?? "");
+  const [deliveryRadius, setDeliveryRadius] = useState(
+    initialDelivery?.radius !== undefined ? String(initialDelivery.radius) : ""
+  );
+  const [deliveryCost, setDeliveryCost] = useState(
+    initialDelivery?.cost !== undefined ? String(initialDelivery.cost) : ""
+  );
+  const [deliveryMinAmount, setDeliveryMinAmount] = useState(
+    initialDelivery?.minAmount !== undefined ? String(initialDelivery.minAmount) : ""
+  );
+  const [dropPointAddress, setDropPointAddress] = useState(
+    initialDropPoint?.address ?? ""
+  );
 
   const form = useForm<FormInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(formSchema) as any,
-    defaultValues: {
-      name: "",
-      description: "",
-      categoryId: "",
-      method: "CONVENTIONAL",
-      tags: [],
-      images: [],
-      price: 0,
-      unit: "KG",
-      availability: "AVAILABLE",
-    },
+    defaultValues: initialValues
+      ? {
+          name: initialValues.name,
+          description: initialValues.description ?? "",
+          categoryId: initialValues.categoryId,
+          method: initialValues.method ?? "CONVENTIONAL",
+          tags: initialValues.tags ?? [],
+          images: initialValues.images ?? [],
+          price: initialValues.price,
+          unit: initialValues.unit,
+          quantityAvailable: initialValues.quantityAvailable,
+          availability: initialValues.availability ?? "AVAILABLE",
+          validUntil: initialValues.validUntil,
+        }
+      : {
+          name: "",
+          description: "",
+          categoryId: "",
+          method: "CONVENTIONAL",
+          tags: [],
+          images: [],
+          price: 0,
+          unit: "KG",
+          availability: "AVAILABLE",
+        },
   });
 
   function buildDeliveryOptions() {
@@ -117,14 +147,21 @@ export function ListingForm({ categories }: ListingFormProps) {
 
     setServerError(null);
     startTransition(async () => {
-      const result = await createListing({
-        ...data,
-        deliveryOptions,
-      });
-      if (result.success) {
-        router.push(`/marketplace/${result.listingId}`);
-      } else if (!result.success && result.error) {
-        setServerError(result.error);
+      const payload = { ...data, deliveryOptions };
+      if (listingId) {
+        const result = await updateListing(listingId, payload);
+        if (result.success) {
+          router.push(`/marketplace/${listingId}`);
+        } else if (!result.success && result.error) {
+          setServerError(result.error);
+        }
+      } else {
+        const result = await createListing(payload);
+        if (result.success) {
+          router.push(`/marketplace/${result.listingId}`);
+        } else if (!result.success && result.error) {
+          setServerError(result.error);
+        }
       }
     });
   }
@@ -421,7 +458,7 @@ export function ListingForm({ categories }: ListingFormProps) {
         )}
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {tMarketplace("createListing")}
+          {tMarketplace(listingId ? "saveChanges" : "createListing")}
         </Button>
       </form>
     </Form>
