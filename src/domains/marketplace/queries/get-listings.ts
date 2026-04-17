@@ -20,8 +20,11 @@ import type { SearchListingsInput } from "../schemas/validation";
 
 const ITEMS_PER_PAGE = 12;
 
-export async function getListings(filters: SearchListingsInput) {
-  const conditions = [ne(listings.availability, "OUT_OF_STOCK")];
+export async function getListings(filters: SearchListingsInput, userId?: string) {
+  // In mine mode: show all farmer's listings including OUT_OF_STOCK
+  const conditions = userId
+    ? [eq(products.farmerId, userId)]
+    : [ne(listings.availability, "OUT_OF_STOCK")];
 
   if (filters.q) {
     conditions.push(ilike(products.name, `%${filters.q}%`));
