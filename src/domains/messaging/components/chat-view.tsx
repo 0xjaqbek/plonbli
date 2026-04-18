@@ -114,8 +114,8 @@ export function ChatView({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <ScrollArea className="flex-1 p-4">
+    <div className="flex flex-col h-full overflow-hidden">
+      <ScrollArea className="flex-1 min-h-0 p-4">
         {messageList.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">
             {t("noMessages")}
