@@ -26,7 +26,7 @@ export default async function MessagesPage() {
     .where(ne(users.id, session.user.id));
 
   return (
-    <div className="max-w-4xl mx-auto h-[calc(100vh-4rem)]">
+    <div className="max-w-4xl mx-auto h-[calc(100dvh-6.6rem)] md:h-[calc(100vh-4rem)]">
       <ConversationList
         initialConversations={conversations}
         currentUserId={session.user.id}

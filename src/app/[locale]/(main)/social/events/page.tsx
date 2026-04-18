@@ -11,7 +11,7 @@ export default async function EventsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{t("events")}</h1>
         <Button asChild size="sm">
           <Link href="/social/events/create">

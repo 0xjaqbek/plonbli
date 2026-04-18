@@ -104,13 +104,13 @@ export function NavBar({ hasUnread, hasUnseenOrders }: NavBarProps) {
 
       {/* Mobile bottom bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t bg-background z-50">
-        <div className="flex items-center justify-around py-2">
+        <div className="flex items-center justify-around h-14">
           {bottomNavItems.map(({ href, icon: Icon, labelKey }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1 text-[10px] transition-colors",
+                "flex flex-col items-center gap-1 px-3 text-[10px] transition-colors",
                 isActive(href)
                   ? "text-primary"
                   : "text-muted-foreground"

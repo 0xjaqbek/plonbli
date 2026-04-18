@@ -81,7 +81,7 @@ export default async function ConversationPage({
     .where(ne(users.id, session.user.id));
 
   return (
-    <div className="max-w-6xl mx-auto h-[calc(100vh-4rem)] flex">
+    <div className="max-w-6xl mx-auto h-[calc(100dvh-6.6rem)] md:h-[calc(100vh-4rem)] flex">
       {/* Desktop sidebar */}
       <div className="hidden md:block w-80 border-r">
         <ConversationList
@@ -94,7 +94,7 @@ export default async function ConversationPage({
 
       {/* Chat area */}
       <div className="flex-1 flex flex-col">
-        <div className="border-b p-3 flex items-center gap-3">
+        <div className="border-b p-1 flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
