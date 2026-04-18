@@ -158,7 +158,7 @@ export function ListingForm({ categories, listingId, initialValues }: ListingFor
       } else {
         const result = await createListing(payload);
         if (result.success) {
-          router.push(`/marketplace/${result.listingId}`);
+          router.push(`/marketplace?mine=1`);
         } else if (!result.success && result.error) {
           setServerError(result.error);
         }
