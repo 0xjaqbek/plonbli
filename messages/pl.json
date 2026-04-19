@@ -135,6 +135,8 @@
     "deliveryMinAmount": "Min. zamowienie (zl)",
     "created": "Oferta dodana",
     "deleted": "Oferta usunieta",
+    "availabilityLabel": "Dostępność",
+    "validUntilLabel": "Ważne do",
     "confirmDelete": "Na pewno chcesz usunac te oferte?",
     "contactFarmer": "Skontaktuj sie z rolnikiem",
     "farmerProfile": "Profil rolnika",

@@ -365,6 +365,49 @@ export function ListingForm({ categories, listingId, initialValues }: ListingFor
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="availability"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("availabilityLabel")}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="AVAILABLE">{tMarketplace("available")}</SelectItem>
+                  <SelectItem value="SEASONAL">{tMarketplace("seasonal")}</SelectItem>
+                  <SelectItem value="OUT_OF_STOCK">{tMarketplace("outOfStock")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="validUntil"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("validUntilLabel")}</FormLabel>
+              <FormControl>
+                <Input
+                  type="date"
+                  value={field.value ? field.value.slice(0, 10) : ""}
+                  onChange={(e) =>
+                    field.onChange(e.target.value || undefined)
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Delivery options */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">{t("delivery")}</h3>
