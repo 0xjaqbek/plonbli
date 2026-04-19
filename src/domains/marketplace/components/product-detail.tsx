@@ -21,6 +21,7 @@ import { ShareButton } from "@/domains/social/components/share-button";
 import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { Input } from "@/shared/ui/input";
 import type { ListingDetail } from "../queries/get-listing";
+import { AvailabilitySelect } from "./availability-select";
 
 const DELIVERY_ICONS: Record<string, typeof MapPin> = {
   PICKUP: MapPin,
@@ -296,6 +297,7 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
               </div>
             )}
           </div>
+          <AvailabilitySelect listingId={listing.id} value={listing.availability} />
         </>
       )}
     </div>
