@@ -98,7 +98,14 @@ export function ChatView({
         content,
       });
 
-      if (!result.success) {
+      if (result.success) {
+        // Replace temp ID with real message ID so polling dedup works correctly
+        setMessageList((prev) =>
+          prev.map((m) =>
+            m.id === optimisticMessage.id ? { ...m, id: result.messageId } : m
+          )
+        );
+      } else {
         setMessageList((prev) =>
           prev.filter((m) => m.id !== optimisticMessage.id)
         );
