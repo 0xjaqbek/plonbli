@@ -17,6 +17,7 @@ interface OrderCardProps {
   counterpartyName: string | null;
   counterpartyAvatar: string | null;
   href: string;
+  hasUnseenChanges?: boolean;
 }
 
 const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructive" | "outline"> = {
@@ -32,7 +33,7 @@ const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructiv
 };
 
 export function OrderCard({
-  orderNumber, status, totalAmount, createdAt, counterpartyName, href,
+  orderNumber, status, totalAmount, createdAt, counterpartyName, href, hasUnseenChanges,
 }: OrderCardProps) {
   const t = useTranslations("orders");
 
@@ -43,7 +44,12 @@ export function OrderCard({
       <Card className="hover:bg-muted/50 transition-colors">
         <CardContent className="flex items-center gap-4 py-4">
           <div className="flex-1 min-w-0">
-            <p className="font-medium">{orderNumber}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-medium">{orderNumber}</p>
+              {hasUnseenChanges && (
+                <span className="h-2 w-2 rounded-full bg-destructive flex-shrink-0" />
+              )}
+            </div>
             <p className="text-sm text-muted-foreground flex items-center gap-1">
               <User className="h-3 w-3" />
               {counterpartyName}

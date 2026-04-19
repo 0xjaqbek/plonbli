@@ -22,7 +22,7 @@ export default async function FarmerOrdersPage({
   });
 
   const orders = results.map(({ order, customer }) => ({
-    order: { ...order, status: order.status as OrderStatus },
+    order: { ...order, status: order.status as OrderStatus, hasUnseenChanges: !order.farmerHasSeen },
     counterparty: customer,
   }));
 

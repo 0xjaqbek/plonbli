@@ -13,6 +13,7 @@ interface OrderListItem {
     status: OrderStatus;
     totalAmount: string;
     createdAt: Date;
+    hasUnseenChanges?: boolean;
   };
   counterparty: {
     id: string;
@@ -51,6 +52,7 @@ export function OrderList({ orders, basePath }: OrderListProps) {
           counterpartyName={counterparty.name}
           counterpartyAvatar={counterparty.avatar}
           href={`${basePath}/${order.id}`}
+          hasUnseenChanges={order.hasUnseenChanges}
         />
       ))}
     </div>
