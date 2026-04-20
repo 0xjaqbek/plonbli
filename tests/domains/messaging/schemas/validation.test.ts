@@ -112,4 +112,37 @@ describe("createConversationSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("accepts direct conversation with orderId", () => {
+    const result = createConversationSchema.safeParse({
+      type: "DIRECT",
+      participantIds: ["user-1"],
+      orderId: "order-abc",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.orderId).toBe("order-abc");
+    }
+  });
+
+  it("accepts direct conversation with listingId", () => {
+    const result = createConversationSchema.safeParse({
+      type: "DIRECT",
+      participantIds: ["user-1"],
+      listingId: "listing-abc",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.listingId).toBe("listing-abc");
+    }
+  });
+
+  it("rejects empty string orderId", () => {
+    const result = createConversationSchema.safeParse({
+      type: "DIRECT",
+      participantIds: ["user-1"],
+      orderId: "",
+    });
+    expect(result.success).toBe(false);
+  });
 });

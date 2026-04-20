@@ -11,6 +11,8 @@ export const createConversationSchema = z
     type: z.enum(["DIRECT", "GROUP"]),
     name: z.string().max(100).optional(),
     participantIds: z.array(z.string().min(1)),
+    orderId: z.string().min(1).optional(),
+    listingId: z.string().min(1).optional(),
   })
   .refine(
     (data) => {
