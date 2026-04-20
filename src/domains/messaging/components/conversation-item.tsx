@@ -83,6 +83,13 @@ export function ConversationItem({
               </span>
             )}
           </div>
+          {item.context && (
+            <p className="text-[10px] text-primary truncate">
+              {item.context.type === "ORDER"
+                ? `${t("orderConversation")} ${item.context.label}`
+                : `${t("listingConversation")}: ${item.context.label}`}
+            </p>
+          )}
           <div className="flex items-center justify-between gap-2 mt-0.5">
             <p className="truncate text-xs text-muted-foreground">
               {lastMessagePreview ?? t("noMessages")}

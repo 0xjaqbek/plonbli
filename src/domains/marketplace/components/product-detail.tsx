@@ -14,9 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import { MapPin, Truck, Package, User } from "lucide-react";
+import { MapPin, Truck, Package, User, MessageCircle } from "lucide-react";
 import { deleteListing } from "../actions/delete-listing";
 import { addToCart } from "@/domains/orders/actions/add-to-cart";
+import { createConversation } from "@/domains/messaging";
 import { ShareButton } from "@/domains/social/components/share-button";
 import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { Input } from "@/shared/ui/input";
@@ -67,6 +68,19 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
       const result = await deleteListing(listing.id);
       if (result.success) {
         router.push("/marketplace");
+      }
+    });
+  }
+
+  function handleAskAboutProduct() {
+    startTransition(async () => {
+      const result = await createConversation({
+        type: "DIRECT",
+        participantIds: [product.farmer.id],
+        listingId: listing.id,
+      });
+      if (result.success) {
+        router.push(`/messages/${result.conversationId}`);
       }
     });
   }
@@ -237,7 +251,7 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
       </div>
 
       {!isOwner && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Input
             type="number"
             min={1}
@@ -247,6 +261,15 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
           />
           <Button onClick={handleAddToCart} disabled={isPending}>
             {cartSuccess ? tOrders("addedToCart") : tOrders("addToCart")}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleAskAboutProduct}
+            disabled={isPending}
+            className="flex items-center gap-2"
+          >
+            <MessageCircle className="h-4 w-4" />
+            {t("askAboutProduct")}
           </Button>
         </div>
       )}

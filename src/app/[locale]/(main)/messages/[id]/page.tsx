@@ -6,6 +6,8 @@ import {
   conversations,
   conversationMembers,
   users,
+  orders,
+  listings,
 } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import { getMessages } from "@/domains/messaging/queries/get-messages";
@@ -13,7 +15,7 @@ import { getConversations } from "@/domains/messaging/queries/get-conversations"
 import { ChatView } from "@/domains/messaging/components/chat-view";
 import { ConversationList } from "@/domains/messaging/components/conversation-list";
 import { Button } from "@/shared/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Package, Tag } from "lucide-react";
 import Link from "next/link";
 
 export default async function ConversationPage({
@@ -72,6 +74,44 @@ export default async function ConversationPage({
       ? otherMembers[0]?.name ?? t("directConversation")
       : conversation.name ?? t("groupConversation");
 
+  // Fetch context data if conversation is linked to an order or listing
+  type ContextData =
+    | { type: "ORDER"; label: string; href: string }
+    | { type: "LISTING"; label: string; href: string }
+    | null;
+
+  let contextData: ContextData = null;
+
+  if (conversation.orderId) {
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.id, conversation.orderId),
+      columns: { orderNumber: true, customerId: true },
+    });
+    if (order) {
+      const isCustomerView = order.customerId === session.user.id;
+      contextData = {
+        type: "ORDER",
+        label: `#${order.orderNumber}`,
+        href: isCustomerView
+          ? `/orders/${conversation.orderId}`
+          : `/farmer/orders/${conversation.orderId}`,
+      };
+    }
+  } else if (conversation.listingId) {
+    const listing = await db.query.listings.findFirst({
+      where: eq(listings.id, conversation.listingId),
+      with: { product: { columns: { name: true } } },
+      columns: {},
+    });
+    if (listing) {
+      contextData = {
+        type: "LISTING",
+        label: listing.product.name,
+        href: `/marketplace/${conversation.listingId}`,
+      };
+    }
+  }
+
   const { messages } = await getMessages(id);
 
   // For desktop split view
@@ -112,6 +152,19 @@ export default async function ConversationPage({
               <p className="text-xs text-muted-foreground">
                 {otherMembers.length + 1} {t("membersCount")}
               </p>
+            )}
+            {contextData && (
+              <Link
+                href={contextData.href}
+                className="text-xs text-primary hover:underline flex items-center gap-1"
+              >
+                {contextData.type === "ORDER" ? (
+                  <Package className="h-3 w-3" />
+                ) : (
+                  <Tag className="h-3 w-3" />
+                )}
+                {contextData.label}
+              </Link>
             )}
           </div>
         </div>

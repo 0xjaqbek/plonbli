@@ -15,6 +15,7 @@ import { PaymentProofForm } from "./payment-proof-form";
 import { ModificationReview } from "./modification-review";
 import { completeOrder } from "../../actions/complete-order";
 import { cancelOrder } from "../../actions/cancel-order";
+import { createConversation } from "@/domains/messaging";
 import type { OrderDetail as OrderDetailType } from "../../queries/get-order";
 
 interface OrderDetailProps {
@@ -34,6 +35,20 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
     startTransition(async () => {
       const result = await completeOrder(order.id);
       if (result.success) router.refresh();
+    });
+  }
+
+  function handleMessageAboutOrder() {
+    const otherPartyId = isCustomer ? order.farmer.id : order.customer.id;
+    startTransition(async () => {
+      const result = await createConversation({
+        type: "DIRECT",
+        participantIds: [otherPartyId],
+        orderId: order.id,
+      });
+      if (result.success) {
+        router.push(`/messages/${result.conversationId}`);
+      }
     });
   }
 
@@ -196,7 +211,8 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
         )}
         <Button
           variant="outline"
-          onClick={() => router.push(`/messages`)}
+          onClick={handleMessageAboutOrder}
+          disabled={isPending}
           className="flex items-center gap-2"
         >
           <MessageCircle className="h-4 w-4" />
