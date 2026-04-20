@@ -11,6 +11,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { MapPin, Truck, Package } from "lucide-react";
 import { createOrder } from "../../actions/create-order";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import type { CartGroup } from "../../queries/get-cart";
 import type { PickupSlot } from "@/shared/db/schema";
 
@@ -44,6 +45,12 @@ export function CheckoutForm({ cartGroup, farmerId, pickupSlots, availableDelive
         customerNote: customerNote || undefined,
       });
       if (result.success) {
+        trackEvent(EVENTS.ORDER_PLACED, {
+          orderId: result.orderId,
+          farmerId,
+          itemCount: cartGroup.items.length,
+          totalValue: cartGroup.total,
+        });
         router.push(`/orders/${result.orderId}`);
       } else {
         setError(result.error ?? "Wystapil blad");

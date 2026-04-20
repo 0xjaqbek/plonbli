@@ -44,6 +44,7 @@ export function CartView({ groups }: CartViewProps) {
               <CartItemRow
                 key={item.cartItem.id}
                 cartItemId={item.cartItem.id}
+                listingId={item.listing.id}
                 productName={item.product.name}
                 quantity={Number(item.cartItem.quantity)}
                 price={Number(item.listing.price)}

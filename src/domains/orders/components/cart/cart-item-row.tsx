@@ -7,9 +7,11 @@ import { Input } from "@/shared/ui/input";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { updateCartItem } from "../../actions/update-cart-item";
 import { removeFromCart } from "../../actions/remove-from-cart";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 interface CartItemRowProps {
   cartItemId: string;
+  listingId: string;
   productName: string;
   quantity: number;
   price: number;
@@ -19,11 +21,12 @@ interface CartItemRowProps {
 }
 
 export function CartItemRow({
-  cartItemId, productName, quantity, price, unit, image, onUpdate,
+  cartItemId, listingId, productName, quantity, price, unit, image, onUpdate,
 }: CartItemRowProps) {
   const t = useTranslations("orders");
   const [isPending, startTransition] = useTransition();
   const [qty, setQty] = useState(quantity);
+  const { trackEvent } = useAnalytics();
 
   function handleQuantityChange(newQty: number) {
     if (newQty <= 0) return;
@@ -37,6 +40,7 @@ export function CartItemRow({
   function handleRemove() {
     startTransition(async () => {
       await removeFromCart(cartItemId);
+      trackEvent(EVENTS.CART_ITEM_REMOVED, { listingId });
       onUpdate();
     });
   }
