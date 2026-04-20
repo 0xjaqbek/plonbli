@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/shared/ui/theme-provider";
+import { AnalyticsScript } from "@/domains/analytics";
 
 export default async function LocaleLayout({
   children,
@@ -17,6 +18,7 @@ export default async function LocaleLayout({
         enableSystem
         disableTransitionOnChange
       >
+        <AnalyticsScript />
         {children}
       </ThemeProvider>
     </NextIntlClientProvider>
