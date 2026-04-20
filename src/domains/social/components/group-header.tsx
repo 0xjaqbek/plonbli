@@ -7,6 +7,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Users, MapPin } from "lucide-react";
 import { joinGroup } from "../actions/join-group";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import type { GroupDetail } from "../queries/get-group";
 
 interface GroupHeaderProps {
@@ -24,6 +25,9 @@ export function GroupHeader({ group, currentUserId }: GroupHeaderProps) {
   function handleJoinLeave() {
     startTransition(async () => {
       await joinGroup(group.id);
+      if (!group.isMember) {
+        trackEvent(EVENTS.GROUP_JOINED, { groupId: group.id });
+      }
       router.refresh();
     });
   }

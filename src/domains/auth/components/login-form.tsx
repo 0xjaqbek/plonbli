@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "../schemas/validation";
 import { login } from "../actions/login";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Separator } from "@/shared/ui/separator";
@@ -42,6 +43,7 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await login(data);
       if (result.success) {
+        trackEvent(EVENTS.AUTH_LOGGED_IN, { method: "email" });
         router.push("/");
         router.refresh();
       } else {
@@ -102,14 +104,20 @@ export function LoginForm() {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => {
+            trackEvent(EVENTS.AUTH_LOGGED_IN, { method: "google" });
+            signIn("google", { callbackUrl: "/" });
+          }}
         >
           Google
         </Button>
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => signIn("facebook", { callbackUrl: "/" })}
+          onClick={() => {
+            trackEvent(EVENTS.AUTH_LOGGED_IN, { method: "facebook" });
+            signIn("facebook", { callbackUrl: "/" });
+          }}
         >
           Facebook
         </Button>

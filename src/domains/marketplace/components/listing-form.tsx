@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createListing } from "../actions/create-listing";
 import { updateListing } from "../actions/update-listing";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { z } from "zod";
 import type { CreateListingInput } from "../schemas/validation";
 
@@ -158,6 +159,11 @@ export function ListingForm({ categories, listingId, initialValues }: ListingFor
       } else {
         const result = await createListing(payload);
         if (result.success) {
+          trackEvent(EVENTS.LISTING_CREATED, {
+            listingId: result.listingId,
+            category: data.categoryId,
+            hasAvailability: data.availability === "AVAILABLE",
+          });
           router.push(`/marketplace?mine=1`);
         } else if (!result.success && result.error) {
           setServerError(result.error);

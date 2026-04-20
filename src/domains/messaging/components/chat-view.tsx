@@ -7,6 +7,7 @@ import { Input } from "@/shared/ui/input";
 import { ScrollArea } from "@/shared/ui/scroll-area";
 import { Send } from "lucide-react";
 import { sendMessage } from "../actions/send-message";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 import { markAsRead } from "../actions/mark-as-read";
 import { MessageBubble } from "./message-bubble";
 import type { MessageWithSender } from "../queries/get-messages";
@@ -15,12 +16,14 @@ interface ChatViewProps {
   conversationId: string;
   currentUserId: string;
   initialMessages: MessageWithSender[];
+  recipientRole?: string;
 }
 
 export function ChatView({
   conversationId,
   currentUserId,
   initialMessages,
+  recipientRole,
 }: ChatViewProps) {
   const t = useTranslations("messaging");
   const [messageList, setMessageList] =
@@ -28,6 +31,7 @@ export function ChatView({
   const [input, setInput] = useState("");
   const [isPending, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { trackEvent } = useAnalytics();
 
   // Mark messages as read on mount
   useEffect(() => {
@@ -105,6 +109,12 @@ export function ChatView({
             m.id === optimisticMessage.id ? { ...m, id: result.messageId } : m
           )
         );
+        trackEvent(EVENTS.MESSAGE_SENT);
+        if (messageList.length === 0) {
+          trackEvent(EVENTS.CONVERSATION_STARTED, {
+            recipientRole: recipientRole ?? "unknown",
+          });
+        }
       } else {
         setMessageList((prev) =>
           prev.filter((m) => m.id !== optimisticMessage.id)

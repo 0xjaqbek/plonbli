@@ -56,6 +56,7 @@ export default async function ConversationPage({
       id: users.id,
       name: users.name,
       avatar: users.avatar,
+      role: users.role,
     })
     .from(conversationMembers)
     .innerJoin(users, eq(conversationMembers.userId, users.id))
@@ -119,6 +120,7 @@ export default async function ConversationPage({
           conversationId={id}
           currentUserId={session.user.id}
           initialMessages={messages}
+          recipientRole={otherMembers[0]?.role?.toLowerCase()}
         />
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { updateAvailability } from "../actions/update-availability";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 type Availability = "AVAILABLE" | "SEASONAL" | "OUT_OF_STOCK";
 
@@ -23,13 +24,19 @@ export function AvailabilitySelect({ listingId, value }: AvailabilitySelectProps
   const tMarketplace = useTranslations("marketplace");
   const [isPending, startTransition] = useTransition();
   const [current, setCurrent] = useState<Availability>(value);
+  const { trackEvent } = useAnalytics();
 
   function handleChange(newValue: string) {
     const next = newValue as Availability;
     setCurrent(next);
     startTransition(async () => {
       const result = await updateAvailability(listingId, newValue);
-      if (!result.success) {
+      if (result.success) {
+        trackEvent(EVENTS.LISTING_AVAILABILITY_UPDATED, {
+          listingId,
+          availability: next,
+        });
+      } else {
         setCurrent(value); // revert on error
       }
     });

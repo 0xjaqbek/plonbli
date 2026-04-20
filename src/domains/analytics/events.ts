@@ -1,0 +1,21 @@
+import type { EventName } from "./types";
+
+export const EVENTS = {
+  AUTH_REGISTERED: "auth.registered",
+  AUTH_LOGGED_IN: "auth.logged_in",
+  AUTH_LOGGED_OUT: "auth.logged_out",
+  LISTING_VIEWED: "listing.viewed",
+  LISTING_CREATED: "listing.created",
+  LISTING_AVAILABILITY_UPDATED: "listing.availability_updated",
+  CART_ITEM_ADDED: "cart.item_added",
+  CART_ITEM_REMOVED: "cart.item_removed",
+  ORDER_PLACED: "order.placed",
+  ORDER_STATUS_CHANGED: "order.status_changed",
+  POST_CREATED: "post.created",
+  POST_LIKED: "post.liked",
+  GROUP_JOINED: "group.joined",
+  EVENT_RSVP: "event.rsvp",
+  CONVERSATION_STARTED: "conversation.started",
+  MESSAGE_SENT: "message.sent",
+  ROLE_UPGRADED_TO_FARMER: "role.upgraded_to_farmer",
+} as const satisfies Record<string, EventName>;
