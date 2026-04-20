@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileInput } from "../schemas/validation";
 import { updateProfile } from "../actions/update-profile";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { LocationCascade } from "@/domains/geo";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -57,6 +58,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
     startTransition(async () => {
       const result = await updateProfile(data);
       if (result.success) {
+        const wasNotFarmer = user.role !== "FARMER" && user.role !== "BOTH";
+        const isFarmerNow = data.role === "FARMER" || data.role === "BOTH";
+        if (wasNotFarmer && isFarmerNow) {
+          trackEvent(EVENTS.ROLE_UPGRADED_TO_FARMER);
+        }
         setMessage(t("saved"));
       }
     });
