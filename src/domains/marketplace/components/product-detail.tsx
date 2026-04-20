@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -22,6 +22,7 @@ import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { Input } from "@/shared/ui/input";
 import type { ListingDetail } from "../queries/get-listing";
 import { AvailabilitySelect } from "./availability-select";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 const DELIVERY_ICONS: Record<string, typeof MapPin> = {
   PICKUP: MapPin,
@@ -48,8 +49,18 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [cartQty, setCartQty] = useState(1);
   const [cartSuccess, setCartSuccess] = useState(false);
+  const { trackEvent } = useAnalytics();
 
   const { product } = listing;
+
+  useEffect(() => {
+    trackEvent(EVENTS.LISTING_VIEWED, {
+      listingId: listing.id,
+      farmerId: product.farmer.id,
+      category: product.category.name,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleDelete() {
     startTransition(async () => {
@@ -64,6 +75,11 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
     startTransition(async () => {
       const result = await addToCart({ listingId: listing.id, quantity: cartQty });
       if (result.success) {
+        trackEvent(EVENTS.CART_ITEM_ADDED, {
+          listingId: listing.id,
+          farmerId: product.farmer.id,
+          price: Number(listing.price),
+        });
         setCartSuccess(true);
         setTimeout(() => setCartSuccess(false), 3000);
       }
