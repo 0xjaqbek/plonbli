@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "../schemas/validation";
 import { register } from "../actions/register";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import {
@@ -52,6 +53,7 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
     startTransition(async () => {
       const result = await register(data);
       if (result.success) {
+        trackEvent(EVENTS.AUTH_REGISTERED, { method: "email" });
         router.push("/login?registered=true");
       } else {
         if (result.errors.email) {
