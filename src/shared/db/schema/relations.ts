@@ -57,9 +57,17 @@ export const listingsRelations = relations(listings, ({ one }) => ({
   }),
 }));
 
-export const conversationsRelations = relations(conversations, ({ many }) => ({
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
   members: many(conversationMembers),
   messages: many(messages),
+  order: one(orders, {
+    fields: [conversations.orderId],
+    references: [orders.id],
+  }),
+  listing: one(listings, {
+    fields: [conversations.listingId],
+    references: [listings.id],
+  }),
 }));
 
 export const conversationMembersRelations = relations(

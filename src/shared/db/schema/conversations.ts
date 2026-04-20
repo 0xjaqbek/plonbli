@@ -1,5 +1,7 @@
 import { pgTable, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
+import { orders } from "./orders";
+import { listings } from "./listings";
 
 export const conversationTypeEnum = pgEnum("conversation_type", [
   "DIRECT",
@@ -14,6 +16,12 @@ export const conversations = pgTable("conversations", {
   type: conversationTypeEnum("type").notNull(),
   name: text("name"),
   groupId: text("group_id"),
+  orderId: text("order_id").references(() => orders.id, {
+    onDelete: "set null",
+  }),
+  listingId: text("listing_id").references(() => listings.id, {
+    onDelete: "set null",
+  }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
