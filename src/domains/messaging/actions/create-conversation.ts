@@ -1,10 +1,12 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/shared/db";
 import {
   conversations,
   conversationMembers,
+  orders,
+  listings,
 } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import {
@@ -32,10 +34,33 @@ export async function createConversation(
     };
   }
 
-  const { type, name, participantIds } = parsed.data;
+  const { type, name, participantIds, orderId, listingId } = parsed.data;
   const currentUserId = session.user.id;
 
-  // For DIRECT conversations, check if one already exists between these users
+  // Access control for orderId
+  if (orderId) {
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.id, orderId),
+    });
+    if (
+      !order ||
+      (order.customerId !== currentUserId && order.farmerId !== currentUserId)
+    ) {
+      return { success: false, error: "Brak dostępu" };
+    }
+  }
+
+  // Access control for listingId
+  if (listingId) {
+    const listing = await db.query.listings.findFirst({
+      where: eq(listings.id, listingId),
+    });
+    if (!listing) {
+      return { success: false, error: "Ogłoszenie nie istnieje" };
+    }
+  }
+
+  // For DIRECT conversations, check if one already exists with the same context
   if (type === "DIRECT") {
     const otherUserId = participantIds[0];
 
@@ -52,10 +77,17 @@ export async function createConversation(
       });
 
       if (otherMembership.length > 0) {
+        const contextCondition = orderId
+          ? eq(conversations.orderId, orderId)
+          : listingId
+            ? eq(conversations.listingId, listingId)
+            : and(isNull(conversations.orderId), isNull(conversations.listingId));
+
         const conv = await db.query.conversations.findFirst({
           where: and(
             eq(conversations.id, membership.conversationId),
-            eq(conversations.type, "DIRECT")
+            eq(conversations.type, "DIRECT"),
+            contextCondition
           ),
         });
 
@@ -72,6 +104,8 @@ export async function createConversation(
     .values({
       type,
       name: name ?? null,
+      orderId: orderId ?? null,
+      listingId: listingId ?? null,
     })
     .returning({ id: conversations.id });
 
