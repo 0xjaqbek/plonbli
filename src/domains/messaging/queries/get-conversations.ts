@@ -7,6 +7,11 @@ import {
   users,
 } from "@/shared/db/schema";
 
+export type ConversationContext =
+  | { type: "ORDER"; label: string }
+  | { type: "LISTING"; label: string }
+  | null;
+
 export async function getConversations(userId: string) {
   // Get all conversations the user is a member of
   const memberships = await db
@@ -30,6 +35,15 @@ export async function getConversations(userId: string) {
 
     const conv = await db.query.conversations.findFirst({
       where: eq(conversations.id, convId),
+      with: {
+        order: { columns: { orderNumber: true } },
+        listing: {
+          columns: { price: true },
+          with: {
+            product: { columns: { name: true } },
+          },
+        },
+      },
     });
 
     if (!conv) continue;
@@ -78,12 +92,23 @@ export async function getConversations(userId: string) {
         )
       );
 
+    // Build context
+    let context: ConversationContext = null;
+    if (conv.order) {
+      context = { type: "ORDER", label: `#${conv.order.orderNumber}` };
+    } else if (conv.listing) {
+      context = { type: "LISTING", label: conv.listing.product.name };
+    }
+
+    const { order: _order, listing: _listing, ...conversationBase } = conv;
+
     results.push({
-      conversation: conv,
+      conversation: conversationBase,
       lastMessage: lastMessage ?? null,
       unreadCount,
       muted: mutedMap.get(convId) ?? false,
       otherMembers: members,
+      context,
     });
   }
 
