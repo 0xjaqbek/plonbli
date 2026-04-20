@@ -1,8 +1,5 @@
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
 import { auth } from "@/domains/auth/lib/auth";
-import { db } from "@/shared/db";
-import { users } from "@/shared/db/schema";
 import { getFarmerOrders } from "@/domains/orders/queries/get-farmer-orders";
 import { getCustomerOrders } from "@/domains/orders/queries/get-customer-orders";
 import { OrderList } from "@/domains/orders/components/order-list/order-list";
@@ -17,37 +14,29 @@ export default async function FarmerOrdersPage({
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-    columns: { role: true },
-  });
-
   const t = await getTranslations("orders");
   const params = await searchParams;
 
-  const farmerResults = await getFarmerOrders(session.user.id, {
-    status: params.status,
-    page: params.page ? Number(params.page) : 1,
-  });
+  const [farmerResults, customerResults] = await Promise.all([
+    getFarmerOrders(session.user.id, {
+      status: params.status,
+      page: params.page ? Number(params.page) : 1,
+    }),
+    getCustomerOrders(session.user.id, {
+      status: params.status,
+      page: params.page ? Number(params.page) : 1,
+    }),
+  ]);
 
   const farmerOrders = farmerResults.map(({ order, customer }) => ({
     order: { ...order, status: order.status as OrderStatus, hasUnseenChanges: !order.farmerHasSeen },
     counterparty: customer,
   }));
 
-  const isBoth = user?.role === "BOTH";
-  let customerOrders: typeof farmerOrders = [];
-
-  if (isBoth) {
-    const customerResults = await getCustomerOrders(session.user.id, {
-      status: params.status,
-      page: params.page ? Number(params.page) : 1,
-    });
-    customerOrders = customerResults.map(({ order, farmer }) => ({
-      order: { ...order, status: order.status as OrderStatus, hasUnseenChanges: !order.customerHasSeen },
-      counterparty: farmer,
-    }));
-  }
+  const customerOrders = customerResults.map(({ order, farmer }) => ({
+    order: { ...order, status: order.status as OrderStatus, hasUnseenChanges: !order.customerHasSeen },
+    counterparty: farmer,
+  }));
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-8">
@@ -56,12 +45,10 @@ export default async function FarmerOrdersPage({
         <OrderList orders={farmerOrders} basePath="/farmer/orders" />
       </div>
 
-      {isBoth && (
-        <div>
-          <h2 className="text-xl font-bold mb-4">{t("myPurchases")}</h2>
-          <OrderList orders={customerOrders} basePath="/orders" />
-        </div>
-      )}
+      <div>
+        <h2 className="text-xl font-bold mb-4">{t("myPurchases")}</h2>
+        <OrderList orders={customerOrders} basePath="/orders" />
+      </div>
     </div>
   );
 }
