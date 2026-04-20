@@ -7,6 +7,7 @@ import { Check, Star } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { rsvpEvent } from "../actions/rsvp-event";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 
 interface RsvpButtonProps {
   eventId: string;
@@ -21,6 +22,7 @@ export function RsvpButton({ eventId, currentStatus }: RsvpButtonProps) {
   function handleRsvp(status: "GOING" | "INTERESTED") {
     startTransition(async () => {
       await rsvpEvent({ eventId, status });
+      trackEvent(EVENTS.EVENT_RSVP, { eventId });
       router.refresh();
     });
   }

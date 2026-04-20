@@ -12,6 +12,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Textarea } from "@/shared/ui/textarea";
 import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { toggleReaction } from "../actions/toggle-reaction";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { deletePost } from "../actions/delete-post";
 import { updatePost } from "../actions/update-post";
 import { SharedEntityPreview } from "./shared-entity-preview";
@@ -42,6 +43,9 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
   function handleLike() {
     startTransition(async () => {
       await toggleReaction(post.id);
+      if (!post.liked) {
+        trackEvent(EVENTS.POST_LIKED);
+      }
     });
   }
 

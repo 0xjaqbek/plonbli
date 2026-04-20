@@ -8,6 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
 import { ImageUpload } from "@/shared/ui/image-upload";
 import { createPost } from "../actions/create-post";
+import { trackEvent, EVENTS } from "@/domains/analytics";
 import { getSharedEntity } from "../actions/get-shared-entity";
 import { SharedEntityPreview } from "./shared-entity-preview";
 import type { SharedEntityData } from "../queries/resolve-shared-entity";
@@ -66,6 +67,7 @@ export function PostForm({ groupId, shareType, shareId }: PostFormProps) {
       });
 
       if (result.success) {
+        trackEvent(EVENTS.POST_CREATED, { hasMedia: images.length > 0 });
         setContent("");
         setImages([]);
         setAttachedShare(null);
