@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
 import { users } from "./users";
+import { pushSubscriptions } from "./push-subscriptions";
+import { notificationPreferences } from "./notification-preferences";
 import { invitations } from "./invitations";
 import { categories } from "./categories";
 import { products } from "./products";
@@ -311,6 +313,20 @@ export const cartItemsRelations = relations(cartItems, ({ one }) => ({
 export const invitationsRelations = relations(invitations, ({ one }) => ({
   user: one(users, {
     fields: [invitations.userId],
+    references: [users.id],
+  }),
+}));
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [pushSubscriptions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [notificationPreferences.userId],
     references: [users.id],
   }),
 }));
