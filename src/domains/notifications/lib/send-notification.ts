@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { getMessaging } from "firebase-admin/messaging";
 import { db } from "@/shared/db";
 import { pushSubscriptions } from "@/shared/db/schema";
 import { getFirebaseAdmin } from "@/shared/lib/firebase-admin";
@@ -24,8 +25,8 @@ export async function sendNotification(
     if (tokens.length === 0) return;
     if (!prefs[payload.category]) return;
 
-    const admin = getFirebaseAdmin();
-    const response = await admin.messaging().sendEachForMulticast({
+    const app = getFirebaseAdmin();
+    const response = await getMessaging(app).sendEachForMulticast({
       tokens,
       notification: { title: payload.title, body: payload.body },
       data: { url: payload.url },
