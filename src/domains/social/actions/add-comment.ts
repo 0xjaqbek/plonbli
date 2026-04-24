@@ -1,12 +1,15 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { comments } from "@/shared/db/schema";
+import { comments, posts } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import {
   addCommentSchema,
   type AddCommentInput,
 } from "../schemas/validation";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildCommentNotification } from "@/domains/notifications/lib/notification-types";
 
 type AddCommentResult =
   | { success: true; commentId: string }
@@ -38,6 +41,17 @@ export async function addComment(
       content,
     })
     .returning({ id: comments.id });
+
+  const post = await db.query.posts.findFirst({
+    where: eq(posts.id, postId),
+  });
+
+  if (post && post.authorId !== session.user.id) {
+    void sendNotification(
+      post.authorId,
+      buildCommentNotification(session.user.name ?? "Ktoś", postId)
+    );
+  }
 
   return { success: true, commentId: comment.id };
 }

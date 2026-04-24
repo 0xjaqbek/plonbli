@@ -2,8 +2,10 @@
 
 import { eq, and } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { reactions } from "@/shared/db/schema";
+import { reactions, posts } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildReactionNotification } from "@/domains/notifications/lib/notification-types";
 
 type ToggleReactionResult =
   | { success: true; liked: boolean }
@@ -40,6 +42,17 @@ export async function toggleReaction(
     postId,
     userId: session.user.id,
   });
+
+  const post = await db.query.posts.findFirst({
+    where: eq(posts.id, postId),
+  });
+
+  if (post && post.authorId !== session.user.id) {
+    void sendNotification(
+      post.authorId,
+      buildReactionNotification(session.user.name ?? "Ktoś", postId)
+    );
+  }
 
   return { success: true, liked: true };
 }
