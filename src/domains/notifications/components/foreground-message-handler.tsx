@@ -13,8 +13,8 @@ export function ForegroundMessageHandler() {
       try {
         const messaging = getFirebaseMessaging();
         unsub = onMessage(messaging, (payload) => {
-          const title = payload.notification?.title ?? "Plonbli";
-          const body = payload.notification?.body;
+          const title = payload.data?.title ?? "Plonbli";
+          const body = payload.data?.body;
           const url = payload.data?.url;
 
           toast(title, {

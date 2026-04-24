@@ -28,13 +28,8 @@ export async function sendNotification(
     const app = getFirebaseAdmin();
     const response = await getMessaging(app).sendEachForMulticast({
       tokens,
-      notification: { title: payload.title, body: payload.body },
-      data: { url: payload.url },
+      data: { url: payload.url, title: payload.title, body: payload.body },
       webpush: {
-        notification: {
-          icon: "/plonbliLogoBezTlaKolo-removebg-preview.png",
-          badge: "/icons/badge.png",
-        },
         fcmOptions: { link: payload.url },
       },
     });
