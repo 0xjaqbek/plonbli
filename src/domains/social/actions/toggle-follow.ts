@@ -4,6 +4,8 @@ import { eq, and } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { follows } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildFollowNotification } from "@/domains/notifications/lib/notification-types";
 
 type ToggleFollowResult =
   | { success: true; following: boolean }
@@ -44,6 +46,11 @@ export async function toggleFollow(
     followerId: session.user.id,
     followeeId: targetUserId,
   });
+
+  void sendNotification(
+    targetUserId,
+    buildFollowNotification(session.user.name ?? "Ktoś", session.user.id)
+  );
 
   return { success: true, following: true };
 }
