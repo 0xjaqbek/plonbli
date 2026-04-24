@@ -17,12 +17,21 @@ vi.mock("@/shared/db", () => {
         where: vi.fn(),
       }),
     }),
+    select: vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([]),
+      }),
+    }),
     query: {
       conversationMembers: { findFirst: vi.fn() },
     },
   };
   return { db: mockDb };
 });
+
+vi.mock("@/domains/notifications/lib/send-notification", () => ({
+  sendNotification: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe("sendMessage", () => {
   beforeEach(() => {
@@ -124,5 +133,50 @@ describe("sendMessage", () => {
     if (result.success) {
       expect(result.messageId).toBe("msg-1");
     }
+  });
+
+  it("triggers push notification to other conversation members after sending", async () => {
+    const { auth } = await import("@/domains/auth/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({
+      user: { id: "user-1", name: "Jan Kowalski", email: "jan@example.com" },
+    } as any);
+
+    const { db } = await import("@/shared/db");
+    vi.mocked(db.query.conversationMembers.findFirst).mockResolvedValueOnce({
+      conversationId: "conv-1",
+      userId: "user-1",
+      role: "MEMBER",
+      muted: false,
+      joinedAt: new Date(),
+    });
+
+    // Mock select for other members
+    const mockWhere = vi.fn().mockResolvedValueOnce([{ userId: "user-2" }]);
+    const mockFrom = vi.fn().mockReturnValue({ where: mockWhere });
+    vi.mocked(db.select).mockReturnValueOnce({ from: mockFrom } as any);
+
+    // Mock insert message
+    const mockReturning = vi
+      .fn()
+      .mockResolvedValueOnce([{ id: "msg-1", createdAt: new Date() }]);
+    const mockValues = vi.fn().mockReturnValue({ returning: mockReturning });
+    vi.mocked(db.insert).mockReturnValueOnce({ values: mockValues } as any);
+
+    // Mock update conversation
+    vi.mocked(db.update).mockReturnValueOnce({
+      set: vi.fn().mockReturnValue({ where: vi.fn().mockResolvedValueOnce(undefined) }),
+    } as any);
+
+    const result = await sendMessage({ conversationId: "conv-1", content: "Cześć!" });
+
+    expect(result.success).toBe(true);
+
+    const { sendNotification } = await import(
+      "@/domains/notifications/lib/send-notification"
+    );
+    expect(vi.mocked(sendNotification)).toHaveBeenCalledWith(
+      "user-2",
+      expect.objectContaining({ category: "messages", url: "/messages/conv-1" })
+    );
   });
 });

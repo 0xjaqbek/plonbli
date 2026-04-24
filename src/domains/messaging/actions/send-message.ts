@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import { db } from "@/shared/db";
 import {
   messages,
@@ -12,6 +12,8 @@ import {
   sendMessageSchema,
   type SendMessageInput,
 } from "../schemas/validation";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildMessageNotification } from "@/domains/notifications/lib/notification-types";
 
 type SendMessageResult =
   | { success: true; messageId: string }
@@ -35,7 +37,6 @@ export async function sendMessage(
 
   const { conversationId, content, images } = parsed.data;
 
-  // Verify user is a member of this conversation
   const membership = await db.query.conversationMembers.findFirst({
     where: and(
       eq(conversationMembers.conversationId, conversationId),
@@ -47,7 +48,6 @@ export async function sendMessage(
     return { success: false, error: "Nie jestes czlonkiem tej rozmowy" };
   }
 
-  // Insert message
   const [message] = await db
     .insert(messages)
     .values({
@@ -58,11 +58,28 @@ export async function sendMessage(
     })
     .returning({ id: messages.id, createdAt: messages.createdAt });
 
-  // Update conversation's updatedAt timestamp
   await db
     .update(conversations)
     .set({ updatedAt: new Date() })
     .where(eq(conversations.id, conversationId));
+
+  // Notify other members (fire-and-forget)
+  const otherMembers = await db
+    .select({ userId: conversationMembers.userId })
+    .from(conversationMembers)
+    .where(
+      and(
+        eq(conversationMembers.conversationId, conversationId),
+        ne(conversationMembers.userId, session.user.id)
+      )
+    );
+
+  for (const { userId } of otherMembers) {
+    void sendNotification(
+      userId,
+      buildMessageNotification(session.user.name ?? "Ktoś", content, conversationId)
+    );
+  }
 
   return { success: true, messageId: message.id };
 }
