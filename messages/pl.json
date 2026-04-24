@@ -664,5 +664,18 @@
     "dayThursday": "Czwartek",
     "dayFriday": "Piatek",
     "daySaturday": "Sobota"
+  },
+  "notifications": {
+    "promptTitle": "Włącz powiadomienia",
+    "promptBody": "Otrzymuj powiadomienia o wiadomościach, nowych ofertach i aktualizacjach zamówień.",
+    "enable": "Włącz",
+    "dismiss": "Nie teraz",
+    "settingsTitle": "Powiadomienia push",
+    "settingsDescription": "Wybierz, o czym chcesz być powiadamiany.",
+    "enablePushButton": "Włącz powiadomienia push",
+    "messagesLabel": "Wiadomości",
+    "socialLabel": "Aktywność społeczna",
+    "marketplaceLabel": "Oferty i zamówienia",
+    "notSupported": "Twoja przeglądarka nie obsługuje powiadomień push."
   }
 }
