@@ -30,7 +30,10 @@ export async function sendNotification(
       notification: { title: payload.title, body: payload.body },
       data: { url: payload.url },
       webpush: {
-        notification: { icon: "/icons/icon-192.png" },
+        notification: {
+          icon: "/plonbliLogoBezTlaKolo-removebg-preview.png",
+          badge: "/icons/badge.png",
+        },
         fcmOptions: { link: payload.url },
       },
     });

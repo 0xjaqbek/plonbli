@@ -27,7 +27,8 @@ messaging.onBackgroundMessage((payload) => {
 
   self.registration.showNotification(title, {
     body,
-    icon: '/icons/icon-192.png',
+    icon: '/plonbliLogoBezTlaKolo-removebg-preview.png',
+    badge: '/icons/badge.png',
     data: { url },
   });
 });
