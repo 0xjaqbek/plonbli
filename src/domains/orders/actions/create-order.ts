@@ -8,6 +8,8 @@ import {
 } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import { createOrderSchema, type CreateOrderInput } from "../schemas/validation";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildNewOrderNotification } from "@/domains/notifications/lib/notification-types";
 
 type CreateOrderResult =
   | { success: true; orderId: string; orderNumber: string }
@@ -121,6 +123,11 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
     return order;
   });
+
+  void sendNotification(
+    farmerId,
+    buildNewOrderNotification(session.user.name ?? "Klient", orderNumber, result.id)
+  );
 
   return { success: true, orderId: result.id, orderNumber };
 }

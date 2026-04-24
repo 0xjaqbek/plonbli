@@ -28,6 +28,10 @@ vi.mock("@/shared/db", () => {
   return { db: mockDb };
 });
 
+vi.mock("@/domains/notifications/lib/send-notification", () => ({
+  sendNotification: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe("createOrder", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -76,5 +80,58 @@ describe("createOrder", () => {
       deliveryMethod: "DELIVERY",
     });
     expect(result.success).toBe(false);
+  });
+
+  it("sends push to farmer after creating order", async () => {
+    const { auth } = await import("@/domains/auth/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({
+      user: { id: "user-1", name: "Klient Jan" },
+    } as any);
+
+    const { db } = await import("@/shared/db");
+
+    vi.mocked(db.select).mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        innerJoin: vi.fn().mockReturnValue({
+          innerJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockResolvedValue([
+              {
+                cartItem: { id: "ci-1", quantity: "2" },
+                listing: { id: "listing-1", price: "10", unit: "KG", deliveryOptions: [] },
+                product: { farmerId: "farmer-1", name: "Ziemniaki" },
+              },
+            ]),
+          }),
+        }),
+      }),
+    } as any);
+
+    vi.mocked(db.transaction).mockImplementationOnce(async (cb) =>
+      cb({
+        insert: vi.fn().mockReturnValue({
+          values: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([{ id: "order-1" }]),
+          }),
+        }),
+        delete: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue(undefined),
+        }),
+      } as any)
+    );
+
+    const result = await createOrder({
+      farmerId: "farmer-1",
+      deliveryMethod: "PICKUP",
+    });
+
+    expect(result.success).toBe(true);
+
+    const { sendNotification } = await import(
+      "@/domains/notifications/lib/send-notification"
+    );
+    expect(vi.mocked(sendNotification)).toHaveBeenCalledWith(
+      "farmer-1",
+      expect.objectContaining({ category: "marketplace", url: expect.stringContaining("/farmer/orders/") })
+    );
   });
 });

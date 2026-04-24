@@ -5,6 +5,8 @@ import { db } from "@/shared/db";
 import { orders, orderStatusHistory } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import { updateOrderStatusSchema, shippingInfoSchema, type UpdateOrderStatusInput, type ShippingInfoInput } from "../schemas/validation";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildOrderStatusNotification } from "@/domains/notifications/lib/notification-types";
 
 type StatusResult = { success: true } | { success: false; error?: string; errors?: Record<string, string[]> };
 
@@ -58,6 +60,11 @@ export async function updateOrderStatus(input: UpdateOrderStatusInput): Promise<
     });
   });
 
+  void sendNotification(
+    order.customerId,
+    buildOrderStatusNotification(status, order.orderNumber, orderId)
+  );
+
   return { success: true };
 }
 
@@ -108,6 +115,11 @@ export async function markAsShipped(input: ShippingInfoInput): Promise<StatusRes
       createdBy: session.user!.id!,
     });
   });
+
+  void sendNotification(
+    order.customerId,
+    buildOrderStatusNotification("SHIPPED", order.orderNumber, orderId)
+  );
 
   return { success: true };
 }
