@@ -6,7 +6,7 @@ import { getFirebaseAdmin } from "@/shared/lib/firebase-admin";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  if (searchParams.get("secret") !== process.env.TEST_NOTIF_SECRET) {
+  if (searchParams.get("secret") !== process.env.TEST_NOTIF_SECRET?.trim()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
