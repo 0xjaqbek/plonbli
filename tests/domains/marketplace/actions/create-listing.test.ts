@@ -14,12 +14,21 @@ vi.mock("@/shared/db", () => {
         returning: mockReturning,
       }),
     }),
+    select: vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([]),
+      }),
+    }),
     query: {
       users: { findFirst: vi.fn() },
     },
   };
   return { db: mockDb };
 });
+
+vi.mock("@/domains/notifications/lib/send-notification", () => ({
+  sendNotification: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe("createListing", () => {
   const validInput = {
@@ -116,5 +125,52 @@ describe("createListing", () => {
     const result = await createListing(validInput);
     expect(result.success).toBe(true);
     if (result.success) expect(result.listingId).toBe("list-1");
+  });
+
+  it("sends push to all followers after creating listing", async () => {
+    const { auth } = await import("@/domains/auth/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({
+      user: { id: "farmer-1", name: "Rolnik Jan" },
+    } as any);
+
+    const { db } = await import("@/shared/db");
+    vi.mocked(db.query.users.findFirst).mockResolvedValueOnce({
+      id: "farmer-1",
+      role: "FARMER",
+    } as any);
+
+    const mockProductReturning = vi.fn().mockResolvedValueOnce([{ id: "product-1" }]);
+    const mockProductValues = vi.fn().mockReturnValue({ returning: mockProductReturning });
+    const mockListingReturning = vi.fn().mockResolvedValueOnce([{ id: "listing-1" }]);
+    const mockListingValues = vi.fn().mockReturnValue({ returning: mockListingReturning });
+
+    vi.mocked(db.insert)
+      .mockReturnValueOnce({ values: mockProductValues } as any)
+      .mockReturnValueOnce({ values: mockListingValues } as any);
+
+    vi.mocked(db.select).mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([
+          { followerId: "user-2" },
+          { followerId: "user-3" },
+        ]),
+      }),
+    } as any);
+
+    const result = await createListing(validInput);
+    expect(result.success).toBe(true);
+
+    const { sendNotification } = await import(
+      "@/domains/notifications/lib/send-notification"
+    );
+    expect(vi.mocked(sendNotification)).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(sendNotification)).toHaveBeenCalledWith(
+      "user-2",
+      expect.objectContaining({ category: "marketplace", url: "/listings/listing-1" })
+    );
+    expect(vi.mocked(sendNotification)).toHaveBeenCalledWith(
+      "user-3",
+      expect.objectContaining({ category: "marketplace" })
+    );
   });
 });

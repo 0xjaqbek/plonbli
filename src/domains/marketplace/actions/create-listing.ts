@@ -2,12 +2,14 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { products, listings, users } from "@/shared/db/schema";
+import { products, listings, users, follows } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
 import {
   createListingSchema,
   type CreateListingInput,
 } from "../schemas/validation";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildNewListingNotification } from "@/domains/notifications/lib/notification-types";
 
 type CreateListingResult =
   | { success: true; listingId: string }
@@ -74,14 +76,25 @@ export async function createListing(
       productId: product.id,
       price: String(price),
       unit,
-      quantityAvailable: quantityAvailable
-        ? String(quantityAvailable)
-        : null,
+      quantityAvailable: quantityAvailable ? String(quantityAvailable) : null,
       availability,
       validUntil: validUntil ? new Date(validUntil) : null,
       deliveryOptions,
     })
     .returning({ id: listings.id });
+
+  // Notify followers (fire-and-forget)
+  const followers = await db
+    .select({ followerId: follows.followerId })
+    .from(follows)
+    .where(eq(follows.followeeId, session.user.id));
+
+  for (const { followerId } of followers) {
+    void sendNotification(
+      followerId,
+      buildNewListingNotification(session.user.name ?? "Rolnik", name, listing.id)
+    );
+  }
 
   return { success: true, listingId: listing.id };
 }
