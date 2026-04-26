@@ -259,13 +259,13 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
             onChange={(e) => setCartQty(Number(e.target.value))}
             className="w-20"
           />
-          <Button onClick={handleAddToCart} disabled={isPending}>
+          <Button onClick={handleAddToCart} isLoading={isPending}>
             {cartSuccess ? tOrders("addedToCart") : tOrders("addToCart")}
           </Button>
           <Button
             variant="outline"
             onClick={handleAskAboutProduct}
-            disabled={isPending}
+            isLoading={isPending}
             className="flex items-center gap-2"
           >
             <MessageCircle className="h-4 w-4" />
@@ -322,7 +322,7 @@ export function ProductDetail({ listing, isOwner }: ProductDetailProps) {
                   variant="destructive"
                   size="sm"
                   onClick={handleDelete}
-                  disabled={isPending}
+                  isLoading={isPending}
                 >
                   {tCommon("delete")}
                 </Button>

@@ -47,7 +47,7 @@ export function ListingCardActions({ listingId }: ListingCardActionsProps) {
             variant="destructive"
             size="sm"
             onClick={handleDelete}
-            disabled={isPending}
+            isLoading={isPending}
           >
             {t("delete")}
           </Button>

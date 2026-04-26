@@ -403,7 +403,7 @@ export function ProxyFarmerForm({ existing }: ProxyFarmerFormProps) {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full" isLoading={isPending}>
           {existing ? t("editProfile") : t("createProfile")}
         </Button>
       </form>

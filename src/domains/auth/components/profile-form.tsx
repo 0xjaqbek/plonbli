@@ -203,7 +203,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         {message && <p className="text-sm text-primary">{message}</p>}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full" isLoading={isPending}>
           {t("editProfile")}
         </Button>
       </form>

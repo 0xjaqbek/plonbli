@@ -506,7 +506,7 @@ export function ListingForm({ categories, listingId, initialValues }: ListingFor
           <p className="text-sm text-destructive">{serverError}</p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full" isLoading={isPending}>
           {tMarketplace(listingId ? "saveChanges" : "createListing")}
         </Button>
       </form>

@@ -138,7 +138,7 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
           <p className="text-sm text-destructive">{serverError}</p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full" isLoading={isPending}>
           {t("register")}
         </Button>
 

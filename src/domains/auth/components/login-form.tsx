@@ -92,7 +92,7 @@ export function LoginForm() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" className="w-full" disabled={isPending}>
+          <Button type="submit" className="w-full" isLoading={isPending}>
             {t("login")}
           </Button>
         </form>
