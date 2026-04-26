@@ -34,7 +34,7 @@ export function RsvpButton({ eventId, currentStatus }: RsvpButtonProps) {
         size="sm"
         className={cn("gap-1", currentStatus === "GOING" && "bg-green-600 hover:bg-green-700")}
         onClick={() => handleRsvp("GOING")}
-        disabled={isPending}
+        isLoading={isPending}
       >
         <Check className="h-4 w-4" />
         {t("going")}
@@ -44,7 +44,7 @@ export function RsvpButton({ eventId, currentStatus }: RsvpButtonProps) {
         size="sm"
         className={cn("gap-1", currentStatus === "INTERESTED" && "bg-yellow-600 hover:bg-yellow-700")}
         onClick={() => handleRsvp("INTERESTED")}
-        disabled={isPending}
+        isLoading={isPending}
       >
         <Star className="h-4 w-4" />
         {t("interested")}

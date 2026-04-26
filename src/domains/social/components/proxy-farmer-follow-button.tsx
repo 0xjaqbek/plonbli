@@ -30,7 +30,7 @@ export function ProxyFarmerFollowButton({
     <Button
       variant={isFollowing ? "outline" : "default"}
       onClick={handleToggle}
-      disabled={isPending}
+      isLoading={isPending}
       size="sm"
     >
       {isFollowing ? t("unfollow") : t("follow")}

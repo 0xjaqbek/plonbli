@@ -169,7 +169,7 @@ export function EventForm({ groupId }: EventFormProps) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" isLoading={isPending} className="w-full">
         {t("createEvent")}
       </Button>
     </form>

@@ -53,7 +53,7 @@ export function StatusUpdateButton({
       {nextStatus && (
         <Button
           onClick={() => handleStatusChange(nextStatus)}
-          disabled={isPending}
+          isLoading={isPending}
         >
           {t(statusKeys[nextStatus])}
         </Button>
@@ -61,7 +61,7 @@ export function StatusUpdateButton({
       <Button
         variant="destructive"
         onClick={() => handleStatusChange("CANCELLED")}
-        disabled={isPending}
+        isLoading={isPending}
       >
         {t("statusCancelled")}
       </Button>

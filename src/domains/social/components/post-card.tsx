@@ -129,7 +129,7 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
               size="icon"
               className="h-8 w-8"
               onClick={handleEdit}
-              disabled={isPending}
+              isLoading={isPending}
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -138,7 +138,7 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
               size="icon"
               className="h-8 w-8 text-destructive"
               onClick={handleDelete}
-              disabled={isPending}
+              isLoading={isPending}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -166,7 +166,8 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
             <Button
               size="sm"
               onClick={handleSaveEdit}
-              disabled={isPending || !editContent.trim()}
+              isLoading={isPending}
+              disabled={!editContent.trim()}
             >
               <Check className="h-4 w-4 mr-1" />
               {t("saveEdit")}
@@ -212,7 +213,7 @@ export function PostCard({ post, currentUserId, onDeleted }: PostCardProps) {
           size="sm"
           className={cn("gap-1", post.liked && "text-red-500")}
           onClick={handleLike}
-          disabled={isPending}
+          isLoading={isPending}
         >
           <Heart
             className={cn("h-4 w-4", post.liked && "fill-current")}

@@ -55,7 +55,7 @@ export function GroupHeader({ group, currentUserId }: GroupHeaderProps) {
           <Button
             variant={group.isMember ? "outline" : "default"}
             onClick={handleJoinLeave}
-            disabled={isPending}
+            isLoading={isPending}
           >
             {group.isMember ? t("leave") : t("join")}
           </Button>

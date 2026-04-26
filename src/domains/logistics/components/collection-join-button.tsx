@@ -78,7 +78,7 @@ export function CollectionJoinButton({
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={isPending} className="flex-1">
+        <Button type="submit" isLoading={isPending} className="flex-1">
           {t("joinCollection")}
         </Button>
         <Button

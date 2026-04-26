@@ -53,7 +53,8 @@ export function CommentForm({ postId }: CommentFormProps) {
       <Button
         size="icon"
         onClick={handleSubmit}
-        disabled={isPending || !content.trim()}
+        isLoading={isPending}
+        disabled={!content.trim()}
       >
         <Send className="h-4 w-4" />
       </Button>
