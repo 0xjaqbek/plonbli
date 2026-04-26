@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Home, ShoppingBasket, Tractor, Users, MessageCircle, User, ShoppingCart, Package } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { useBadges } from "@/shared/lib/badge-context";
 
 const bottomNavItems = [
   { href: "/", icon: Home, labelKey: "home" as const },
@@ -22,14 +23,10 @@ const topRightItems = [
 
 const allNavItems = [...bottomNavItems, ...topRightItems];
 
-interface NavBarProps {
-  hasUnread?: boolean;
-  hasUnseenOrders?: boolean;
-}
-
-export function NavBar({ hasUnread, hasUnseenOrders }: NavBarProps) {
+export function NavBar() {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const { hasUnread, hasUnseenOrders } = useBadges();
 
   // Strip locale prefix for comparison
   const cleanPath = pathname.replace(/^\/[a-z]{2}(?:\/|$)/, "/");

@@ -5,6 +5,7 @@ import { hasUnreadMessages } from "@/domains/messaging/queries/has-unread-messag
 import { hasUnseenOrderChanges } from "@/domains/orders/queries/has-unseen-order-changes";
 import { PushPermissionPrompt } from "@/domains/notifications/components/push-permission-prompt";
 import { ForegroundMessageHandler } from "@/domains/notifications/components/foreground-message-handler";
+import { BadgeProvider } from "@/shared/lib/badge-context";
 
 export default async function MainLayout({
   children,
@@ -23,8 +24,10 @@ export default async function MainLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <NavBar hasUnread={hasUnread} hasUnseenOrders={hasUnseenOrders} />
-      <main className="pb-20 md:pb-0">{children}</main>
+      <BadgeProvider initialUnread={hasUnread} initialUnseenOrders={hasUnseenOrders}>
+        <NavBar />
+        <main className="pb-20 md:pb-0">{children}</main>
+      </BadgeProvider>
       <PushPermissionPrompt />
       <ForegroundMessageHandler />
     </div>
