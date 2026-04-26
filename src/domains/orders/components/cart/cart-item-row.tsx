@@ -64,7 +64,7 @@ export function CartItemRow({
           size="icon"
           className="h-8 w-8"
           onClick={() => handleQuantityChange(qty - 1)}
-          disabled={isPending || qty <= 1}
+          isLoading={isPending} disabled={qty <= 1}
         >
           <Minus className="h-3 w-3" />
         </Button>
@@ -81,7 +81,7 @@ export function CartItemRow({
           size="icon"
           className="h-8 w-8"
           onClick={() => handleQuantityChange(qty + 1)}
-          disabled={isPending}
+          isLoading={isPending}
         >
           <Plus className="h-3 w-3" />
         </Button>
@@ -94,7 +94,7 @@ export function CartItemRow({
         size="icon"
         className="h-8 w-8 text-destructive"
         onClick={handleRemove}
-        disabled={isPending}
+        isLoading={isPending}
       >
         <Trash2 className="h-4 w-4" />
       </Button>

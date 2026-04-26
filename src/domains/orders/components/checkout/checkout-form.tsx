@@ -140,7 +140,7 @@ export function CheckoutForm({ cartGroup, farmerId, pickupSlots, availableDelive
       </Card>
 
       {error && <p className="text-destructive text-sm">{error}</p>}
-      <Button className="w-full" size="lg" onClick={handleSubmit} disabled={isPending}>
+      <Button className="w-full" size="lg" onClick={handleSubmit} isLoading={isPending}>
         {isPending ? "..." : t("placeOrder")}
       </Button>
     </div>

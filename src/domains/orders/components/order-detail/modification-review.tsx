@@ -67,10 +67,10 @@ export function ModificationReview({
         </div>
       </CardContent>
       <CardFooter className="gap-3">
-        <Button onClick={handleAccept} disabled={isPending} className="flex-1">
+        <Button onClick={handleAccept} isLoading={isPending} className="flex-1">
           {t("acceptModification")}
         </Button>
-        <Button variant="destructive" onClick={handleReject} disabled={isPending} className="flex-1">
+        <Button variant="destructive" onClick={handleReject} isLoading={isPending} className="flex-1">
           {t("rejectModification")}
         </Button>
       </CardFooter>

@@ -67,7 +67,7 @@ export function PickupScheduleForm({ slots }: PickupScheduleFormProps) {
                 <p className="text-sm text-muted-foreground">{slot.startTime} - {slot.endTime}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(slot.id)} disabled={isPending}>
+            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(slot.id)} isLoading={isPending}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </CardContent>
@@ -100,7 +100,7 @@ export function PickupScheduleForm({ slots }: PickupScheduleFormProps) {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleAdd} disabled={isPending}>{t("addSlot")}</Button>
+              <Button onClick={handleAdd} isLoading={isPending}>{t("addSlot")}</Button>
               <Button variant="ghost" onClick={() => setShowAdd(false)}>{tCommon("cancel")}</Button>
             </div>
           </CardContent>

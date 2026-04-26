@@ -57,7 +57,7 @@ export function PaymentMethodsForm({ methods }: PaymentMethodsFormProps) {
               <p className="text-sm text-muted-foreground">{method.details}</p>
               {method.isDefault && <span className="text-xs text-primary">{t("defaultMethod")}</span>}
             </div>
-            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(method.id)} disabled={isPending}>
+            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(method.id)} isLoading={isPending}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </CardContent>
@@ -92,7 +92,7 @@ export function PaymentMethodsForm({ methods }: PaymentMethodsFormProps) {
               <Label htmlFor="isDefault">{t("setAsDefault")}</Label>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleAdd} disabled={isPending || !label || !details}>{t("addPaymentMethod")}</Button>
+              <Button onClick={handleAdd} isLoading={isPending} disabled={!label || !details}>{t("addPaymentMethod")}</Button>
               <Button variant="ghost" onClick={() => setShowAdd(false)}>{tCommon("cancel")}</Button>
             </div>
           </CardContent>

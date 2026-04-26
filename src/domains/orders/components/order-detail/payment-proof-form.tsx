@@ -123,7 +123,7 @@ export function PaymentProofForm({ orderId }: PaymentProofFormProps) {
 
       {error && <p className="text-destructive text-sm">{error}</p>}
 
-      <Button onClick={handleSubmit} disabled={isPending} className="w-full">
+      <Button onClick={handleSubmit} isLoading={isPending} className="w-full">
         {isPending ? "..." : t("submitProof")}
       </Button>
     </div>
