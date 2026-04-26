@@ -1,7 +1,7 @@
 // src/domains/orders/components/order-detail/order-detail.tsx
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
@@ -17,6 +17,7 @@ import { completeOrder } from "../../actions/complete-order";
 import { cancelOrder } from "../../actions/cancel-order";
 import { createConversation } from "@/domains/messaging";
 import type { OrderDetail as OrderDetailType } from "../../queries/get-order";
+import { useBadges } from "@/shared/lib/badge-context";
 
 interface OrderDetailProps {
   order: OrderDetailType;
@@ -30,6 +31,11 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
   const [isPending, startTransition] = useTransition();
   const [showCancel, setShowCancel] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const { clearUnseenOrders } = useBadges();
+
+  useEffect(() => {
+    clearUnseenOrders();
+  }, []);
 
   function handleComplete() {
     startTransition(async () => {
@@ -205,14 +211,14 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
       {/* Actions */}
       <div className="flex gap-3">
         {canComplete && (
-          <Button onClick={handleComplete} disabled={isPending} className="flex-1">
+          <Button onClick={handleComplete} isLoading={isPending} className="flex-1">
             {t("completeOrder")}
           </Button>
         )}
         <Button
           variant="outline"
           onClick={handleMessageAboutOrder}
-          disabled={isPending}
+          isLoading={isPending}
           className="flex items-center gap-2"
         >
           <MessageCircle className="h-4 w-4" />
@@ -236,7 +242,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
               rows={2}
             />
             <div className="flex gap-2">
-              <Button variant="destructive" onClick={handleCancel} disabled={isPending}>
+              <Button variant="destructive" onClick={handleCancel} isLoading={isPending}>
                 {t("cancel")}
               </Button>
               <Button variant="ghost" onClick={() => setShowCancel(false)}>

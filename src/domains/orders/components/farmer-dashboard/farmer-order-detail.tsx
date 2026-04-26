@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
@@ -17,6 +17,7 @@ import { verifyPayment } from "../../actions/verify-payment";
 import { updateOrderStatus, markAsShipped } from "../../actions/update-order-status";
 import { cancelOrder } from "../../actions/cancel-order";
 import type { OrderDetail } from "../../queries/get-order";
+import { useBadges } from "@/shared/lib/badge-context";
 
 interface FarmerOrderDetailProps {
   order: OrderDetail;
@@ -32,6 +33,11 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
   const [cancelReason, setCancelReason] = useState("");
   const [showCancel, setShowCancel] = useState(false);
   const [showModify, setShowModify] = useState(false);
+  const { clearUnseenOrders } = useBadges();
+
+  useEffect(() => {
+    clearUnseenOrders();
+  }, []);
 
   const PROOF_TYPE_LABELS: Record<string, string> = {
     SCREENSHOT: t("proofScreenshot"),
@@ -136,7 +142,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
         <CardContent className="space-y-4">
           {canConfirm && (
             <div className="flex gap-2">
-              <Button onClick={handleConfirm} disabled={isPending}>
+              <Button onClick={handleConfirm} isLoading={isPending}>
                 <Check className="h-4 w-4 mr-2" />
                 {t("confirm")}
               </Button>
@@ -170,7 +176,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
                       </a>
                     )}
                   </div>
-                  <Button onClick={() => handleVerifyPayment(proof.id)} disabled={isPending} size="sm">
+                  <Button onClick={() => handleVerifyPayment(proof.id)} isLoading={isPending} size="sm">
                     {t("verifyPayment")}
                   </Button>
                 </div>
@@ -179,14 +185,14 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
           )}
 
           {canPrepare && (
-            <Button onClick={() => handleStatusChange("PREPARING")} disabled={isPending}>
+            <Button onClick={() => handleStatusChange("PREPARING")} isLoading={isPending}>
               <Package className="h-4 w-4 mr-2" />
               {t("markPreparing")}
             </Button>
           )}
 
           {canMarkReady && (
-            <Button onClick={() => handleStatusChange("READY_FOR_PICKUP")} disabled={isPending}>
+            <Button onClick={() => handleStatusChange("READY_FOR_PICKUP")} isLoading={isPending}>
               <Check className="h-4 w-4 mr-2" />
               {t("markReady")}
             </Button>
@@ -198,7 +204,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
               <Input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="PL123456789" />
               <Label>{t("trackingUrl")}</Label>
               <Input value={trackingUrl} onChange={(e) => setTrackingUrl(e.target.value)} placeholder="https://..." />
-              <Button onClick={handleShip} disabled={isPending || !trackingNumber}>
+              <Button onClick={handleShip} isLoading={isPending} disabled={!trackingNumber}>
                 <Truck className="h-4 w-4 mr-2" />
                 {t("markShipped")}
               </Button>
@@ -229,7 +235,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
                   rows={2}
                 />
                 <div className="flex gap-2">
-                  <Button variant="destructive" onClick={handleCancel} disabled={isPending || !cancelReason}>
+                  <Button variant="destructive" onClick={handleCancel} isLoading={isPending} disabled={!cancelReason}>
                     {t("cancel")}
                   </Button>
                   <Button variant="ghost" onClick={() => setShowCancel(false)}>{tCommon("cancel")}</Button>
