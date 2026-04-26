@@ -9,6 +9,7 @@ import { Send } from "lucide-react";
 import { sendMessage } from "../actions/send-message";
 import { useAnalytics, EVENTS } from "@/domains/analytics";
 import { markAsRead } from "../actions/mark-as-read";
+import { useBadges } from "@/shared/lib/badge-context";
 import { MessageBubble } from "./message-bubble";
 import type { MessageWithSender } from "../queries/get-messages";
 
@@ -32,10 +33,15 @@ export function ChatView({
   const [isPending, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
   const { trackEvent } = useAnalytics();
+  const { clearUnread } = useBadges();
 
   // Mark messages as read on mount
   useEffect(() => {
-    markAsRead(conversationId);
+    const doMark = async () => {
+      const result = await markAsRead(conversationId);
+      if (result.success) clearUnread();
+    };
+    doMark();
   }, [conversationId]);
 
   // Scroll to bottom on new messages
@@ -163,7 +169,8 @@ export function ChatView({
           <Button
             size="icon"
             onClick={handleSend}
-            disabled={isPending || !input.trim()}
+            isLoading={isPending}
+            disabled={!input.trim()}
           >
             <Send className="h-4 w-4" />
           </Button>
