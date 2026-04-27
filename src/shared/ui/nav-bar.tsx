@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Home, ShoppingBasket, Tractor, Users, MessageCircle, User, ShoppingCart, Package } from "lucide-react";
@@ -40,8 +41,9 @@ export function NavBar() {
     <>
       {/* Desktop top bar */}
       <header className="hidden md:flex items-center justify-between border-b px-6 py-3">
-        <Link href="/" className="text-xl font-bold text-primary">
-          plonbli
+        <Link href="/" className="flex items-center text-xl font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
+          <Image src="/plonbliLogoBezTla-removebg-preview.png" alt="p" width={24} height={24} className="-mr-2.5" />
+          <span className="self-end leading-none translate-y-0.5">lonbli</span>
         </Link>
         <nav className="flex items-center gap-1">
           {allNavItems.map(({ href, icon: Icon, labelKey }) => (
@@ -72,8 +74,9 @@ export function NavBar() {
 
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 flex items-center justify-between border-b bg-background px-4 py-2.5 z-50">
-        <Link href="/" className="text-lg font-bold text-primary">
-          plonbli
+        <Link href="/" className="flex items-center text-lg font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
+          <Image src="/plonbliLogoBezTla-removebg-preview.png" alt="p" width={22} height={22} className="-mr-2.5" />
+          <span className="self-end leading-none translate-y-0.4">lonbli</span>
         </Link>
         <div className="flex items-center gap-1">
           {topRightItems.map(({ href, icon: Icon }) => (

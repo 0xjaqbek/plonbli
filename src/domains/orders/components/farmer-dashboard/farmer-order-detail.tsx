@@ -141,7 +141,7 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
         <CardHeader><CardTitle>{t("actions")}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           {canConfirm && (
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               <Button onClick={handleConfirm} isLoading={isPending}>
                 <Check className="h-4 w-4 mr-2" />
                 {t("confirm")}

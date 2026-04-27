@@ -209,7 +209,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
       </Card>
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3">
         {canComplete && (
           <Button onClick={handleComplete} isLoading={isPending} className="flex-1">
             {t("completeOrder")}
