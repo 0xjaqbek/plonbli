@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+const mockSendEachForMulticast = vi.fn();
+
+vi.mock("firebase-admin/messaging", () => ({
+  getMessaging: vi.fn(() => ({ sendEachForMulticast: mockSendEachForMulticast })),
+}));
+
 vi.mock("@/shared/lib/firebase-admin", () => ({
-  getFirebaseAdmin: vi.fn(),
+  getFirebaseAdmin: vi.fn(() => ({})),
 }));
 
 vi.mock("@/domains/notifications/queries/get-user-tokens", () => ({
@@ -38,12 +44,6 @@ describe("sendNotification", () => {
       marketplace: true,
     });
 
-    const { getFirebaseAdmin } = await import("@/shared/lib/firebase-admin");
-    const mockSend = vi.fn();
-    vi.mocked(getFirebaseAdmin).mockReturnValue({
-      messaging: () => ({ sendEachForMulticast: mockSend }),
-    } as any);
-
     const { sendNotification } = await import(
       "@/domains/notifications/lib/send-notification"
     );
@@ -54,7 +54,7 @@ describe("sendNotification", () => {
       url: "/messages/1",
     });
 
-    expect(mockSend).not.toHaveBeenCalled();
+    expect(mockSendEachForMulticast).not.toHaveBeenCalled();
   });
 
   it("does nothing when category is disabled in preferences", async () => {
@@ -72,12 +72,6 @@ describe("sendNotification", () => {
       marketplace: true,
     });
 
-    const { getFirebaseAdmin } = await import("@/shared/lib/firebase-admin");
-    const mockSend = vi.fn();
-    vi.mocked(getFirebaseAdmin).mockReturnValue({
-      messaging: () => ({ sendEachForMulticast: mockSend }),
-    } as any);
-
     const { sendNotification } = await import(
       "@/domains/notifications/lib/send-notification"
     );
@@ -88,7 +82,7 @@ describe("sendNotification", () => {
       url: "/messages/1",
     });
 
-    expect(mockSend).not.toHaveBeenCalled();
+    expect(mockSendEachForMulticast).not.toHaveBeenCalled();
   });
 
   it("sends to all tokens with correct payload", async () => {
@@ -106,13 +100,9 @@ describe("sendNotification", () => {
       marketplace: true,
     });
 
-    const { getFirebaseAdmin } = await import("@/shared/lib/firebase-admin");
-    const mockSend = vi
-      .fn()
-      .mockResolvedValueOnce({ responses: [{ success: true }, { success: true }] });
-    vi.mocked(getFirebaseAdmin).mockReturnValue({
-      messaging: () => ({ sendEachForMulticast: mockSend }),
-    } as any);
+    mockSendEachForMulticast.mockResolvedValueOnce({
+      responses: [{ success: true }, { success: true }],
+    });
 
     const { sendNotification } = await import(
       "@/domains/notifications/lib/send-notification"
@@ -124,11 +114,10 @@ describe("sendNotification", () => {
       url: "/messages/conv-1",
     });
 
-    expect(mockSend).toHaveBeenCalledWith(
+    expect(mockSendEachForMulticast).toHaveBeenCalledWith(
       expect.objectContaining({
         tokens: ["token-1", "token-2"],
-        notification: { title: "Jan Kowalski", body: "Cześć!" },
-        data: { url: "/messages/conv-1" },
+        data: { url: "/messages/conv-1", title: "Jan Kowalski", body: "Cześć!" },
       })
     );
   });
@@ -148,8 +137,7 @@ describe("sendNotification", () => {
       marketplace: true,
     });
 
-    const { getFirebaseAdmin } = await import("@/shared/lib/firebase-admin");
-    const mockSend = vi.fn().mockResolvedValueOnce({
+    mockSendEachForMulticast.mockResolvedValueOnce({
       responses: [
         { success: true },
         {
@@ -158,9 +146,6 @@ describe("sendNotification", () => {
         },
       ],
     });
-    vi.mocked(getFirebaseAdmin).mockReturnValue({
-      messaging: () => ({ sendEachForMulticast: mockSend }),
-    } as any);
 
     const { sendNotification } = await import(
       "@/domains/notifications/lib/send-notification"
@@ -192,12 +177,7 @@ describe("sendNotification", () => {
       marketplace: true,
     });
 
-    const { getFirebaseAdmin } = await import("@/shared/lib/firebase-admin");
-    vi.mocked(getFirebaseAdmin).mockReturnValue({
-      messaging: () => ({
-        sendEachForMulticast: vi.fn().mockRejectedValueOnce(new Error("FCM down")),
-      }),
-    } as any);
+    mockSendEachForMulticast.mockRejectedValueOnce(new Error("FCM down"));
 
     const { sendNotification } = await import(
       "@/domains/notifications/lib/send-notification"
