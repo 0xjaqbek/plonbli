@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Share2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 interface ShareButtonProps {
   entityType: "FARMER" | "EVENT" | "CROP_LOG" | "PRODUCT" | "PROXY_FARMER";
@@ -20,8 +21,10 @@ export function ShareButton({
 }: ShareButtonProps) {
   const t = useTranslations("social");
   const router = useRouter();
+  const { trackEvent } = useAnalytics();
 
   function handleShare() {
+    trackEvent(EVENTS.LISTING_SHARED, { entityType, entityId });
     router.push(`/social?shareType=${entityType}&shareId=${entityId}`);
   }
 
