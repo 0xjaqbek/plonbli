@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
@@ -16,6 +17,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { ListingCard } from "./listing-card";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 import { ShareButton } from "@/domains/social/components/share-button";
 import { UserFollowButton } from "@/domains/social/components/user-follow-button";
 import type { User } from "@/shared/db/schema";
@@ -65,6 +67,12 @@ export function FarmerProfileView({
     .toUpperCase();
 
   const isOwnProfile = currentUserId === farmer.id;
+
+  const { trackEvent } = useAnalytics();
+
+  useEffect(() => {
+    trackEvent(EVENTS.PRODUCER_PROFILE_VIEWED, { farmerId: farmer.id });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="space-y-6">
