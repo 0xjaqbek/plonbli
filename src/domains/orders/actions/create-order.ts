@@ -34,7 +34,6 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
 
   const { farmerId, deliveryMethod, deliveryAddress, pickupSlotId, customerNote } = parsed.data;
 
-  // Get cart items for this farmer
   const farmerCartItems = await db
     .select({
       cartItem: cartItems,
@@ -47,41 +46,18 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     .where(and(eq(cartItems.userId, session.user.id), eq(products.farmerId, farmerId)));
 
   if (farmerCartItems.length === 0) {
-    return { success: false, error: "Koszyk jest pusty" };
+    return { success: false, error: "Lista produktów jest pusta" };
   }
 
-  // Calculate totals
-  let itemsTotal = 0;
-  const orderItemsData = farmerCartItems.map(({ cartItem, listing, product }) => {
-    const qty = Number(cartItem.quantity);
-    const price = Number(listing.price);
-    const total = qty * price;
-    itemsTotal += total;
-    return {
-      listingId: listing.id,
-      productName: product.name,
-      quantity: cartItem.quantity,
-      unit: listing.unit,
-      pricePerUnit: listing.price,
-      totalPrice: String(total),
-    };
-  });
-
-  // Find default shipping cost from listing delivery options
-  let shippingCost: string | null = null;
-  if (deliveryMethod === "DELIVERY") {
-    const deliveryOption = farmerCartItems[0]?.listing.deliveryOptions?.find(
-      (opt: any) => opt.type === "DELIVERY"
-    );
-    if (deliveryOption?.cost) {
-      shippingCost = String(deliveryOption.cost);
-      itemsTotal += deliveryOption.cost;
-    }
-  }
+  const orderItemsData = farmerCartItems.map(({ cartItem, listing, product }) => ({
+    listingId: listing.id,
+    productName: product.name,
+    quantity: cartItem.quantity,
+    unit: listing.unit,
+  }));
 
   const orderNumber = generateOrderNumber();
 
-  // Transaction: create order + items + history + clear cart
   const result = await db.transaction(async (tx) => {
     const [order] = await tx
       .insert(orders)
@@ -93,14 +69,11 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
         deliveryMethod: deliveryMethod as "PICKUP" | "DELIVERY" | "DROP_POINT",
         deliveryAddress: deliveryAddress ?? null,
         pickupSlotId: pickupSlotId ?? null,
-        shippingCost,
-        totalAmount: String(itemsTotal),
         customerNote: customerNote ?? null,
         farmerHasSeen: false,
       })
       .returning({ id: orders.id });
 
-    // Insert order items
     await tx.insert(orderItems).values(
       orderItemsData.map((item) => ({
         orderId: order.id,
@@ -108,14 +81,12 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
       }))
     );
 
-    // Record initial status
     await tx.insert(orderStatusHistory).values({
       orderId: order.id,
       status: "PENDING",
       createdBy: session.user!.id!,
     });
 
-    // Clear cart items for this farmer
     const cartItemIds = farmerCartItems.map(({ cartItem }) => cartItem.id);
     for (const id of cartItemIds) {
       await tx.delete(cartItems).where(eq(cartItems.id, id));

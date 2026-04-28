@@ -19,14 +19,14 @@ export async function modifyOrder(input: ModifyOrderInput): Promise<ModifyOrderR
     return { success: false, errors: parsed.error.flatten().fieldErrors as Record<string, string[]> };
   }
 
-  const { orderId, items, shippingCost, paymentRequired, farmerNote } = parsed.data;
+  const { orderId, items, farmerNote } = parsed.data;
 
   const order = await db.query.orders.findFirst({
     where: eq(orders.id, orderId),
   });
 
   if (!order) {
-    return { success: false, error: "Zamowienie nie istnieje" };
+    return { success: false, error: "Zapytanie nie istnieje" };
   }
 
   if (order.farmerId !== session.user.id) {
@@ -34,7 +34,7 @@ export async function modifyOrder(input: ModifyOrderInput): Promise<ModifyOrderR
   }
 
   if (order.status !== "PENDING") {
-    return { success: false, error: "Zamowienie nie moze byc zmodyfikowane w tym statusie" };
+    return { success: false, error: "Zapytanie nie moze byc zmodyfikowane w tym statusie" };
   }
 
   await db.transaction(async (tx) => {
@@ -44,37 +44,16 @@ export async function modifyOrder(input: ModifyOrderInput): Promise<ModifyOrderR
           .update(orderItems)
           .set({
             modifiedQuantity: item.modifiedQuantity !== undefined ? String(item.modifiedQuantity) : null,
-            modifiedPricePerUnit: item.modifiedPricePerUnit !== undefined ? String(item.modifiedPricePerUnit) : null,
           })
           .where(and(eq(orderItems.id, item.orderItemId), eq(orderItems.orderId, orderId)));
       }
-    }
-
-    const allItems = await tx.query.orderItems.findMany({
-      where: eq(orderItems.orderId, orderId),
-    });
-
-    let newTotal = 0;
-    for (const item of allItems) {
-      const qty = item.modifiedQuantity ? Number(item.modifiedQuantity) : Number(item.quantity);
-      const price = item.modifiedPricePerUnit ? Number(item.modifiedPricePerUnit) : Number(item.pricePerUnit);
-      newTotal += qty * price;
-    }
-
-    if (shippingCost !== undefined) {
-      newTotal += shippingCost;
-    } else if (order.shippingCost) {
-      newTotal += Number(order.shippingCost);
     }
 
     await tx
       .update(orders)
       .set({
         status: "MODIFIED",
-        shippingCost: shippingCost !== undefined ? String(shippingCost) : order.shippingCost,
-        paymentRequired: paymentRequired as "PREPAID" | "ON_PICKUP",
         farmerNote: farmerNote ?? order.farmerNote,
-        totalAmount: String(newTotal),
         customerHasSeen: false,
       })
       .where(eq(orders.id, orderId));
