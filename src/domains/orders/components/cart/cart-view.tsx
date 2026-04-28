@@ -54,10 +54,11 @@ export function CartView({ groups }: CartViewProps) {
               />
             ))}
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <p className="font-semibold">
-              {t("total")}: {group.total.toFixed(2)} zl
-            </p>
+          <CardFooter className="flex justify-between items-end">
+            <div>
+              <p className="font-semibold text-sm">{t("indicativeValue")}: {group.total.toFixed(2)} zł</p>
+              <p className="text-xs text-muted-foreground">{t("indicativeValueNote")}</p>
+            </div>
             <Button onClick={() => router.push(`/marketplace/cart/${group.farmer.id}/checkout`)}>
               {t("checkout")}
             </Button>

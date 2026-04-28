@@ -1,4 +1,3 @@
-// src/domains/orders/components/order-detail/order-detail.tsx
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
@@ -7,11 +6,9 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { Separator } from "@/shared/ui/separator";
 import { MessageCircle, Package, Truck, MapPin, ExternalLink } from "lucide-react";
 import { OrderTimeline } from "./order-timeline";
 import { OrderItemsTable } from "./order-items-table";
-import { PaymentProofForm } from "./payment-proof-form";
 import { ModificationReview } from "./modification-review";
 import { completeOrder } from "../../actions/complete-order";
 import { cancelOrder } from "../../actions/cancel-order";
@@ -65,20 +62,12 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
     });
   }
 
-  const PROOF_TYPE_LABELS: Record<string, string> = {
-    SCREENSHOT: t("proofScreenshot"),
-    BANK_TRANSFER: t("proofBankTransfer"),
-    BLOCKCHAIN_LINK: t("proofBlockchain"),
-  };
-
-  const showPaymentForm = isCustomer && order.status === "CONFIRMED" && order.paymentRequired === "PREPAID";
   const showModificationReview = isCustomer && order.status === "MODIFIED";
   const canComplete = isCustomer && (order.status === "SHIPPED" || order.status === "READY_FOR_PICKUP");
   const canCancel = isCustomer && ["PENDING", "MODIFIED"].includes(order.status);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{order.orderNumber}</h1>
@@ -91,41 +80,23 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
         </Badge>
       </div>
 
-      {/* Modification review */}
       {showModificationReview && (
         <ModificationReview
           orderId={order.id}
           items={order.items}
-          originalTotal={order.items.reduce((sum, item) =>
-            sum + Number(item.quantity) * Number(item.pricePerUnit), 0
-          ).toFixed(2)}
-          newTotal={order.totalAmount}
           farmerNote={order.farmerNote}
         />
       )}
 
-      {/* Items */}
       <Card>
         <CardHeader>
           <CardTitle>{t("items")}</CardTitle>
         </CardHeader>
         <CardContent>
           <OrderItemsTable items={order.items} showModified={order.status !== "PENDING"} />
-          <Separator className="my-3" />
-          {order.shippingCost && (
-            <div className="flex justify-between text-sm">
-              <span>{t("shippingCost")}</span>
-              <span>{Number(order.shippingCost).toFixed(2)} zl</span>
-            </div>
-          )}
-          <div className="flex justify-between font-semibold mt-2">
-            <span>{t("total")}</span>
-            <span>{Number(order.totalAmount).toFixed(2)} zl</span>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Delivery info */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -150,55 +121,6 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
         </CardContent>
       </Card>
 
-      {/* Payment section */}
-      {showPaymentForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("paymentProof")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Show farmer payment methods */}
-            {order.farmerPaymentMethods.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">{t("farmerPaymentMethodsLabel")}</p>
-                {order.farmerPaymentMethods.map((method) => (
-                  <div key={method.id} className="text-sm p-2 bg-muted rounded">
-                    <span className="font-medium">{method.label}:</span> {method.details}
-                  </div>
-                ))}
-              </div>
-            )}
-            <Separator />
-            <PaymentProofForm orderId={order.id} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Payment proofs list */}
-      {order.paymentProofs.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("paymentProof")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {order.paymentProofs.map((proof) => (
-              <div key={proof.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-                <Badge variant={proof.verified ? "default" : "outline"}>
-                  {proof.verified ? t("paymentVerified") : t("paymentPending")}
-                </Badge>
-                <span className="text-sm">{PROOF_TYPE_LABELS[proof.type] ?? proof.type}</span>
-                {proof.transactionUrl && (
-                  <a href={proof.transactionUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary flex items-center gap-1">
-                    Link <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Timeline */}
       <Card>
         <CardHeader>
           <CardTitle>{t("history")}</CardTitle>
@@ -208,7 +130,6 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
         </CardContent>
       </Card>
 
-      {/* Actions */}
       <div className="flex flex-col gap-3">
         {canComplete && (
           <Button onClick={handleComplete} isLoading={isPending} className="flex-1">

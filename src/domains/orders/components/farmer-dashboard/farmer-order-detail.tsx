@@ -8,12 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Separator } from "@/shared/ui/separator";
 import { Check, Package, Truck, User } from "lucide-react";
 import { OrderTimeline } from "../order-detail/order-timeline";
 import { OrderItemsTable } from "../order-detail/order-items-table";
 import { confirmOrder } from "../../actions/confirm-order";
-import { verifyPayment } from "../../actions/verify-payment";
 import { updateOrderStatus, markAsShipped } from "../../actions/update-order-status";
 import { cancelOrder } from "../../actions/cancel-order";
 import type { OrderDetail } from "../../queries/get-order";
@@ -39,17 +37,10 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
     clearUnseenOrders();
   }, []);
 
-  const PROOF_TYPE_LABELS: Record<string, string> = {
-    SCREENSHOT: t("proofScreenshot"),
-    BANK_TRANSFER: t("proofBankTransfer"),
-    BLOCKCHAIN_LINK: t("proofBlockchain"),
-  };
-
   const STATUS_LABELS: Record<string, string> = {
     PENDING: t("statusPending"),
     MODIFIED: t("statusModified"),
     CONFIRMED: t("statusConfirmed"),
-    PAID: t("statusPaid"),
     PREPARING: t("statusPreparing"),
     SHIPPED: t("statusShipped"),
     READY_FOR_PICKUP: t("statusReadyForPickup"),
@@ -60,13 +51,6 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
   function handleConfirm() {
     startTransition(async () => {
       const result = await confirmOrder(order.id);
-      if (result.success) router.refresh();
-    });
-  }
-
-  function handleVerifyPayment(proofId: string) {
-    startTransition(async () => {
-      const result = await verifyPayment(order.id, proofId);
       if (result.success) router.refresh();
     });
   }
@@ -98,10 +82,9 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
 
   const canConfirm = order.status === "PENDING";
   const canModify = order.status === "PENDING";
-  const canVerifyPayment = order.status === "CONFIRMED" && order.paymentProofs.some((p) => !p.verified);
-  const canPrepare = order.status === "PAID" || (order.status === "CONFIRMED" && order.paymentRequired === "ON_PICKUP");
+  const canPrepare = order.status === "CONFIRMED";
   const canShip = order.status === "PREPARING" && order.deliveryMethod === "DELIVERY";
-  const canMarkReady = (order.status === "PREPARING" || order.status === "PAID" || (order.status === "CONFIRMED" && order.paymentRequired === "ON_PICKUP")) && order.deliveryMethod === "PICKUP";
+  const canMarkReady = order.status === "PREPARING" && order.deliveryMethod !== "DELIVERY";
 
   return (
     <div className="space-y-6">
@@ -129,11 +112,6 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
         <CardHeader><CardTitle>{t("items")}</CardTitle></CardHeader>
         <CardContent>
           <OrderItemsTable items={order.items} showModified={order.status !== "PENDING"} />
-          <Separator className="my-3" />
-          <div className="flex justify-between font-semibold">
-            <span>{t("total")}</span>
-            <span>{Number(order.totalAmount).toFixed(2)} zl</span>
-          </div>
         </CardContent>
       </Card>
 
@@ -160,28 +138,6 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
                 <Button variant="ghost" onClick={() => setShowModify(false)}>{tCommon("cancel")}</Button>
               </CardContent>
             </Card>
-          )}
-
-          {canVerifyPayment && (
-            <div className="space-y-3">
-              <p className="font-medium">{t("paymentProof")}</p>
-              {order.paymentProofs.filter((p) => !p.verified).map((proof) => (
-                <div key={proof.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <Badge variant="outline">{PROOF_TYPE_LABELS[proof.type] ?? proof.type}</Badge>
-                    {proof.imageUrl && <img src={proof.imageUrl} alt="Proof" className="mt-2 max-w-xs rounded" />}
-                    {proof.transactionUrl && (
-                      <a href={proof.transactionUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary block mt-1">
-                        {proof.transactionUrl}
-                      </a>
-                    )}
-                  </div>
-                  <Button onClick={() => handleVerifyPayment(proof.id)} isLoading={isPending} size="sm">
-                    {t("verifyPayment")}
-                  </Button>
-                </div>
-              ))}
-            </div>
           )}
 
           {canPrepare && (

@@ -1,4 +1,3 @@
-// src/domains/orders/components/order-detail/modification-review.tsx
 "use client";
 
 import { useTransition } from "react";
@@ -10,19 +9,15 @@ import { AlertTriangle } from "lucide-react";
 import { acceptModification } from "../../actions/accept-modification";
 import { cancelOrder } from "../../actions/cancel-order";
 import { OrderItemsTable } from "./order-items-table";
-import type { OrderItem } from "@/shared/db/schema";
+import type { OrderDetail } from "../../queries/get-order";
 
 interface ModificationReviewProps {
   orderId: string;
-  items: OrderItem[];
-  originalTotal: string;
-  newTotal: string;
+  items: OrderDetail["items"];
   farmerNote: string | null;
 }
 
-export function ModificationReview({
-  orderId, items, originalTotal, newTotal, farmerNote,
-}: ModificationReviewProps) {
+export function ModificationReview({ orderId, items, farmerNote }: ModificationReviewProps) {
   const t = useTranslations("orders");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -54,17 +49,6 @@ export function ModificationReview({
           <p className="text-sm bg-muted p-3 rounded-lg">{t("farmerNote")}: {farmerNote}</p>
         )}
         <OrderItemsTable items={items} showModified />
-        <div className="flex justify-between font-semibold pt-2 border-t">
-          <span>{t("total")}</span>
-          <span>
-            {Number(originalTotal) !== Number(newTotal) && (
-              <span className="line-through text-muted-foreground mr-2">
-                {Number(originalTotal).toFixed(2)} zl
-              </span>
-            )}
-            {Number(newTotal).toFixed(2)} zl
-          </span>
-        </div>
       </CardContent>
       <CardFooter className="gap-3">
         <Button onClick={handleAccept} isLoading={isPending} className="flex-1">

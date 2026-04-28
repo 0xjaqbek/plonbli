@@ -49,7 +49,6 @@ export function CheckoutForm({ cartGroup, farmerId, pickupSlots, availableDelive
           orderId: result.orderId,
           farmerId,
           itemCount: cartGroup.items.length,
-          totalValue: cartGroup.total,
         });
         router.push(`/orders/${result.orderId}`);
       } else {
@@ -68,13 +67,14 @@ export function CheckoutForm({ cartGroup, farmerId, pickupSlots, availableDelive
           {cartGroup.items.map((item) => (
             <div key={item.cartItem.id} className="flex justify-between text-sm">
               <span>{item.product.name} x {Number(item.cartItem.quantity)} {item.listing.unit.toLowerCase()}</span>
-              <span>{(Number(item.cartItem.quantity) * Number(item.listing.price)).toFixed(2)} zl</span>
+              <span>{(Number(item.cartItem.quantity) * Number(item.listing.price)).toFixed(2)} zł</span>
             </div>
           ))}
           <div className="border-t pt-2 flex justify-between font-semibold">
-            <span>{t("total")}</span>
-            <span>{cartGroup.total.toFixed(2)} zl</span>
+            <span>{t("indicativeValue")}</span>
+            <span>{cartGroup.total.toFixed(2)} zł</span>
           </div>
+          <p className="text-xs text-muted-foreground italic">{t("indicativeValueNote")}</p>
         </CardContent>
       </Card>
 
@@ -136,6 +136,12 @@ export function CheckoutForm({ cartGroup, farmerId, pickupSlots, availableDelive
         <CardContent className="pt-6">
           <Label htmlFor="note">{t("customerNote")}</Label>
           <Textarea id="note" value={customerNote} onChange={(e) => setCustomerNote(e.target.value)} rows={3} maxLength={2000} />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-muted/50">
+        <CardContent className="pt-4 pb-4">
+          <p className="text-sm text-muted-foreground">{t("inquiryNote")}</p>
         </CardContent>
       </Card>
 
