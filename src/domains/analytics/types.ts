@@ -7,7 +7,7 @@ export type EventProperties = {
   "listing.availability_updated": { listingId: string; availability: string };
   "cart.item_added": { listingId: string; farmerId: string; price: number };
   "cart.item_removed": { listingId: string };
-  "order.placed": { orderId: string; farmerId: string; itemCount: number; totalValue: number };
+  "order.placed": { orderId: string; farmerId: string; itemCount: number };
   "order.status_changed": { orderId: string; fromStatus: string; toStatus: string };
   "post.created": { hasMedia: boolean };
   "post.liked": undefined;

@@ -68,7 +68,7 @@ describe("createOrder", () => {
       pickupSlotId: "slot-1",
     });
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error).toBe("Koszyk jest pusty");
+    if (!result.success) expect(result.error).toBe("Lista produktów jest pusta");
   });
 
   it("returns error for delivery without address", async () => {

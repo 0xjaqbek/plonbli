@@ -12,7 +12,6 @@ interface OrderCardProps {
   orderId: string;
   orderNumber: string;
   status: OrderStatus;
-  totalAmount: string;
   createdAt: Date;
   counterpartyName: string | null;
   counterpartyAvatar: string | null;
@@ -24,7 +23,6 @@ const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructiv
   PENDING: "outline",
   MODIFIED: "secondary",
   CONFIRMED: "default",
-  PAID: "default",
   PREPARING: "default",
   SHIPPED: "default",
   READY_FOR_PICKUP: "default",
@@ -33,7 +31,7 @@ const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructiv
 };
 
 export function OrderCard({
-  orderNumber, status, totalAmount, createdAt, counterpartyName, href, hasUnseenChanges,
+  orderNumber, status, createdAt, counterpartyName, href, hasUnseenChanges,
 }: OrderCardProps) {
   const t = useTranslations("orders");
 
@@ -56,7 +54,6 @@ export function OrderCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="font-semibold">{Number(totalAmount).toFixed(2)} zl</p>
             <p className="text-xs text-muted-foreground">
               {new Date(createdAt).toLocaleDateString("pl")}
             </p>

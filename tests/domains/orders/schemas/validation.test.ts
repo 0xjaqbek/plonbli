@@ -3,11 +3,9 @@ import {
   addToCartSchema,
   createOrderSchema,
   modifyOrderSchema,
-  submitPaymentProofSchema,
   cancelOrderSchema,
   updateOrderStatusSchema,
   shippingInfoSchema,
-  farmerPaymentMethodSchema,
   pickupSlotSchema,
 } from "@/domains/orders/schemas/validation";
 
@@ -67,57 +65,25 @@ describe("createOrderSchema", () => {
 });
 
 describe("modifyOrderSchema", () => {
-  it("accepts item modifications", () => {
+  it("accepts quantity modifications", () => {
     const result = modifyOrderSchema.safeParse({
       orderId: "order-1",
-      items: [{ orderItemId: "item-1", modifiedQuantity: 3, modifiedPricePerUnit: 10 }],
-      paymentRequired: "PREPAID",
+      items: [{ orderItemId: "item-1", modifiedQuantity: 3 }],
     });
     expect(result.success).toBe(true);
   });
 
-  it("accepts shipping cost change", () => {
+  it("accepts farmer note only", () => {
     const result = modifyOrderSchema.safeParse({
       orderId: "order-1",
-      shippingCost: 15,
-      paymentRequired: "ON_PICKUP",
+      farmerNote: "Mam tylko 2 kg jablek",
     });
     expect(result.success).toBe(true);
   });
 
-  it("requires paymentRequired", () => {
-    const result = modifyOrderSchema.safeParse({
-      orderId: "order-1",
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
-describe("submitPaymentProofSchema", () => {
-  it("accepts screenshot proof", () => {
-    const result = submitPaymentProofSchema.safeParse({
-      orderId: "order-1",
-      type: "SCREENSHOT",
-      imageUrl: "https://r2.example.com/proof.png",
-    });
+  it("accepts minimal input with just orderId", () => {
+    const result = modifyOrderSchema.safeParse({ orderId: "order-1" });
     expect(result.success).toBe(true);
-  });
-
-  it("accepts blockchain link proof", () => {
-    const result = submitPaymentProofSchema.safeParse({
-      orderId: "order-1",
-      type: "BLOCKCHAIN_LINK",
-      transactionUrl: "https://etherscan.io/tx/0x123",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects screenshot without imageUrl", () => {
-    const result = submitPaymentProofSchema.safeParse({
-      orderId: "order-1",
-      type: "SCREENSHOT",
-    });
-    expect(result.success).toBe(false);
   });
 });
 
@@ -157,26 +123,6 @@ describe("shippingInfoSchema", () => {
       trackingNumber: "PL123456789",
     });
     expect(result.success).toBe(true);
-  });
-});
-
-describe("farmerPaymentMethodSchema", () => {
-  it("accepts valid payment method", () => {
-    const result = farmerPaymentMethodSchema.safeParse({
-      type: "BLIK",
-      label: "BLIK na telefon",
-      details: "600 123 456",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects empty details", () => {
-    const result = farmerPaymentMethodSchema.safeParse({
-      type: "TRANSFER",
-      label: "Przelew",
-      details: "",
-    });
-    expect(result.success).toBe(false);
   });
 });
 

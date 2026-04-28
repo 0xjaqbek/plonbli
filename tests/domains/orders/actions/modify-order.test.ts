@@ -34,10 +34,7 @@ describe("modifyOrder", () => {
     const { auth } = await import("@/domains/auth/lib/auth");
     vi.mocked(auth).mockResolvedValueOnce(null as any);
 
-    const result = await modifyOrder({
-      orderId: "order-1",
-      paymentRequired: "PREPAID",
-    });
+    const result = await modifyOrder({ orderId: "order-1" });
     expect(result.success).toBe(false);
   });
 
@@ -47,12 +44,9 @@ describe("modifyOrder", () => {
     vi.mocked(auth).mockResolvedValueOnce({ user: { id: "farmer-1" } } as any);
     vi.mocked(db.query.orders.findFirst).mockResolvedValueOnce(undefined);
 
-    const result = await modifyOrder({
-      orderId: "order-1",
-      paymentRequired: "PREPAID",
-    });
+    const result = await modifyOrder({ orderId: "order-1" });
     expect(result.success).toBe(false);
-    if (!result.success) expect(result.error).toBe("Zamowienie nie istnieje");
+    if (!result.success) expect(result.error).toBe("Zapytanie nie istnieje");
   });
 
   it("returns error when user is not the farmer", async () => {
@@ -65,10 +59,7 @@ describe("modifyOrder", () => {
       status: "PENDING",
     } as any);
 
-    const result = await modifyOrder({
-      orderId: "order-1",
-      paymentRequired: "PREPAID",
-    });
+    const result = await modifyOrder({ orderId: "order-1" });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.error).toBe("Brak uprawnien");
   });
@@ -83,10 +74,7 @@ describe("modifyOrder", () => {
       status: "CONFIRMED",
     } as any);
 
-    const result = await modifyOrder({
-      orderId: "order-1",
-      paymentRequired: "PREPAID",
-    });
+    const result = await modifyOrder({ orderId: "order-1" });
     expect(result.success).toBe(false);
   });
 });

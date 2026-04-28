@@ -11,7 +11,6 @@ interface OrderListItem {
     id: string;
     orderNumber: string;
     status: OrderStatus;
-    totalAmount: string;
     createdAt: Date;
     hasUnseenChanges?: boolean;
   };
@@ -47,7 +46,6 @@ export function OrderList({ orders, basePath }: OrderListProps) {
           orderId={order.id}
           orderNumber={order.orderNumber}
           status={order.status}
-          totalAmount={order.totalAmount}
           createdAt={order.createdAt}
           counterpartyName={counterparty.name}
           counterpartyAvatar={counterparty.avatar}
