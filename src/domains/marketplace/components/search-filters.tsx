@@ -14,10 +14,13 @@ import {
 import { Button } from "@/shared/ui/button";
 import { LocationCascade, type LocationValue } from "@/domains/geo";
 import type { Category } from "@/shared/db/schema";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 interface SearchFiltersProps {
   categories: Category[];
 }
+
+type FilterType = "category" | "method" | "sort" | "location";
 
 export function SearchFilters({ categories }: SearchFiltersProps) {
   const t = useTranslations("marketplace");
@@ -25,6 +28,7 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const { trackEvent } = useAnalytics();
 
   const updateParams = useCallback(
     (key: string, value: string) => {
@@ -36,14 +40,22 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
       }
       params.delete("page");
       router.push(`${pathname}?${params.toString()}`);
+      if (key !== "q" && value && value !== "all") {
+        trackEvent(EVENTS.FILTER_APPLIED, {
+          filterType: key as FilterType,
+          value,
+        });
+      }
     },
-    [searchParams, pathname, router]
+    [searchParams, pathname, router, trackEvent]
   );
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    updateParams("q", formData.get("q") as string);
+    const query = formData.get("q") as string;
+    updateParams("q", query);
+    trackEvent(EVENTS.SEARCH_PERFORMED, { query });
   }
 
   function clearFilters() {
@@ -69,6 +81,13 @@ export function SearchFilters({ categories }: SearchFiltersProps) {
     }
     params.delete("page");
     router.push(`${pathname}?${params.toString()}`);
+    const locationValue = loc.commune ?? loc.county ?? loc.voivodeship;
+    if (locationValue) {
+      trackEvent(EVENTS.FILTER_APPLIED, {
+        filterType: "location",
+        value: locationValue,
+      });
+    }
   }
 
   return (
