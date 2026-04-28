@@ -16,6 +16,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 import type { FarmerForMap } from "../queries/get-farmers-for-map";
+import { useAnalytics, EVENTS } from "@/domains/analytics";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((m) => m.MapContainer),
@@ -103,15 +104,17 @@ export function FarmerMap({ farmers }: FarmerMapProps) {
 
   useEffect(() => {
     setMapReady(true);
+    trackEvent(EVENTS.MAP_VIEWED, { farmerCount: resolved.length });
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setUserPos([pos.coords.latitude, pos.coords.longitude]),
         () => {} // silently fallback to Poland center
       );
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const resolved = useMemo(() => resolveFarmers(farmers), [farmers]);
+  const { trackEvent } = useAnalytics();
 
   if (!mapReady) {
     return (
