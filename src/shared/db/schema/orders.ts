@@ -7,7 +7,7 @@ export const orderStatusEnum = pgEnum("order_status", [
   "PENDING",
   "MODIFIED",
   "CONFIRMED",
-  "PAID",
+  "PAID", // kept in DB enum (Postgres cannot remove enum values); never set by application code
   "PREPARING",
   "SHIPPED",
   "READY_FOR_PICKUP",
@@ -19,18 +19,6 @@ export const deliveryMethodEnum = pgEnum("delivery_method", [
   "PICKUP",
   "DELIVERY",
   "DROP_POINT",
-]);
-
-export const paymentMethodEnum = pgEnum("payment_method", [
-  "BLIK",
-  "TRANSFER",
-  "CRYPTO",
-  "CASH_ON_PICKUP",
-]);
-
-export const paymentRequiredEnum = pgEnum("payment_required", [
-  "PREPAID",
-  "ON_PICKUP",
 ]);
 
 export const cancelledByEnum = pgEnum("cancelled_by", [
@@ -47,12 +35,8 @@ export const orders = pgTable("orders", {
   deliveryMethod: deliveryMethodEnum("delivery_method").notNull(),
   deliveryAddress: text("delivery_address"),
   pickupSlotId: text("pickup_slot_id"),
-  shippingCost: numeric("shipping_cost", { precision: 10, scale: 2 }),
   trackingNumber: text("tracking_number"),
   trackingUrl: text("tracking_url"),
-  paymentMethod: paymentMethodEnum("payment_method"),
-  paymentRequired: paymentRequiredEnum("payment_required"),
-  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   customerNote: text("customer_note"),
   farmerNote: text("farmer_note"),
   cancellationReason: text("cancellation_reason"),
@@ -73,10 +57,7 @@ export const orderItems = pgTable("order_items", {
   productName: text("product_name").notNull(),
   quantity: numeric("quantity", { precision: 10, scale: 2 }).notNull(),
   unit: text("unit").notNull(),
-  pricePerUnit: numeric("price_per_unit", { precision: 10, scale: 2 }).notNull(),
-  totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
   modifiedQuantity: numeric("modified_quantity", { precision: 10, scale: 2 }),
-  modifiedPricePerUnit: numeric("modified_price_per_unit", { precision: 10, scale: 2 }),
 });
 
 export type OrderItem = typeof orderItems.$inferSelect;

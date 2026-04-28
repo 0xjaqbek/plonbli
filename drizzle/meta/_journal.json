@@ -57,6 +57,13 @@
       "when": 1776685093829,
       "tag": "0007_stale_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777384157743,
+      "tag": "0008_dac7_noticeboard",
+      "breakpoints": true
     }
   ]
 }

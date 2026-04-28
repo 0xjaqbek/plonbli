@@ -142,18 +142,10 @@ export {
 // Orders
 export {
   orders, orderItems, orderStatusHistory,
-  orderStatusEnum, deliveryMethodEnum, paymentMethodEnum, paymentRequiredEnum, cancelledByEnum,
+  orderStatusEnum, deliveryMethodEnum, cancelledByEnum,
   type Order, type NewOrder, type OrderItem, type NewOrderItem,
   type OrderStatusHistory, type NewOrderStatusHistory,
 } from "./orders";
-
-// Payments
-export {
-  paymentProofs, farmerPaymentMethods,
-  paymentProofTypeEnum, farmerPaymentTypeEnum,
-  type PaymentProof, type NewPaymentProof,
-  type FarmerPaymentMethod, type NewFarmerPaymentMethod,
-} from "./payments";
 
 // Pickup Slots
 export {
@@ -170,7 +162,6 @@ export {
 // Relations (new order-related)
 export {
   ordersRelations, orderItemsRelations, orderStatusHistoryRelations,
-  paymentProofsRelations, farmerPaymentMethodsRelations,
   pickupSlotsRelations, cartItemsRelations,
   invitationsRelations,
 } from "./relations";
