@@ -18,4 +18,9 @@ export const EVENTS = {
   CONVERSATION_STARTED: "conversation.started",
   MESSAGE_SENT: "message.sent",
   ROLE_UPGRADED_TO_FARMER: "role.upgraded_to_farmer",
+  SEARCH_PERFORMED: "search.performed",
+  FILTER_APPLIED: "filter.applied",
+  MAP_VIEWED: "map.viewed",
+  PRODUCER_PROFILE_VIEWED: "producer_profile.viewed",
+  LISTING_SHARED: "listing.shared",
 } as const satisfies Record<string, EventName>;

@@ -16,6 +16,11 @@ export type EventProperties = {
   "conversation.started": { recipientRole: string };
   "message.sent": undefined;
   "role.upgraded_to_farmer": undefined;
+  "search.performed": { query: string };
+  "filter.applied": { filterType: "category" | "method" | "sort" | "location"; value: string };
+  "map.viewed": { farmerCount: number };
+  "producer_profile.viewed": { farmerId: string };
+  "listing.shared": { entityType: "FARMER" | "EVENT" | "CROP_LOG" | "PRODUCT" | "PROXY_FARMER"; entityId: string };
 };
 
 export type EventName = keyof EventProperties;
