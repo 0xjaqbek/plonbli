@@ -15,6 +15,8 @@ import {
   Pencil,
   MapPin,
   Send,
+  Shield,
+  Download,
 } from "lucide-react";
 import { auth, signOut } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
@@ -26,10 +28,12 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Separator } from "@/shared/ui/separator";
 import { ThemeSelect } from "./theme-select";
+import { DeleteAccountDialog } from "./delete-account-dialog";
 
 export default async function ProfilePage() {
   const t = await getTranslations("profile");
   const tAuth = await getTranslations("auth");
+  const tLegal = await getTranslations("legal");
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -220,6 +224,50 @@ export default async function ProfilePage() {
               {tAuth("logout")}
             </button>
           </form>
+        </CardContent>
+      </Card>
+      {/* Prawa i dokumenty */}
+      <Card>
+        <CardContent className="pt-4 pb-2">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-3 pb-2">
+            {t("legalSection")}
+          </p>
+          <nav className="space-y-1">
+            <Link
+              href="/terms"
+              className="flex items-center justify-between px-3 py-2.5 rounded-md hover:bg-accent transition-colors"
+            >
+              <span className="flex items-center gap-3 text-sm">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                {tLegal("termsOfService")}
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+            <Link
+              href="/privacy"
+              className="flex items-center justify-between px-3 py-2.5 rounded-md hover:bg-accent transition-colors"
+            >
+              <span className="flex items-center gap-3 text-sm">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                {tLegal("privacyPolicy")}
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+            <Separator className="my-1" />
+            <a
+              href="/api/user/export"
+              download="plonbli-dane.json"
+              className="flex items-center justify-between px-3 py-2.5 rounded-md hover:bg-accent transition-colors"
+            >
+              <span className="flex items-center gap-3 text-sm">
+                <Download className="h-4 w-4 text-muted-foreground" />
+                {t("downloadData")}
+              </span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </a>
+            <Separator className="my-1" />
+            <DeleteAccountDialog userEmail={user.email} />
+          </nav>
         </CardContent>
       </Card>
     </div>
