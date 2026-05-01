@@ -39,7 +39,14 @@
     "noAccount": "Nie masz konta?",
     "hasAccount": "Masz juz konto?",
     "loginError": "Nieprawidlowy email lub haslo",
-    "registerSuccess": "Konto utworzone. Zaloguj sie."
+    "registerSuccess": "Konto utworzone. Zaloguj sie.",
+    "acceptTermsPrefix": "Akceptuje",
+    "acceptTermsAnd": "i",
+    "acceptTermsTerms": "Regulamin",
+    "acceptTermsPrivacy": "Polityke Prywatnosci",
+    "acceptTermsError": "Musisz zaakceptowac regulamin i polityke prywatnosci",
+    "termsLink": "Regulamin",
+    "privacyLink": "Polityka prywatnosci"
   },
   "profile": {
     "title": "Profil",
@@ -58,7 +65,15 @@
     "myGroups": "Moje grupy",
     "settings": "Ustawienia",
     "bio": "O mnie",
-    "bioPlaceholder": "Opowiedz o swoim gospodarstwie, metodach upraw, doswiadczeniu..."
+    "bioPlaceholder": "Opowiedz o swoim gospodarstwie, metodach upraw, doswiadczeniu...",
+    "legalSection": "Prawa i dokumenty",
+    "downloadData": "Pobierz swoje dane",
+    "deleteAccount": "Usun konto",
+    "deleteAccountDialogTitle": "Usun konto",
+    "deleteAccountDialogDescription": "Ta operacja jest nieodwracalna. Twoje dane osobowe zostana usuniete. Tresci, ktore opublikowales, pozostana na platformie jako \"Uzytkownik usuniety\".",
+    "deleteAccountConfirmLabel": "Wpisz swoj adres email, aby potwierdzic",
+    "deleteAccountConfirmButton": "Usun konto na zawsze",
+    "deleteAccountCancel": "Anuluj"
   },
   "nav": {
     "home": "Strona glowna",
