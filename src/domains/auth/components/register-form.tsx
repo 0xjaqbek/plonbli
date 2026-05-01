@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { registerSchema, type RegisterInput } from "../schemas/validation";
 import { register } from "../actions/register";
 import { trackEvent, EVENTS } from "@/domains/analytics";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+import { Checkbox } from "@/shared/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -25,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import Link from "next/link";
 
 interface RegisterFormProps {
   inviteCode?: string;
@@ -130,6 +131,36 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="acceptTerms"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value === true}
+                  onCheckedChange={(checked) =>
+                    field.onChange(checked === true ? true : false)
+                  }
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="font-normal text-sm cursor-pointer">
+                  {t("acceptTermsPrefix")}{" "}
+                  <Link href="/terms" className="text-primary underline">
+                    {t("acceptTermsTerms")}
+                  </Link>{" "}
+                  {t("acceptTermsAnd")}{" "}
+                  <Link href="/privacy" className="text-primary underline">
+                    {t("acceptTermsPrivacy")}
+                  </Link>
+                </FormLabel>
+                <FormMessage />
+              </div>
             </FormItem>
           )}
         />
