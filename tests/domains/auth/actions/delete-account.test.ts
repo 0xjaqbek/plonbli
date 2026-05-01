@@ -38,7 +38,7 @@ describe("deleteAccount", () => {
 
   it("returns error when user is not authenticated", async () => {
     const { auth } = await import("@/domains/auth/lib/auth");
-    vi.mocked(auth).mockResolvedValueOnce(null);
+    vi.mocked(auth).mockResolvedValueOnce(null as any);
 
     const result = await deleteAccount("jan@example.com");
 

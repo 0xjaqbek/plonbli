@@ -8,7 +8,7 @@ export const registerSchema = z.object({
   role: z.enum(["FARMER", "CONSUMER", "BOTH"]),
   inviteCode: z.string().optional(),
   acceptTerms: z.literal(true, {
-    errorMap: () => ({ message: "Musisz zaakceptowac regulamin i polityke prywatnosci" }),
+    error: "Musisz zaakceptowac regulamin i polityke prywatnosci",
   }),
 });
 

@@ -45,6 +45,7 @@ describe("register", () => {
       email: "bad",
       password: "short",
       role: "CONSUMER",
+      acceptTerms: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors).toBeDefined();
