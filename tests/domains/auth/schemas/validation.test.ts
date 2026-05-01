@@ -12,6 +12,41 @@ describe("registerSchema", () => {
       email: "jan@example.com",
       password: "SecurePass123!",
       role: "FARMER",
+      acceptTerms: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects missing acceptTerms", () => {
+    const result = registerSchema.safeParse({
+      name: "Jan Kowalski",
+      email: "jan@example.com",
+      password: "SecurePass123!",
+      role: "FARMER",
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toContain("acceptTerms");
+  });
+
+  it("rejects acceptTerms = false", () => {
+    const result = registerSchema.safeParse({
+      name: "Jan Kowalski",
+      email: "jan@example.com",
+      password: "SecurePass123!",
+      role: "FARMER",
+      acceptTerms: false,
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toContain("acceptTerms");
+  });
+
+  it("accepts acceptTerms = true", () => {
+    const result = registerSchema.safeParse({
+      name: "Jan Kowalski",
+      email: "jan@example.com",
+      password: "SecurePass123!",
+      role: "FARMER",
+      acceptTerms: true,
     });
     expect(result.success).toBe(true);
   });

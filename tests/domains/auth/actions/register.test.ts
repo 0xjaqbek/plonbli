@@ -62,6 +62,7 @@ describe("register", () => {
       email: "jan@example.com",
       password: "SecurePass123!",
       role: "CONSUMER",
+      acceptTerms: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors?.email).toBeDefined();
@@ -80,6 +81,7 @@ describe("register", () => {
       email: "jan@example.com",
       password: "SecurePass123!",
       role: "FARMER",
+      acceptTerms: true,
     });
 
     expect(hashPassword).toHaveBeenCalledWith("SecurePass123!");
@@ -105,6 +107,7 @@ describe("register", () => {
       password: "SecurePass123!",
       role: "CONSUMER",
       inviteCode: "validcode",
+      acceptTerms: true,
     });
 
     expect(result.success).toBe(true);
@@ -125,6 +128,7 @@ describe("register", () => {
       password: "SecurePass123!",
       role: "CONSUMER",
       inviteCode: "bogusCode",
+      acceptTerms: true,
     });
 
     expect(result.success).toBe(true);

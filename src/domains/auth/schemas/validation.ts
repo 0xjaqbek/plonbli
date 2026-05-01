@@ -7,6 +7,9 @@ export const registerSchema = z.object({
   password: z.string().min(8, "Haslo musi miec minimum 8 znakow").max(128),
   role: z.enum(["FARMER", "CONSUMER", "BOTH"]),
   inviteCode: z.string().optional(),
+  acceptTerms: z.literal(true, {
+    errorMap: () => ({ message: "Musisz zaakceptowac regulamin i polityke prywatnosci" }),
+  }),
 });
 
 export const loginSchema = z.object({
