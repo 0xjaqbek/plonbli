@@ -47,6 +47,9 @@ export default async function PrivacyPolicyPage() {
       <h2>{t("privacy.retention.title")}</h2>
       <p>{t("privacy.retention.body")}</p>
 
+      <h2>{t("privacy.administrator.title")}</h2>
+      <p>{t("privacy.administrator.body")}</p>
+
       <h2>{t("privacy.contact.title")}</h2>
       <p>{t("privacy.contact.body")}</p>
     </article>

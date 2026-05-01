@@ -8,6 +8,9 @@ export default async function TermsOfServicePage() {
       <h1>{t("termsOfService")}</h1>
       <p className="text-muted-foreground">{t("lastUpdated")}: 2026-03-30</p>
 
+      <h2>{t("terms.platformCharacter.title")}</h2>
+      <p>{t("terms.platformCharacter.body")}</p>
+
       <h2>{t("terms.general.title")}</h2>
       <p>{t("terms.general.body")}</p>
 
@@ -41,6 +44,16 @@ export default async function TermsOfServicePage() {
 
       <h2>{t("terms.changes.title")}</h2>
       <p>{t("terms.changes.body")}</p>
+
+      <h2>{t("terms.ranking.title")}</h2>
+      <p>{t("terms.ranking.body")}</p>
+
+      <h2>{t("terms.dsa.title")}</h2>
+      <p>{t("terms.dsa.body")}</p>
+      <h3>{t("terms.dsa.reportTitle")}</h3>
+      <p>{t("terms.dsa.reportBody")}</p>
+      <h3>{t("terms.dsa.procedureTitle")}</h3>
+      <p>{t("terms.dsa.procedureBody")}</p>
 
       <h2>{t("terms.contact.title")}</h2>
       <p>{t("terms.contact.body")}</p>

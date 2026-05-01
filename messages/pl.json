@@ -431,6 +431,10 @@
         "title": "Okres przechowywania danych",
         "body": "Dane osobowe przechowujemy przez okres korzystania z konta. Po usunieciu konta dane zostana trwale usuniete w ciagu 30 dni, z wyjatkiem danych wymaganych przepisami prawa."
       },
+      "administrator": {
+        "title": "Administrator danych osobowych",
+        "body": "Administratorem danych osobowych uzytkownikow serwisu Plonbli jest wlasciciel serwisu (dane kontaktowe: privacy@plonbli.pl). Dane przetwarzane sa wylacznie w celu umozliwienia kontaktu miedzy uzytkownikami na podstawie art. 6 ust. 1 lit. b RODO (wykonanie umowy/uslug) oraz art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes administratora — bezpieczenstwo platformy). Uzytkownik moze w kazdej chwili zadzadac usuniecia swoich danych lub ich eksportu — opcje te dostepne sa bezposrednio w ustawieniach konta."
+      },
       "contact": {
         "title": "Kontakt",
         "body": "W sprawach dotyczacych ochrony danych osobowych prosimy o kontakt pod adresem e-mail: privacy@plonbli.pl"
@@ -477,6 +481,22 @@
       "changes": {
         "title": "Zmiany Regulaminu",
         "body": "Regulamin moze byc zmieniany. O istotnych zmianach uzytkownicy zostana poinformowani za posrednictwem Serwisu. Dalsze korzystanie z Serwisu po wprowadzeniu zmian oznacza ich akceptacje."
+      },
+      "platformCharacter": {
+        "title": "Charakter serwisu",
+        "body": "Plonbli jest serwisem wylacznie ogloszeniowym, dzialajacym na zasadach pro bono. Serwis nie posredniczy w transakcjach ani platnosciach — wszelkie ustalenia dotyczace ceny, platnosci i dostawy sa dokonywane bezposrednio miedzy rolnikiem a kupujacym. Plonbli jest wylacznie dostawca uslugi hostingu ogloszen i nie jest strona zadnej umowy sprzedazy, nie weryfikuje produktow ani nie przetwarza platnosci."
+      },
+      "ranking": {
+        "title": "Kolejnosc wyswietlania ogloszen (P2B)",
+        "body": "O kolejnosci wyswietlania ogloszen decyduje wylacznie data ich dodania — najnowsze ogloszenia wyswietlane sa jako pierwsze. Serwis nie stosuje platnego promowania, reklam natywnych ani algorytmow personalizowanych. Wszyscy uzytkownicy traktowani sa rowno."
+      },
+      "dsa": {
+        "title": "Moderacja i zglaszanie tresci (DSA)",
+        "body": "Plonbli swiadczy usluge hostingu, umozliwiajac uzytkownikow przechowywanie i publiczne udostepnianie tresci. Serwis nie prowadzi uprzedniej weryfikacji zamieszczanych tresci, jednak zastrzega sobie prawo do moderacji w przypadku naruszenia prawa lub Regulaminu.",
+        "reportTitle": "Zglaszanie nielegalnych tresci",
+        "reportBody": "Kazda osoba moze zglosic tresc uznana za nielegalna lub niezgodna z Regulaminem, przesylajac wiadomosc e-mail na adres: contact@plonbli.pl. Zgloszenie powinno zawierac: adres URL spornej tresci, uzasadnienie naruszenia oraz opcjonalnie dane kontaktowe zglaszajacego.",
+        "procedureTitle": "Procedura i odwolania",
+        "procedureBody": "Po otrzymaniu zgloszenia Serwis niezwlocznie analizuje sprawe. W przypadku usuniecia tresci uzytkownik zostanie poinformowany mailowo z uzasadnieniem wskazujacym, ktory punkt Regulaminu lub przepis prawa zostal naruszony. Kazdy uzytkownik, ktorego tresc zostala usunieta, ma prawo odwolania sie w terminie 14 dni od decyzji, przesylajac wiadomosc na adres: contact@plonbli.pl."
       },
       "contact": {
         "title": "Kontakt",
