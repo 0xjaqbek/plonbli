@@ -3,6 +3,7 @@
 import { db } from "@/shared/db";
 import { events } from "@/shared/db/schema";
 import { auth } from "@/domains/auth/lib/auth";
+import { geocodeLocation } from "@/domains/geo/geocode";
 import {
   createEventSchema,
   type CreateEventInput,
@@ -33,14 +34,27 @@ export async function createEvent(
     description,
     type,
     groupId,
-    location,
-    latitude,
-    longitude,
+    voivodeship,
+    county,
+    commune,
     coverImage,
     startDate,
     endDate,
     recurrence,
   } = parsed.data;
+
+  let latitude: string | null = null;
+  let longitude: string | null = null;
+  let location: string | null = null;
+
+  if (voivodeship || county || commune) {
+    const coords = await geocodeLocation({ voivodeship, county, commune });
+    if (coords) {
+      latitude = coords.latitude;
+      longitude = coords.longitude;
+    }
+    location = [commune, county, voivodeship].filter(Boolean).join(", ");
+  }
 
   const [event] = await db
     .insert(events)
@@ -50,9 +64,9 @@ export async function createEvent(
       title,
       description,
       type,
-      location: location ?? null,
-      latitude: latitude ?? null,
-      longitude: longitude ?? null,
+      location,
+      latitude,
+      longitude,
       coverImage: coverImage ?? null,
       startDate: new Date(startDate),
       endDate: new Date(endDate),

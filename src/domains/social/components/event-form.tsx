@@ -15,6 +15,10 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { ImageUpload } from "@/shared/ui/image-upload";
+import {
+  LocationCascade,
+  type LocationValue,
+} from "@/domains/geo/components/location-cascade";
 import { createEvent } from "../actions/create-event";
 
 interface EventFormProps {
@@ -30,7 +34,11 @@ export function EventForm({ groupId }: EventFormProps) {
   const [type, setType] = useState<"MARKET" | "OPEN_DAY" | "MEETUP" | "OTHER">(
     "MARKET"
   );
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState<LocationValue>({
+    voivodeship: null,
+    county: null,
+    commune: null,
+  });
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [recurrence, setRecurrence] = useState<string>("");
@@ -47,7 +55,9 @@ export function EventForm({ groupId }: EventFormProps) {
         description: description.trim(),
         type,
         groupId,
-        location: location.trim() || undefined,
+        voivodeship: location.voivodeship ?? undefined,
+        county: location.county ?? undefined,
+        commune: location.commune ?? undefined,
         coverImage: coverImage[0] || undefined,
         startDate,
         endDate,
@@ -107,15 +117,16 @@ export function EventForm({ groupId }: EventFormProps) {
         </Select>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="location">{t("address")}</Label>
-        <Input
-          id="location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          maxLength={300}
-        />
-      </div>
+      <LocationCascade
+        mode="form"
+        value={location}
+        onChange={setLocation}
+        labels={{
+          voivodeship: t("voivodeship"),
+          county: t("county"),
+          commune: t("commune"),
+        }}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

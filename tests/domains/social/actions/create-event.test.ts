@@ -19,6 +19,10 @@ vi.mock("@/shared/db", () => {
   return { db: mockDb };
 });
 
+vi.mock("@/domains/geo/geocode", () => ({
+  geocodeLocation: vi.fn(),
+}));
+
 describe("createEvent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -84,5 +88,76 @@ describe("createEvent", () => {
     if (result.success) {
       expect(result.eventId).toBe("event-1");
     }
+  });
+
+  it("geocodes voivodeship/county/commune and saves lat/lng", async () => {
+    const { auth } = await import("@/domains/auth/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({
+      user: { id: "user-1", email: "a@b.com", name: "A" },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+
+    const { geocodeLocation } = await import("@/domains/geo/geocode");
+    vi.mocked(geocodeLocation).mockResolvedValueOnce({
+      latitude: "50.0647",
+      longitude: "19.9450",
+    });
+
+    const { db } = await import("@/shared/db");
+    const mockReturning = vi.fn().mockResolvedValueOnce([{ id: "event-2" }]);
+    const mockValues = vi.fn().mockReturnValue({ returning: mockReturning });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.mocked(db.insert).mockReturnValueOnce({ values: mockValues } as any);
+
+    const result = await createEvent({
+      title: "Targ w Krakowie",
+      type: "MARKET",
+      voivodeship: "malopolskie",
+      county: "Kraków",
+      commune: "Kraków",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+
+    expect(result.success).toBe(true);
+    expect(geocodeLocation).toHaveBeenCalledWith({
+      voivodeship: "malopolskie",
+      county: "Kraków",
+      commune: "Kraków",
+    });
+    const insertedValues = mockValues.mock.calls[0][0];
+    expect(insertedValues.latitude).toBe("50.0647");
+    expect(insertedValues.longitude).toBe("19.9450");
+    expect(insertedValues.location).toBe("Kraków, Kraków, malopolskie");
+  });
+
+  it("creates event without coordinates when geocoding fails", async () => {
+    const { auth } = await import("@/domains/auth/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({
+      user: { id: "user-1", email: "a@b.com", name: "A" },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+
+    const { geocodeLocation } = await import("@/domains/geo/geocode");
+    vi.mocked(geocodeLocation).mockResolvedValueOnce(null);
+
+    const { db } = await import("@/shared/db");
+    const mockReturning = vi.fn().mockResolvedValueOnce([{ id: "event-3" }]);
+    const mockValues = vi.fn().mockReturnValue({ returning: mockReturning });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.mocked(db.insert).mockReturnValueOnce({ values: mockValues } as any);
+
+    const result = await createEvent({
+      title: "Targ w regionie",
+      type: "MARKET",
+      voivodeship: "malopolskie",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+    });
+
+    expect(result.success).toBe(true);
+    const insertedValues = mockValues.mock.calls[0][0];
+    expect(insertedValues.latitude).toBeNull();
+    expect(insertedValues.longitude).toBeNull();
   });
 });

@@ -150,6 +150,19 @@ describe("createEventSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts event with voivodeship, county and commune", () => {
+    const result = createEventSchema.safeParse({
+      title: "Targ w Krakowie",
+      type: "MARKET",
+      startDate: "2026-04-15T09:00:00Z",
+      endDate: "2026-04-15T15:00:00Z",
+      voivodeship: "malopolskie",
+      county: "Kraków",
+      commune: "Kraków",
+    });
+    expect(result.success).toBe(true);
+  });
+
   it("rejects empty title", () => {
     const result = createEventSchema.safeParse({
       title: "",
