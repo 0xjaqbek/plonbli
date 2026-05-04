@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { AnalyticsScript } from "@/domains/analytics";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"] });
 
@@ -26,7 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <AnalyticsScript />
+      </body>
     </html>
   );
 }

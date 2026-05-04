@@ -1,7 +1,6 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/shared/ui/theme-provider";
-import { AnalyticsScript } from "@/domains/analytics";
 import { Toaster } from "sonner";
 
 export default async function LocaleLayout({
@@ -19,7 +18,6 @@ export default async function LocaleLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <AnalyticsScript />
         {children}
         <Toaster richColors />
       </ThemeProvider>

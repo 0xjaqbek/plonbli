@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { FormItem, FormLabel } from "@/shared/ui/form";
+import { Label } from "@/shared/ui/label";
 import { VOIVODESHIPS } from "@/domains/geo/types";
 import { getPowiats, getGminas } from "@/domains/geo/teryt";
 
@@ -152,18 +152,18 @@ export function LocationCascade({
 
   return (
     <div className="space-y-4">
-      <FormItem>
-        <FormLabel>{labelVoiv}</FormLabel>
+      <div className="space-y-2">
+        <Label>{labelVoiv}</Label>
         {voivodeshipSelect}
-      </FormItem>
-      <FormItem>
-        <FormLabel>{labelCounty}</FormLabel>
+      </div>
+      <div className="space-y-2">
+        <Label>{labelCounty}</Label>
         {countySelect}
-      </FormItem>
-      <FormItem>
-        <FormLabel>{labelCommune}</FormLabel>
+      </div>
+      <div className="space-y-2">
+        <Label>{labelCommune}</Label>
         {communeSelect}
-      </FormItem>
+      </div>
     </div>
   );
 }
