@@ -14,6 +14,7 @@ import { OrderItemsTable } from "../order-detail/order-items-table";
 import { confirmOrder } from "../../actions/confirm-order";
 import { updateOrderStatus, markAsShipped } from "../../actions/update-order-status";
 import { cancelOrder } from "../../actions/cancel-order";
+import { modifyOrder } from "../../actions/modify-order";
 import type { OrderDetail } from "../../queries/get-order";
 import { useBadges } from "@/shared/lib/badge-context";
 
@@ -31,6 +32,17 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
   const [cancelReason, setCancelReason] = useState("");
   const [showCancel, setShowCancel] = useState(false);
   const [showModify, setShowModify] = useState(false);
+  const [modifiedQuantities, setModifiedQuantities] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      order.items.map((item) => [
+        item.id,
+        item.modifiedQuantity !== null && item.modifiedQuantity !== undefined
+          ? String(Number(item.modifiedQuantity))
+          : String(Number(item.quantity)),
+      ])
+    )
+  );
+  const [farmerNote, setFarmerNote] = useState(order.farmerNote ?? "");
   const { clearUnseenOrders } = useBadges();
 
   useEffect(() => {
@@ -77,6 +89,26 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
     startTransition(async () => {
       const result = await cancelOrder({ orderId: order.id, reason: cancelReason });
       if (result.success) router.refresh();
+    });
+  }
+
+  function handleModifySave() {
+    startTransition(async () => {
+      const items = order.items.map((item) => ({
+        orderItemId: item.id,
+        modifiedQuantity: modifiedQuantities[item.id] !== undefined
+          ? Number(modifiedQuantities[item.id])
+          : undefined,
+      }));
+      const result = await modifyOrder({
+        orderId: order.id,
+        items,
+        farmerNote: farmerNote || undefined,
+      });
+      if (result.success) {
+        setShowModify(false);
+        router.refresh();
+      }
     });
   }
 
@@ -134,8 +166,44 @@ export function FarmerOrderDetail({ order }: FarmerOrderDetailProps) {
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <p className="text-sm text-muted-foreground">{t("modifyHint")}</p>
-                <p className="text-xs text-muted-foreground italic">{t("modifyFormPlaceholder")}</p>
-                <Button variant="ghost" onClick={() => setShowModify(false)}>{tCommon("cancel")}</Button>
+                <div className="space-y-3">
+                  {order.items.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3">
+                      <span className="flex-1 text-sm">{item.productName}</span>
+                      <span className="text-xs text-muted-foreground w-16 text-right">
+                        {t("quantity")}: {Number(item.quantity)} {item.unit.toLowerCase()}
+                      </span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="w-28"
+                        value={modifiedQuantities[item.id] ?? ""}
+                        onChange={(e) =>
+                          setModifiedQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))
+                        }
+                      />
+                      <span className="text-xs text-muted-foreground w-10">{item.unit.toLowerCase()}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-1">
+                  <Label>{t("farmerNote")}</Label>
+                  <textarea
+                    className="w-full border rounded p-2 text-sm"
+                    rows={2}
+                    value={farmerNote}
+                    onChange={(e) => setFarmerNote(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleModifySave} isLoading={isPending}>
+                    {tCommon("save")}
+                  </Button>
+                  <Button variant="ghost" onClick={() => setShowModify(false)} disabled={isPending}>
+                    {tCommon("cancel")}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
