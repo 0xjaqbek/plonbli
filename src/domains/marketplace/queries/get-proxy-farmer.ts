@@ -1,4 +1,4 @@
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, SQL } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { proxyFarmers, users, proxyFarmerFollows, reviews } from "@/shared/db/schema";
 
@@ -75,8 +75,15 @@ export async function getProxyFarmerCount(creatorId: string) {
   return count;
 }
 
-export async function getProxyFarmersForList() {
-  return db
+export async function getProxyFarmersForList(
+  filters: { voivodeship?: string; county?: string; commune?: string } = {}
+) {
+  const conditions: SQL[] = [];
+  if (filters.voivodeship) conditions.push(eq(proxyFarmers.voivodeship, filters.voivodeship));
+  if (filters.county) conditions.push(eq(proxyFarmers.county, filters.county));
+  if (filters.commune) conditions.push(eq(proxyFarmers.commune, filters.commune));
+
+  const query = db
     .select({
       id: proxyFarmers.id,
       name: proxyFarmers.name,
@@ -86,10 +93,19 @@ export async function getProxyFarmersForList() {
       isProxy: sql<boolean>`true`.as("is_proxy"),
     })
     .from(proxyFarmers);
+
+  return conditions.length > 0 ? query.where(and(...conditions)) : query;
 }
 
-export async function getProxyFarmersForMap() {
-  return db
+export async function getProxyFarmersForMap(
+  filters: { voivodeship?: string; county?: string; commune?: string } = {}
+) {
+  const conditions: SQL[] = [];
+  if (filters.voivodeship) conditions.push(eq(proxyFarmers.voivodeship, filters.voivodeship));
+  if (filters.county) conditions.push(eq(proxyFarmers.county, filters.county));
+  if (filters.commune) conditions.push(eq(proxyFarmers.commune, filters.commune));
+
+  const query = db
     .select({
       id: proxyFarmers.id,
       name: proxyFarmers.name,
@@ -102,4 +118,6 @@ export async function getProxyFarmersForMap() {
       isProxy: sql<boolean>`true`.as("is_proxy"),
     })
     .from(proxyFarmers);
+
+  return conditions.length > 0 ? query.where(and(...conditions)) : query;
 }

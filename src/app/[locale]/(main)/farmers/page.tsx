@@ -33,9 +33,9 @@ export default async function FarmersPage({
   const [regularFarmers, proxyFarmers, farmersForMap, proxyForMap] =
     await Promise.all([
       getFarmers(filters),
-      getProxyFarmersForList(),
-      getFarmersForMap(),
-      getProxyFarmersForMap(),
+      getProxyFarmersForList(filters),
+      getFarmersForMap(filters),
+      getProxyFarmersForMap(filters),
     ]);
 
   type FarmerItem = {

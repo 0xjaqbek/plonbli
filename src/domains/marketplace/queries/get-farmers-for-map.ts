@@ -1,8 +1,16 @@
-import { or, eq } from "drizzle-orm";
+import { or, eq, and } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
+import type { SearchFarmersInput } from "../schemas/validation";
 
-export async function getFarmersForMap() {
+export async function getFarmersForMap(filters: SearchFarmersInput = {}) {
+  const roleCondition = or(eq(users.role, "FARMER"), eq(users.role, "BOTH"))!;
+  const conditions = [roleCondition];
+
+  if (filters.voivodeship) conditions.push(eq(users.voivodeship, filters.voivodeship));
+  if (filters.county) conditions.push(eq(users.county, filters.county));
+  if (filters.commune) conditions.push(eq(users.commune, filters.commune));
+
   return db
     .select({
       id: users.id,
@@ -15,7 +23,7 @@ export async function getFarmersForMap() {
       commune: users.commune,
     })
     .from(users)
-    .where(or(eq(users.role, "FARMER"), eq(users.role, "BOTH")));
+    .where(and(...conditions));
 }
 
 export type FarmerForMap = Awaited<ReturnType<typeof getFarmersForMap>>[number];
