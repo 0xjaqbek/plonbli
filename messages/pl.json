@@ -116,7 +116,11 @@
     "available": "Dostepne",
     "seasonal": "Sezonowe",
     "outOfStock": "Niedostepne",
-    "showMore": "Pokaz wiecej"
+    "showMore": "Pokaz wiecej",
+    "proxySection": "Rolnicy bez rejestracji",
+    "proxySectionDesc": "Oferty rolników dodane przez innych użytkowników",
+    "proxyContactHint": "Skontaktuj się z twórcą profilu",
+    "proxyBadge": "Bez rejestracji"
   },
   "product": {
     "name": "Nazwa produktu",
@@ -671,6 +675,13 @@
     "indicativeValueNote": "Kwota do ustalenia bezpośrednio z rolnikiem",
     "indicativeDeliveryCost": "Orientacyjny koszt dostawy",
     "inquiryNote": "Szczegóły płatności i dostawy ustalisz bezpośrednio z rolnikiem po złożeniu zapytania."
+  },
+  "installPrompt": {
+    "title": "Zainstaluj aplikację",
+    "body": "Dodaj plonbli do ekranu głównego i korzystaj jak z natywnej aplikacji.",
+    "install": "Zainstaluj",
+    "dismiss": "Nie teraz",
+    "iosInstruction": "Dotknij ikony udostępniania (\u2191) na dole ekranu, a następnie wybierz „Dodaj do ekranu głównego"
   },
   "notifications": {
     "promptTitle": "Włącz powiadomienia",

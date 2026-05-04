@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
+import { InstallPromptCard } from "@/domains/notifications/components/install-prompt-card";
 
 export default async function AuthLayout({
   children,
@@ -35,6 +36,7 @@ export default async function AuthLayout({
           {t("privacyLink")}
         </Link>
       </p>
+      <InstallPromptCard />
     </div>
   );
 }

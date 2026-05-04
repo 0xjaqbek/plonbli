@@ -8,15 +8,10 @@ export const metadata: Metadata = {
   title: "plonbli",
   description: "Platforma dla rolnikow i konsumentow",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/plonbliLogoBezTla-removebg-preview.png",
-    apple: "/plonbliLogoBezTlaKolo-removebg-preview.png",
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "plonbli",
-    startupImage: "/plonbliLogoBezTlaKolo-removebg-preview.png",
   },
 };
 
