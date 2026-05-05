@@ -3,18 +3,8 @@
 import "leaflet/dist/leaflet.css";
 import { useMemo, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import L from "leaflet";
 import { useTranslations } from "next-intl";
 import { VOIVODESHIP_CENTERS } from "@/domains/geo";
-
-// Fix default marker icons not loading in Next.js
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 import type { FarmerForMap } from "../queries/get-farmers-for-map";
 import { useAnalytics, EVENTS } from "@/domains/analytics";
 
@@ -103,6 +93,16 @@ export function FarmerMap({ farmers }: FarmerMapProps) {
   const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
+    // Fix default marker icons not loading in Next.js
+    import("leaflet").then((L) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+    });
     setMapReady(true);
     trackEvent(EVENTS.MAP_VIEWED, { farmerCount: resolved.length });
     if (navigator.geolocation) {
@@ -136,7 +136,7 @@ export function FarmerMap({ farmers }: FarmerMapProps) {
   const zoom = userPos ? USER_ZOOM : POLAND_ZOOM;
 
   return (
-    <div className="h-[500px] rounded-md overflow-hidden border">
+    <div className="h-[500px] rounded-md overflow-hidden border isolate">
       <MapContainer center={center} zoom={zoom} className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

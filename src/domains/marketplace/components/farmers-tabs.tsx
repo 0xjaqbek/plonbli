@@ -1,9 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { FarmerMap } from "./farmer-map";
 import type { FarmerForMap } from "../queries/get-farmers-for-map";
+
+const FarmerMap = dynamic(() => import("./farmer-map").then((m) => m.FarmerMap), { ssr: false });
 
 interface FarmersTabsProps {
   farmers: FarmerForMap[];
