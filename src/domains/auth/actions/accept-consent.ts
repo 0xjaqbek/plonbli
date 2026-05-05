@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { users } from "@/shared/db/schema";
-import { auth } from "@/domains/auth/lib/auth";
+import { auth, unstable_update } from "@/domains/auth/lib/auth";
 
 export async function acceptConsent(): Promise<{ success: boolean }> {
   const session = await auth();
@@ -14,6 +14,8 @@ export async function acceptConsent(): Promise<{ success: boolean }> {
     .update(users)
     .set({ termsAcceptedAt: now, privacyAcceptedAt: now })
     .where(eq(users.id, session.user.id));
+
+  await unstable_update({});
 
   return { success: true };
 }

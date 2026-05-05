@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { acceptConsent } from "@/domains/auth/actions/accept-consent";
 import { Button } from "@/shared/ui/button";
@@ -13,7 +12,6 @@ import { Label } from "@/shared/ui/label";
 export default function ConsentPage() {
   const t = useTranslations("auth");
   const router = useRouter();
-  const { update } = useSession();
   const [isPending, startTransition] = useTransition();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
@@ -24,7 +22,6 @@ export default function ConsentPage() {
     startTransition(async () => {
       const result = await acceptConsent();
       if (result.success) {
-        await update();
         router.replace("/");
       }
     });
