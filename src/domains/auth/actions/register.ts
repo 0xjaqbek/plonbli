@@ -34,9 +34,10 @@ export async function register(input: RegisterInput): Promise<RegisterResult> {
 
   const passwordHash = await hashPassword(password);
 
+  const now = new Date();
   const [newUser] = await db
     .insert(users)
-    .values({ name, email, passwordHash, role })
+    .values({ name, email, passwordHash, role, termsAcceptedAt: now, privacyAcceptedAt: now })
     .returning({ id: users.id });
 
   if (inviteCode) {

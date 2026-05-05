@@ -8,6 +8,14 @@ import { users, authAccounts } from "@/shared/db/schema";
 import { verifyPassword } from "./passwords";
 import { loginSchema } from "../schemas/validation";
 
+async function checkNeedsConsent(userId: string): Promise<boolean> {
+  const dbUser = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { termsAcceptedAt: true, privacyAcceptedAt: true },
+  });
+  return !dbUser?.termsAcceptedAt || !dbUser?.privacyAcceptedAt;
+}
+
 export const authConfig: NextAuthConfig = {
   providers: [
     Credentials({
@@ -112,11 +120,16 @@ export const authConfig: NextAuthConfig = {
       if (token.sub) {
         session.user.id = token.sub;
       }
+      session.user.needsConsent = token.needsConsent as boolean;
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.sub = user.id;
+        token.needsConsent = await checkNeedsConsent(user.id!);
+      }
+      if (trigger === "update") {
+        token.needsConsent = await checkNeedsConsent(token.sub!);
       }
       return token;
     },

@@ -40,13 +40,17 @@
     "hasAccount": "Masz już konto?",
     "loginError": "Nieprawidłowy email lub hasło",
     "registerSuccess": "Konto utworzone. Zaloguj się.",
-    "acceptTermsPrefix": "Akceptuję",
-    "acceptTermsAnd": "i",
-    "acceptTermsTerms": "Regulamin",
-    "acceptTermsPrivacy": "Politykę Prywatności",
-    "acceptTermsError": "Musisz zaakceptować regulamin i politykę prywatności",
+    "acceptTermsLabel": "Akceptuję",
+    "acceptTermsLink": "Regulamin",
+    "acceptTermsError": "Musisz zaakceptować regulamin",
+    "acceptPrivacyLabel": "Akceptuję",
+    "acceptPrivacyLink": "Politykę Prywatności",
+    "acceptPrivacyError": "Musisz zaakceptować politykę prywatności",
     "termsLink": "Regulamin",
-    "privacyLink": "Polityka prywatności"
+    "privacyLink": "Polityka prywatności",
+    "consentTitle": "Zanim zaczniesz",
+    "consentDescription": "Aby korzystać z platformy Plonbli, musisz zaakceptować poniższe dokumenty.",
+    "consentSubmit": "Akceptuję i przechodzę dalej"
   },
   "profile": {
     "title": "Profil",

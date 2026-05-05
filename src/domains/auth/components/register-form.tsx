@@ -9,9 +9,11 @@ import Link from "next/link";
 import { registerSchema, type RegisterInput } from "../schemas/validation";
 import { register } from "../actions/register";
 import { trackEvent, EVENTS } from "@/domains/analytics";
+import { signIn } from "next-auth/react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Checkbox } from "@/shared/ui/checkbox";
+import { Separator } from "@/shared/ui/separator";
 import {
   Form,
   FormControl,
@@ -68,6 +70,7 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
   }
 
   return (
+    <div className="space-y-4">
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
@@ -135,35 +138,59 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="acceptTerms"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Checkbox
-                  checked={field.value === true}
-                  onCheckedChange={(checked) =>
-                    field.onChange(checked === true ? true : false)
-                  }
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="font-normal text-sm cursor-pointer">
-                  {t("acceptTermsPrefix")}{" "}
-                  <Link href="/terms" className="text-primary underline">
-                    {t("acceptTermsTerms")}
-                  </Link>{" "}
-                  {t("acceptTermsAnd")}{" "}
-                  <Link href="/privacy" className="text-primary underline">
-                    {t("acceptTermsPrivacy")}
-                  </Link>
-                </FormLabel>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col gap-3">
+          <FormField
+            control={form.control}
+            name="acceptTerms"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value === true}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked === true ? true : false)
+                    }
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-normal text-sm cursor-pointer">
+                    {t("acceptTermsLabel")}{" "}
+                    <Link href="/terms" className="text-primary underline">
+                      {t("acceptTermsLink")}
+                    </Link>
+                  </FormLabel>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="acceptPrivacy"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value === true}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked === true ? true : false)
+                    }
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-normal text-sm cursor-pointer">
+                    {t("acceptPrivacyLabel")}{" "}
+                    <Link href="/privacy" className="text-primary underline">
+                      {t("acceptPrivacyLink")}
+                    </Link>
+                  </FormLabel>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
 
         {serverError && (
           <p className="text-sm text-destructive">{serverError}</p>
@@ -172,14 +199,40 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
         <Button type="submit" className="w-full" isLoading={isPending}>
           {t("register")}
         </Button>
-
-        <p className="text-center text-sm text-muted-foreground">
-          {t("hasAccount")}{" "}
-          <Link href="/login" className="text-primary underline">
-            {t("login")}
-          </Link>
-        </p>
       </form>
     </Form>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            trackEvent(EVENTS.AUTH_REGISTERED, { method: "google" });
+            signIn("google", { callbackUrl: "/" });
+          }}
+        >
+          Google
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            trackEvent(EVENTS.AUTH_REGISTERED, { method: "facebook" });
+            signIn("facebook", { callbackUrl: "/" });
+          }}
+        >
+          Facebook
+        </Button>
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        {t("hasAccount")}{" "}
+        <Link href="/login" className="text-primary underline">
+          {t("login")}
+        </Link>
+      </p>
+    </div>
   );
 }
