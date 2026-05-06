@@ -81,36 +81,24 @@ export async function getFeed(userId: string, page = 1) {
       groupName: groups.name,
       sharedEntityType: posts.sharedEntityType,
       sharedEntityId: posts.sharedEntityId,
+      reactionCount: sql<number>`cast(count(distinct ${reactions.userId}) as int)`,
+      commentCount: sql<number>`cast(count(distinct ${comments.id}) as int)`,
+      liked: sql<boolean>`bool_or(${reactions.userId} = ${userId})`,
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
     .leftJoin(groups, eq(posts.groupId, groups.id))
+    .leftJoin(reactions, eq(reactions.postId, posts.id))
+    .leftJoin(comments, eq(comments.postId, posts.id))
     .where(or(...conditions))
+    .groupBy(posts.id, users.id, groups.id)
     .orderBy(desc(posts.createdAt))
     .limit(POSTS_PER_PAGE)
     .offset(offset);
 
-  // Get reaction counts and comment counts for each post
+  // Resolve shared entities (only for posts that have them — typically rare)
   const enriched = await Promise.all(
     feedPosts.map(async (post) => {
-      const [{ count: reactionCount }] = await db
-        .select({ count: sql<number>`cast(count(*) as int)` })
-        .from(reactions)
-        .where(eq(reactions.postId, post.id));
-
-      const [{ count: commentCount }] = await db
-        .select({ count: sql<number>`cast(count(*) as int)` })
-        .from(comments)
-        .where(eq(comments.postId, post.id));
-
-      // Check if current user liked this post
-      const userReaction = await db.query.reactions.findFirst({
-        where: and(
-          eq(reactions.postId, post.id),
-          eq(reactions.userId, userId)
-        ),
-      });
-
       let sharedEntity: SharedEntityData | null = null;
       if (post.sharedEntityType && post.sharedEntityId) {
         sharedEntity = await resolveSharedEntity(
@@ -118,14 +106,7 @@ export async function getFeed(userId: string, page = 1) {
           post.sharedEntityId
         );
       }
-
-      return {
-        ...post,
-        reactionCount,
-        commentCount,
-        liked: !!userReaction,
-        sharedEntity,
-      };
+      return { ...post, sharedEntity };
     })
   );
 
