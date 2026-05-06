@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   title: "plonbli",
   description: "Platforma dla rolnikow i konsumentow",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/favicon.ico",
+    apple: "/icons/android-chrome-192x192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
