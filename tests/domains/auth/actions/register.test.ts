@@ -46,6 +46,7 @@ describe("register", () => {
       password: "short",
       role: "CONSUMER",
       acceptTerms: true,
+      acceptPrivacy: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors).toBeDefined();
@@ -64,6 +65,7 @@ describe("register", () => {
       password: "SecurePass123!",
       role: "CONSUMER",
       acceptTerms: true,
+      acceptPrivacy: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors?.email).toBeDefined();
@@ -83,6 +85,7 @@ describe("register", () => {
       password: "SecurePass123!",
       role: "FARMER",
       acceptTerms: true,
+      acceptPrivacy: true,
     });
 
     expect(hashPassword).toHaveBeenCalledWith("SecurePass123!");
@@ -109,6 +112,7 @@ describe("register", () => {
       role: "CONSUMER",
       inviteCode: "validcode",
       acceptTerms: true,
+      acceptPrivacy: true,
     });
 
     expect(result.success).toBe(true);
@@ -130,6 +134,7 @@ describe("register", () => {
       role: "CONSUMER",
       inviteCode: "bogusCode",
       acceptTerms: true,
+      acceptPrivacy: true,
     });
 
     expect(result.success).toBe(true);
