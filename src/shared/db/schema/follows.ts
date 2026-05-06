@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, primaryKey, index } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { proxyFarmers } from "./proxy-farmers";
 
@@ -17,6 +17,7 @@ export const follows = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.followerId, table.followeeId] }),
+    index("idx_follows_followee_id").on(table.followeeId),
   ]
 );
 

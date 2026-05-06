@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, pgEnum, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { conversations } from "./conversations";
 import { users } from "./users";
@@ -25,7 +25,10 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+},
+(table) => [
+  index("idx_messages_conversation_created").on(table.conversationId, table.createdAt),
+]);
 
 export type Message = typeof messages.$inferSelect;
 export type NewMessage = typeof messages.$inferInsert;

@@ -5,6 +5,7 @@ import {
   numeric,
   pgEnum,
   jsonb,
+  index,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { products } from "./products";
@@ -59,7 +60,11 @@ export const listings = pgTable("listings", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+},
+(table) => [
+  index("idx_listings_product_id").on(table.productId),
+  index("idx_listings_availability_created").on(table.availability, table.createdAt),
+]);
 
 export type Listing = typeof listings.$inferSelect;
 export type NewListing = typeof listings.$inferInsert;

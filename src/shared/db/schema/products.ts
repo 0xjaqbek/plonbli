@@ -4,6 +4,7 @@ import {
   varchar,
   timestamp,
   pgEnum,
+  index,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
@@ -37,7 +38,11 @@ export const products = pgTable("products", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+},
+(table) => [
+  index("idx_products_farmer_id").on(table.farmerId),
+  index("idx_products_category_id").on(table.categoryId),
+]);
 
 export type Product = typeof products.$inferSelect;
 export type NewProduct = typeof products.$inferInsert;

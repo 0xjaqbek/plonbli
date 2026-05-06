@@ -5,6 +5,7 @@ import {
   timestamp,
   pgEnum,
   primaryKey,
+  index,
 } from "drizzle-orm/pg-core";
 import { conversations } from "./conversations";
 import { users } from "./users";
@@ -28,6 +29,7 @@ export const conversationMembers = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.conversationId, table.userId] }),
+    index("idx_conversation_members_user_id").on(table.userId),
   ]
 );
 

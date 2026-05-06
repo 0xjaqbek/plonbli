@@ -1,4 +1,4 @@
-import { pgTable, text, numeric, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, numeric, timestamp, pgEnum, boolean, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { listings } from "./listings";
@@ -45,7 +45,12 @@ export const orders = pgTable("orders", {
   farmerHasSeen: boolean("farmer_has_seen").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
-});
+},
+(table) => [
+  index("idx_orders_customer_created").on(table.customerId, table.createdAt),
+  index("idx_orders_farmer_created").on(table.farmerId, table.createdAt),
+  index("idx_orders_status").on(table.status),
+]);
 
 export type Order = typeof orders.$inferSelect;
 export type NewOrder = typeof orders.$inferInsert;

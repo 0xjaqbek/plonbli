@@ -1,14 +1,17 @@
-import { pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, varchar, index } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
-export const sessions = pgTable("sessions", {
-  sessionToken: varchar("session_token", { length: 255 })
-    .primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { withTimezone: true }).notNull(),
-});
+export const sessions = pgTable(
+  "sessions",
+  {
+    sessionToken: varchar("session_token", { length: 255 }).primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expires: timestamp("expires", { withTimezone: true }).notNull(),
+  },
+  (table) => [index("idx_sessions_user_id").on(table.userId)]
+);
 
 export const verificationTokens = pgTable(
   "verification_tokens",

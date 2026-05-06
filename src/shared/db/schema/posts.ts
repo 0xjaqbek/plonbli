@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, pgEnum, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { groups } from "./groups";
@@ -36,7 +36,12 @@ export const posts = pgTable("posts", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+},
+(table) => [
+  index("idx_posts_author_created").on(table.authorId, table.createdAt),
+  index("idx_posts_group_created").on(table.groupId, table.createdAt),
+  index("idx_posts_visibility_created").on(table.visibility, table.createdAt),
+]);
 
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;

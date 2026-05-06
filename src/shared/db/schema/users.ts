@@ -4,6 +4,7 @@ import {
   timestamp,
   pgEnum,
   varchar,
+  index,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
@@ -43,7 +44,11 @@ export const users = pgTable("users", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+},
+(table) => [
+  index("idx_users_role").on(table.role),
+  index("idx_users_voivodeship").on(table.voivodeship),
+]);
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
