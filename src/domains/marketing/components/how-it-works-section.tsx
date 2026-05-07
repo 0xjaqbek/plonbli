@@ -28,13 +28,13 @@ export function HowItWorksSection({
       <div className="max-w-3xl mx-auto px-4 space-y-8">
         <h2 className="text-3xl font-bold text-center">{title}</h2>
         <Tabs defaultValue="consumer" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="consumer" className="gap-2">
-              <UserRound className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-2 h-auto">
+            <TabsTrigger value="consumer" className="gap-1.5 py-2 text-xs sm:text-sm">
+              <UserRound className="h-3.5 w-3.5 flex-shrink-0" />
               {tabConsumer}
             </TabsTrigger>
-            <TabsTrigger value="farmer" className="gap-2">
-              <Tractor className="h-4 w-4" />
+            <TabsTrigger value="farmer" className="gap-1.5 py-2 text-xs sm:text-sm">
+              <Tractor className="h-3.5 w-3.5 flex-shrink-0" />
               {tabFarmer}
             </TabsTrigger>
           </TabsList>
