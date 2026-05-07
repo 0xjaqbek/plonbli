@@ -100,7 +100,21 @@
       "Bash(vercel deploy:*)",
       "Bash(vercel ls:*)",
       "Bash(vercel logs:*)",
-      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); orders=d.get\\(''''orders'''',{}\\); [print\\(k,'''':'''',repr\\(v\\)\\) for k,v in orders.items\\(\\)]\")"
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); orders=d.get\\(''''orders'''',{}\\); [print\\(k,'''':'''',repr\\(v\\)\\) for k,v in orders.items\\(\\)]\")",
+      "Bash(grep -h \"pgTable\\(\" D:/plonbli/src/shared/db/schema/*.ts)",
+      "mcp__Neon__get_connection_string",
+      "Bash(find src/domains/notifications -name *.ts)",
+      "Bash(xargs -I{} ls {})",
+      "Bash(python:*)",
+      "Bash(cat \"D:/plonbli/src/app/[locale]/\\(auth\\)/layout.tsx\")",
+      "Bash(find D:/plonbli/tests -name *.test.ts)",
+      "Bash(ls \"D:/plonbli/src/app/[locale]/\\(public\\)\")",
+      "Bash(mkdir -p \"src/app/[locale]/\\(public\\)/welcome\")",
+      "Bash(mv \"src/app/[locale]/\\(public\\)/page.tsx\" \"src/app/[locale]/\\(public\\)/welcome/page.tsx\")",
+      "Bash(mkdir -p \"src/app/[locale]/\\(main\\)/home\")",
+      "Bash(mv \"src/app/[locale]/\\(main\\)/page.tsx\" \"src/app/[locale]/\\(main\\)/home/page.tsx\")",
+      "Bash(mv \"src/app/[locale]/\\(public\\)/welcome/page.tsx\" \"src/app/[locale]/\\(public\\)/page.tsx\")",
+      "Bash(rmdir \"src/app/[locale]/\\(public\\)/welcome\")"
     ]
   }
 }

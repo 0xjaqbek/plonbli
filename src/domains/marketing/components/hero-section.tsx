@@ -22,7 +22,7 @@ export async function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
         {isLoggedIn ? (
           <Button asChild size="lg">
-            <Link href="/">{t("ctaApp")}</Link>
+            <Link href="/home">{t("ctaApp")}</Link>
           </Button>
         ) : (
           <>

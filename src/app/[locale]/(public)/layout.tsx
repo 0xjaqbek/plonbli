@@ -27,7 +27,7 @@ export default async function PublicLayout({
             <ThemeToggle />
             {isLoggedIn ? (
               <Button asChild size="sm">
-                <Link href="/">{t("goToApp")}</Link>
+                <Link href="/home">{t("goToApp")}</Link>
               </Button>
             ) : (
               <Button asChild size="sm" variant="outline">
