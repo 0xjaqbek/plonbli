@@ -701,5 +701,103 @@
     "socialLabel": "Aktywność społeczna",
     "marketplaceLabel": "Oferty i zapytania",
     "notSupported": "Twoja przeglądarka nie obsługuje powiadomień push."
+  },
+  "landing": {
+    "nav": {
+      "login": "Zaloguj się",
+      "goToApp": "Przejdź do aplikacji"
+    },
+    "hero": {
+      "tagline": "Świeże produkty prosto od rolnika",
+      "subtitle": "Połącz się z lokalnymi rolnikami, kupuj bez pośredników i wspieraj lokalną społeczność.",
+      "ctaRegister": "Dołącz do plonbli",
+      "ctaLogin": "Zaloguj się",
+      "ctaApp": "Przejdź do aplikacji"
+    },
+    "howItWorks": {
+      "title": "Jak to działa",
+      "tabConsumer": "Jestem konsumentem",
+      "tabFarmer": "Jestem rolnikiem",
+      "consumerStep1Title": "Zarejestruj się",
+      "consumerStep1Desc": "Utwórz bezpłatne konto w kilka sekund.",
+      "consumerStep2Title": "Znajdź produkty",
+      "consumerStep2Desc": "Przeglądaj oferty lokalnych rolników w twojej okolicy.",
+      "consumerStep3Title": "Umów odbiór",
+      "consumerStep3Desc": "Skontaktuj się bezpośrednio z rolnikiem i zamów produkty.",
+      "farmerStep1Title": "Zarejestruj się",
+      "farmerStep1Desc": "Utwórz bezpłatne konto i uzupełnij profil.",
+      "farmerStep2Title": "Dodaj oferty",
+      "farmerStep2Desc": "Opublikuj swoje produkty z opisami i cenami.",
+      "farmerStep3Title": "Przyjmuj zamówienia",
+      "farmerStep3Desc": "Kontaktuj się z klientami i realizuj zamówienia bezpośrednio."
+    },
+    "forConsumer": {
+      "title": "Dla konsumenta",
+      "subtitle": "Odkryj smak prawdziwej lokalnej żywności",
+      "benefit1Title": "Świeże produkty bez pośredników",
+      "benefit1Desc": "Kupujesz bezpośrednio od rolnika — świeższe i tańsze.",
+      "benefit2Title": "Wiesz skąd pochodzi żywność",
+      "benefit2Desc": "Pełna transparentność — historia upraw i metody produkcji.",
+      "benefit3Title": "Bezpośredni kontakt z rolnikiem",
+      "benefit3Desc": "Czat, pytania, umówienie odbioru — wszystko w jednym miejscu.",
+      "benefit4Title": "Lokalna społeczność",
+      "benefit4Desc": "Dołącz do grup, wydarzeń i bądź na bieżąco z lokalnymi rolnikami."
+    },
+    "forFarmer": {
+      "title": "Dla rolnika",
+      "subtitle": "Sprzedawaj bezpośrednio, zarabiaj więcej",
+      "benefit1Title": "Sprzedaż bez pośredników",
+      "benefit1Desc": "Cały zysk trafia do ciebie — zero prowizji, zero pośredników.",
+      "benefit2Title": "Dokumentacja upraw",
+      "benefit2Desc": "Prowadź dziennik upraw z historią zmian gotową na wymogi przyszłości.",
+      "benefit3Title": "System opinii i reputacji",
+      "benefit3Desc": "Buduj zaufanie klientów przez transparentny system ocen.",
+      "benefit4Title": "Bezpłatna platforma",
+      "benefit4Desc": "Wszystkie funkcje dostępne za darmo — bez ukrytych opłat."
+    },
+    "proxyFarmer": {
+      "title": "Profil-ambasador",
+      "subtitle": "Pomóż lokalnemu rolnikowi zaistnieć w sieci",
+      "description": "Znasz rolnika który nie korzysta z internetu? Utwórz mu profil-ambasador — wizytówkę z produktami i danymi kontaktowymi. Inni użytkownicy znajdą go na platformie i skontaktują się bezpośrednio.",
+      "feature1": "Każdy użytkownik może stworzyć do 3 profili dla lokalnych rolników",
+      "feature2": "Profil zawiera produkty, metody kontaktu i lokalizację",
+      "feature3": "Użytkownicy mogą obserwować profil i być na bieżąco z ofertą",
+      "ctaLoggedIn": "Dodaj rolnika",
+      "ctaGuest": "Zarejestruj się i dodaj rolnika"
+    },
+    "features": {
+      "title": "Co oferuje plonbli",
+      "marketplaceTitle": "Marketplace",
+      "marketplaceDesc": "Przeglądaj i zamawiaj lokalne produkty.",
+      "socialTitle": "Social feed",
+      "socialDesc": "Aktualności od rolników których obserwujesz.",
+      "groupsTitle": "Grupy i wydarzenia",
+      "groupsDesc": "Lokalne społeczności i targi.",
+      "chatTitle": "Czat",
+      "chatDesc": "Bezpośrednia komunikacja z rolnikiem.",
+      "cropLogTitle": "Dokumentacja upraw",
+      "cropLogDesc": "Przejrzysta historia produkcji.",
+      "reputationTitle": "Opinie i reputacja",
+      "reputationDesc": "Zaufany system ocen."
+    },
+    "appPreview": {
+      "title": "Wszystko w jednej aplikacji",
+      "subtitle": "Dostępna jako PWA — działa jak natywna aplikacja na telefonie."
+    },
+    "faq": {
+      "title": "Najczęstsze pytania",
+      "q1": "Czy platforma jest bezpłatna?",
+      "a1": "Tak, plonbli jest w pełni bezpłatne dla wszystkich użytkowników — zarówno rolników, jak i konsumentów. Nie pobieramy żadnych prowizji ani opłat.",
+      "q2": "Jak złożyć zamówienie?",
+      "a2": "Znajdź interesującą ofertę w Marketplace, kliknij \"Dodaj do koszyka\" i przejdź do realizacji zamówienia. Rolnik otrzyma powiadomienie i skontaktuje się z tobą.",
+      "q3": "Jak dodać ofertę jako rolnik?",
+      "a3": "Po zalogowaniu przejdź do Marketplace i kliknij \"Dodaj ofertę\". Wypełnij formularz z opisem, ceną i metodą dostawy.",
+      "q4": "Co to jest profil-ambasador?",
+      "a4": "Profil-ambasador (ProxyFarmer) to wizytówka stworzona przez użytkownika dla rolnika który nie jest na platformie. Każdy może dodać do 3 takich profili.",
+      "q5": "Jak działają opinie i reputacja?",
+      "a5": "Po każdej transakcji możesz wystawić opinię rolnikowi. Opinie są publiczne i pomagają innym użytkownikom w wyborze sprawdzonych sprzedawców.",
+      "q6": "Czy moje dane są bezpieczne?",
+      "a6": "Tak. Stosujemy standardowe zabezpieczenia, a Twoje dane osobowe przetwarzamy zgodnie z RODO. Szczegóły w Polityce Prywatności."
+    }
   }
 }
