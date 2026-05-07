@@ -41,7 +41,7 @@ export function NavBar() {
     <>
       {/* Desktop top bar */}
       <header className="hidden md:flex items-center justify-between border-b px-6 py-3">
-        <Link href="/" className="flex items-center text-xl font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
+        <Link href="/welcome" className="flex items-center text-xl font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
           <Image src="/plonbliLogoBezTla-removebg-preview.png" alt="p" width={24} height={24} className="-mr-2.5" />
           <span className="self-end leading-none translate-y-0.5">lonbli</span>
         </Link>
@@ -74,7 +74,7 @@ export function NavBar() {
 
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 flex items-center justify-between border-b bg-background px-4 py-2.5 z-50">
-        <Link href="/" className="flex items-center text-lg font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
+        <Link href="/welcome" className="flex items-center text-lg font-bold" style={{ color: "#8fc36a", WebkitTextStroke: "0.2px #fefcda" }}>
           <Image src="/plonbliLogoBezTla-removebg-preview.png" alt="p" width={22} height={22} className="-mr-2.5" />
           <span className="self-end leading-none translate-y-0.4">lonbli</span>
         </Link>

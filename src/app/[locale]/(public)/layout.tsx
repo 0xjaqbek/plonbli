@@ -19,7 +19,7 @@ export default async function PublicLayout({
     <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+          <Link href="/welcome" className="flex items-center gap-2 font-bold text-lg">
             <Sprout className="h-5 w-5 text-primary" />
             plonbli
           </Link>
@@ -27,7 +27,7 @@ export default async function PublicLayout({
             <ThemeToggle />
             {isLoggedIn ? (
               <Button asChild size="sm">
-                <Link href="/social">{t("goToApp")}</Link>
+                <Link href="/">{t("goToApp")}</Link>
               </Button>
             ) : (
               <Button asChild size="sm" variant="outline">
