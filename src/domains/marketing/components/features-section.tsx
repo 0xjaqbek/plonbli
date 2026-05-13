@@ -14,17 +14,22 @@ export async function FeaturesSection() {
   ];
 
   return (
-    <section className="py-16 bg-muted/50">
-      <div className="max-w-5xl mx-auto px-4 space-y-10">
-        <h2 className="text-3xl font-bold text-center">{t("title")}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <section className="py-20">
+      <div className="max-w-5xl mx-auto px-4 space-y-12">
+        <h2 className="font-display text-3xl sm:text-4xl font-bold text-center">
+          {t("title")}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map(({ Icon, title, desc }) => (
-            <div key={title} className="rounded-lg border bg-card p-5 space-y-2">
-              <div className="rounded-md bg-primary/10 w-fit p-2">
-                <Icon className="h-5 w-5 text-primary" />
+            <div
+              key={title}
+              className="rounded-xl border-t-2 border-t-golden border border-border/40 bg-card p-6 space-y-3 shadow-[0_2px_12px_oklch(0.45_0.1_145_/_0.05)] hover:shadow-[0_4px_20px_oklch(0.45_0.1_145_/_0.09)] hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <div className="rounded-lg bg-golden/12 w-fit p-2.5">
+                <Icon className="h-5 w-5 text-golden" />
               </div>
-              <p className="font-semibold">{title}</p>
-              <p className="text-sm text-muted-foreground">{desc}</p>
+              <p className="font-display font-semibold">{title}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
