@@ -1,9 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Lora, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AnalyticsScript } from "@/domains/analytics";
 
-const inter = Inter({ subsets: ["latin", "latin-ext"] });
+const lora = Lora({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-lora",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "plonbli",
@@ -31,7 +41,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body
+        className={`${lora.variable} ${dmSans.variable} font-sans`}
+        suppressHydrationWarning
+      >
         {children}
         <AnalyticsScript />
       </body>

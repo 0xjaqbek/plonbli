@@ -6,6 +6,8 @@
 
 @theme {
   --breakpoint-md: 1100px;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-lora), ui-serif, Georgia, serif;
 }
 
 @theme inline {
