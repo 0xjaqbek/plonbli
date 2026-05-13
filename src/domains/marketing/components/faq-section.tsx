@@ -1,4 +1,10 @@
 import { getTranslations } from "next-intl/server";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shared/ui/accordion";
 
 export async function FaqSection() {
   const t = await getTranslations("landing.faq");
@@ -13,25 +19,27 @@ export async function FaqSection() {
   ];
 
   return (
-    <section className="py-16 bg-muted/50">
-      <div className="max-w-2xl mx-auto px-4 space-y-6">
-        <h2 className="text-3xl font-bold text-center">{t("title")}</h2>
-        <div className="space-y-2">
+    <section className="py-20 bg-landing-wash">
+      <div className="max-w-2xl mx-auto px-4 space-y-8">
+        <h2 className="font-display text-3xl sm:text-4xl font-bold text-center">
+          {t("title")}
+        </h2>
+        <Accordion type="single" collapsible className="space-y-2">
           {items.map(({ q, a }, i) => (
-            <details
+            <AccordionItem
               key={i}
-              className="group rounded-lg border bg-card px-4 py-3 cursor-pointer"
+              value={`item-${i}`}
+              className="rounded-xl border border-border/50 bg-card px-5 shadow-[0_1px_8px_oklch(0.45_0.1_145_/_0.04)]"
             >
-              <summary className="font-medium list-none flex items-center justify-between select-none">
+              <AccordionTrigger className="font-display font-medium text-left py-4 hover:no-underline">
                 {q}
-                <span className="ml-4 text-muted-foreground transition-transform group-open:rotate-45 flex-shrink-0 text-lg leading-none">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm text-muted-foreground">{a}</p>
-            </details>
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                {a}
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </div>
     </section>
   );
