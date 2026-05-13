@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/shared/ui/button";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
+import { GrainOverlay } from "@/shared/ui/grain-overlay";
 import { auth } from "@/domains/auth/lib/auth";
 
 export default async function PublicLayout({
@@ -17,7 +18,9 @@ export default async function PublicLayout({
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <GrainOverlay />
+
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/">
             <Image
@@ -31,7 +34,11 @@ export default async function PublicLayout({
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {isLoggedIn ? (
-              <Button asChild size="sm">
+              <Button
+                asChild
+                size="sm"
+                className="bg-golden text-golden-foreground hover:bg-golden/90"
+              >
                 <Link href="/home">{t("goToApp")}</Link>
               </Button>
             ) : (
@@ -45,22 +52,28 @@ export default async function PublicLayout({
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+      <footer className="bg-landing-dark text-landing-dark-foreground py-10">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-6 text-sm">
           <Link href="/">
             <Image
               src="/Plonbli logo nazwa bold Poppins.png"
               alt="plonbli"
               width={120}
               height={34}
-              className="h-7 w-auto"
+              className="h-7 w-auto brightness-[3] opacity-80"
             />
           </Link>
-          <div className="flex gap-4">
-            <Link href="/terms" className="hover:underline">
+          <div className="flex gap-6 text-landing-dark-foreground/60">
+            <Link
+              href="/terms"
+              className="hover:text-landing-dark-foreground transition-colors"
+            >
               {tLegal("termsOfService")}
             </Link>
-            <Link href="/privacy" className="hover:underline">
+            <Link
+              href="/privacy"
+              className="hover:text-landing-dark-foreground transition-colors"
+            >
               {tLegal("privacyPolicy")}
             </Link>
           </div>
