@@ -9,38 +9,48 @@ export async function ProxyFarmerSection({ isLoggedIn }: { isLoggedIn: boolean }
   const features = [t("feature1"), t("feature2"), t("feature3")];
 
   return (
-    <section className="py-16">
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="rounded-2xl border bg-card p-8 md:p-12 space-y-6">
-          <div className="flex justify-center">
-            <div className="rounded-full bg-primary/10 p-3">
-              <UserRoundPlus className="h-8 w-8 text-primary" />
-            </div>
-          </div>
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold">{t("title")}</h2>
-            <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
-          </div>
-          <p className="text-muted-foreground text-center">{t("description")}</p>
-          <ul className="space-y-3 max-w-md mx-auto">
-            {features.map((feature, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm">{feature}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex justify-center pt-2">
-            {isLoggedIn ? (
-              <Button asChild>
-                <Link href="/farmers/proxy/create">{t("ctaLoggedIn")}</Link>
-              </Button>
-            ) : (
-              <Button asChild>
-                <Link href="/register">{t("ctaGuest")}</Link>
-              </Button>
-            )}
-          </div>
+    <section className="py-20 bg-landing-dark text-landing-dark-foreground">
+      <div className="max-w-3xl mx-auto px-6 text-center space-y-8">
+        <div className="inline-flex items-center justify-center rounded-full bg-white/10 p-4">
+          <UserRoundPlus className="h-8 w-8 text-golden" />
+        </div>
+        <div className="space-y-3">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold">
+            {t("title")}
+          </h2>
+          <p className="text-lg text-landing-dark-foreground/80">{t("subtitle")}</p>
+        </div>
+        <p className="text-landing-dark-foreground/70 max-w-xl mx-auto leading-relaxed">
+          {t("description")}
+        </p>
+        <ul className="space-y-3 max-w-md mx-auto text-left">
+          {features.map((feature, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <div className="flex-shrink-0 rounded-full bg-golden/20 p-0.5 mt-0.5">
+                <Check className="h-4 w-4 text-golden" />
+              </div>
+              <span className="text-sm text-landing-dark-foreground/80 leading-relaxed">
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="pt-2">
+          {isLoggedIn ? (
+            <Button
+              asChild
+              className="bg-golden text-golden-foreground hover:bg-golden/90"
+            >
+              <Link href="/farmers/proxy/create">{t("ctaLoggedIn")}</Link>
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="bg-golden text-golden-foreground hover:bg-golden/90"
+            >
+              <Link href="/register">{t("ctaGuest")}</Link>
+            </Button>
+          )}
         </div>
       </div>
     </section>
