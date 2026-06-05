@@ -5,58 +5,68 @@ import {
   profileSchema,
 } from "@/domains/auth/schemas/validation";
 
+const validRegisterBase = {
+  name: "Jan Kowalski",
+  email: "jan@example.com",
+  password: "SecurePass123!",
+  role: "FARMER" as const,
+  profileType: "SMALL_FARM" as const,
+  acceptTerms: true as const,
+  acceptPrivacy: true as const,
+  acceptAge: true as const,
+};
+
 describe("registerSchema", () => {
   it("accepts valid registration data", () => {
-    const result = registerSchema.safeParse({
-      name: "Jan Kowalski",
-      email: "jan@example.com",
-      password: "SecurePass123!",
-      role: "FARMER",
-      acceptTerms: true,
-    });
+    const result = registerSchema.safeParse(validRegisterBase);
     expect(result.success).toBe(true);
   });
 
   it("rejects missing acceptTerms", () => {
-    const result = registerSchema.safeParse({
-      name: "Jan Kowalski",
-      email: "jan@example.com",
-      password: "SecurePass123!",
-      role: "FARMER",
-    });
+    const { acceptTerms: _, ...rest } = validRegisterBase;
+    const result = registerSchema.safeParse(rest);
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].path).toContain("acceptTerms");
+    const paths = result.error?.issues.map((i) => i.path[0]);
+    expect(paths).toContain("acceptTerms");
   });
 
   it("rejects acceptTerms = false", () => {
-    const result = registerSchema.safeParse({
-      name: "Jan Kowalski",
-      email: "jan@example.com",
-      password: "SecurePass123!",
-      role: "FARMER",
-      acceptTerms: false,
-    });
+    const result = registerSchema.safeParse({ ...validRegisterBase, acceptTerms: false });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].path).toContain("acceptTerms");
+    const paths = result.error?.issues.map((i) => i.path[0]);
+    expect(paths).toContain("acceptTerms");
   });
 
   it("accepts acceptTerms = true", () => {
-    const result = registerSchema.safeParse({
-      name: "Jan Kowalski",
-      email: "jan@example.com",
-      password: "SecurePass123!",
-      role: "FARMER",
-      acceptTerms: true,
-    });
+    const result = registerSchema.safeParse(validRegisterBase);
     expect(result.success).toBe(true);
+  });
+
+  it("rejects missing acceptAge", () => {
+    const { acceptAge: _, ...rest } = validRegisterBase;
+    const result = registerSchema.safeParse(rest);
+    expect(result.success).toBe(false);
+    const paths = result.error?.issues.map((i) => i.path[0]);
+    expect(paths).toContain("acceptAge");
+  });
+
+  it("rejects missing profileType", () => {
+    const { profileType: _, ...rest } = validRegisterBase;
+    const result = registerSchema.safeParse(rest);
+    expect(result.success).toBe(false);
+    const paths = result.error?.issues.map((i) => i.path[0]);
+    expect(paths).toContain("profileType");
+  });
+
+  it("rejects invalid profileType", () => {
+    const result = registerSchema.safeParse({ ...validRegisterBase, profileType: "MEGA_FARM" });
+    expect(result.success).toBe(false);
   });
 
   it("rejects short password", () => {
     const result = registerSchema.safeParse({
-      name: "Jan",
-      email: "jan@example.com",
+      ...validRegisterBase,
       password: "short",
-      role: "CONSUMER",
     });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].path).toContain("password");
@@ -64,10 +74,8 @@ describe("registerSchema", () => {
 
   it("rejects invalid email", () => {
     const result = registerSchema.safeParse({
-      name: "Jan",
+      ...validRegisterBase,
       email: "not-an-email",
-      password: "SecurePass123!",
-      role: "CONSUMER",
     });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].path).toContain("email");
@@ -75,9 +83,7 @@ describe("registerSchema", () => {
 
   it("rejects invalid role", () => {
     const result = registerSchema.safeParse({
-      name: "Jan",
-      email: "jan@example.com",
-      password: "SecurePass123!",
+      ...validRegisterBase,
       role: "ADMIN",
     });
     expect(result.success).toBe(false);
@@ -85,10 +91,8 @@ describe("registerSchema", () => {
 
   it("rejects empty name", () => {
     const result = registerSchema.safeParse({
+      ...validRegisterBase,
       name: "",
-      email: "jan@example.com",
-      password: "SecurePass123!",
-      role: "CONSUMER",
     });
     expect(result.success).toBe(false);
   });
@@ -126,6 +130,15 @@ describe("profileSchema", () => {
     const result = profileSchema.safeParse({
       name: "Jan Kowalski",
       role: "CONSUMER",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts profileType update", () => {
+    const result = profileSchema.safeParse({
+      name: "Jan Kowalski",
+      role: "FARMER",
+      profileType: "LARGE_FARM",
     });
     expect(result.success).toBe(true);
   });

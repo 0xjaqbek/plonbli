@@ -45,8 +45,10 @@ describe("register", () => {
       email: "bad",
       password: "short",
       role: "CONSUMER",
+      profileType: "PRIVATE",
       acceptTerms: true,
       acceptPrivacy: true,
+      acceptAge: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors).toBeDefined();
@@ -64,8 +66,10 @@ describe("register", () => {
       email: "jan@example.com",
       password: "SecurePass123!",
       role: "CONSUMER",
+      profileType: "PRIVATE",
       acceptTerms: true,
       acceptPrivacy: true,
+      acceptAge: true,
     });
     expect(result.success).toBe(false);
     if (!result.success) expect(result.errors?.email).toBeDefined();
@@ -84,8 +88,10 @@ describe("register", () => {
       email: "jan@example.com",
       password: "SecurePass123!",
       role: "FARMER",
+      profileType: "SMALL_FARM",
       acceptTerms: true,
       acceptPrivacy: true,
+      acceptAge: true,
     });
 
     expect(hashPassword).toHaveBeenCalledWith("SecurePass123!");
@@ -110,9 +116,11 @@ describe("register", () => {
       email: "nowy@example.com",
       password: "SecurePass123!",
       role: "CONSUMER",
+      profileType: "PRIVATE",
       inviteCode: "validcode",
       acceptTerms: true,
       acceptPrivacy: true,
+      acceptAge: true,
     });
 
     expect(result.success).toBe(true);
@@ -132,9 +140,11 @@ describe("register", () => {
       email: "nowy2@example.com",
       password: "SecurePass123!",
       role: "CONSUMER",
+      profileType: "PRIVATE",
       inviteCode: "bogusCode",
       acceptTerms: true,
       acceptPrivacy: true,
+      acceptAge: true,
     });
 
     expect(result.success).toBe(true);
