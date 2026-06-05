@@ -19,7 +19,7 @@ export async function register(input: RegisterInput): Promise<RegisterResult> {
     };
   }
 
-  const { name, email, password, role, inviteCode } = parsed.data;
+  const { name, email, password, role, profileType, inviteCode } = parsed.data;
 
   const existing = await db.query.users.findFirst({
     where: eq(users.email, email),
@@ -37,7 +37,16 @@ export async function register(input: RegisterInput): Promise<RegisterResult> {
   const now = new Date();
   const [newUser] = await db
     .insert(users)
-    .values({ name, email, passwordHash, role, termsAcceptedAt: now, privacyAcceptedAt: now })
+    .values({
+      name,
+      email,
+      passwordHash,
+      role,
+      profileType,
+      termsAcceptedAt: now,
+      privacyAcceptedAt: now,
+      ageConfirmedAt: now,
+    })
     .returning({ id: users.id });
 
   if (inviteCode) {

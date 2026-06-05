@@ -138,6 +138,30 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="profileType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("profileType")}</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("profileType")} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="PRIVATE">{t("profileTypePrivate")}</SelectItem>
+                  <SelectItem value="SMALL_FARM">{t("profileTypeSmallFarm")}</SelectItem>
+                  <SelectItem value="MEDIUM_FARM">{t("profileTypeMediumFarm")}</SelectItem>
+                  <SelectItem value="LARGE_FARM">{t("profileTypeLargeFarm")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex flex-col gap-3">
           <FormField
             control={form.control}
@@ -184,6 +208,29 @@ export function RegisterForm({ inviteCode }: RegisterFormProps) {
                     <Link href="/privacy" className="text-primary underline">
                       {t("acceptPrivacyLink")}
                     </Link>
+                  </FormLabel>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="acceptAge"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value === true}
+                    onCheckedChange={(checked) =>
+                      field.onChange(checked === true ? true : false)
+                    }
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="font-normal text-sm cursor-pointer">
+                    {t("acceptAge")}
                   </FormLabel>
                   <FormMessage />
                 </div>
