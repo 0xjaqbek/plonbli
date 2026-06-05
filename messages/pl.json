@@ -50,7 +50,17 @@
     "privacyLink": "Polityka prywatności",
     "consentTitle": "Zanim zaczniesz",
     "consentDescription": "Aby korzystać z platformy Plonbli, musisz zaakceptować poniższe dokumenty.",
-    "consentSubmit": "Akceptuję i przechodzę dalej"
+    "consentSubmit": "Akceptuję i przechodzę dalej",
+    "profileType": "Kim jesteś?",
+    "profileTypePrivate": "Osoba prywatna",
+    "profileTypeSmallFarm": "Małe gospodarstwo",
+    "profileTypeMediumFarm": "Średnie gospodarstwo",
+    "profileTypeLargeFarm": "Duże gospodarstwo",
+    "acceptAge": "Mam ukończone 18 lat",
+    "acceptAgeRequired": "Musisz potwierdzić pełnoletność",
+    "onboardingTitle": "Uzupełnij profil",
+    "onboardingSubtitle": "Zanim zaczniesz, potrzebujemy kilku informacji.",
+    "onboardingSubmit": "Przejdź do platformy"
   },
   "profile": {
     "title": "Profil",
@@ -583,6 +593,7 @@
     "productCategory": "Kategoria",
     "productDescription": "Opis produktu",
     "noProducts": "Brak produktów",
+    "creationDisabled": "Tworzenie profili-ambasador jest tymczasowo niedostępne",
     "limitReached": "Osiągnięto limit 3 profili-ambasador",
     "remainingProfiles": "Pozostało profili do utworzenia",
     "ambassadorBadge": "Ambasador",
