@@ -10,20 +10,20 @@ import {
   FileText,
   Settings,
   ChevronRight,
-  UserPlus,
-  Plus,
-  Pencil,
-  MapPin,
+  // UserPlus,
+  // Plus,
+  // Pencil,
+  // MapPin,
   Send,
   Shield,
   Download,
 } from "lucide-react";
 import { auth, signOut } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
+// import { getProxyFarmersByCreator } from "@/domains/marketplace/queries/get-proxy-farmer";
 import { users } from "@/shared/db/schema";
-import { getProxyFarmersByCreator } from "@/domains/marketplace/queries/get-proxy-farmer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { Badge } from "@/shared/ui/badge";
+// import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Separator } from "@/shared/ui/separator";
@@ -43,9 +43,9 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/login");
 
-  const tProxy = await getTranslations("proxyFarmer");
+  // const tProxy = await getTranslations("proxyFarmer");
   const isFarmer = user.role === "FARMER" || user.role === "BOTH";
-  const proxyProfiles = await getProxyFarmersByCreator(session.user.id);
+  // const proxyProfiles = await getProxyFarmersByCreator(session.user.id);
 
   const initials = user.name
     .split(" ")
@@ -110,7 +110,7 @@ export default async function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Proxy farmer profiles */}
+      {/* Proxy farmer profiles — tymczasowo ukryte
       <Card>
         <CardContent className="pt-4">
           <div className="flex flex-col gap-2 mb-4">
@@ -168,6 +168,7 @@ export default async function ProfilePage() {
           )}
         </CardContent>
       </Card>
+      */}
 
       {/* Quick links */}
       <Card>
