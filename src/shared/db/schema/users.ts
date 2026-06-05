@@ -15,6 +15,13 @@ export const userRoleEnum = pgEnum("user_role", [
   "BOTH",
 ]);
 
+export const profileTypeEnum = pgEnum("profile_type", [
+  "PRIVATE",
+  "SMALL_FARM",
+  "MEDIUM_FARM",
+  "LARGE_FARM",
+]);
+
 export const users = pgTable("users", {
   id: text("id")
     .primaryKey()
@@ -25,6 +32,8 @@ export const users = pgTable("users", {
   avatar: text("avatar"),
   bio: text("bio"),
   role: userRoleEnum("role").notNull().default("CONSUMER"),
+  profileType: profileTypeEnum("profile_type"),
+  ageConfirmedAt: timestamp("age_confirmed_at", { withTimezone: true }),
   voivodeship: varchar("voivodeship", { length: 50 }),
   county: varchar("county", { length: 100 }),
   commune: varchar("commune", { length: 100 }),
