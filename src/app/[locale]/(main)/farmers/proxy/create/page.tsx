@@ -5,12 +5,26 @@ import { getProxyFarmerCount } from "@/domains/marketplace/queries/get-proxy-far
 import { ProxyFarmerForm } from "@/domains/marketplace/components/proxy-farmer-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 
+const PROXY_FARMER_CREATION_ENABLED = false;
+
 export default async function CreateProxyFarmerPage() {
   const t = await getTranslations("proxyFarmer");
   const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/login");
+  }
+
+  if (!PROXY_FARMER_CREATION_ENABLED) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <Card>
+          <CardContent className="p-6 text-center text-muted-foreground">
+            {t("creationDisabled")}
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const count = await getProxyFarmerCount(session.user.id);

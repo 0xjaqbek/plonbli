@@ -118,7 +118,7 @@ export default async function ProfilePage() {
               <UserPlus className="h-4 w-4 text-muted-foreground" />
               {tProxy("myProxyProfiles")}
             </span>
-            {proxyProfiles.length < 3 && (
+            {false && proxyProfiles.length < 3 && (
               <Button asChild variant="outline" size="sm" className="w-fit">
                 <Link href="/farmers/proxy/create">
                   <Plus className="h-3.5 w-3.5 mr-1" />
