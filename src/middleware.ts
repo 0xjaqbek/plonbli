@@ -19,6 +19,14 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/consent", req.url));
   }
 
+  if (
+    req.auth?.user?.needsOnboarding &&
+    !pathname.startsWith("/onboarding") &&
+    !pathname.startsWith("/consent")
+  ) {
+    return NextResponse.redirect(new URL("/onboarding", req.url));
+  }
+
   return intlMiddleware(req);
 });
 

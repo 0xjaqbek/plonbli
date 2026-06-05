@@ -16,6 +16,14 @@ async function checkNeedsConsent(userId: string): Promise<boolean> {
   return !dbUser?.termsAcceptedAt || !dbUser?.privacyAcceptedAt;
 }
 
+async function checkNeedsOnboarding(userId: string): Promise<boolean> {
+  const dbUser = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { ageConfirmedAt: true, profileType: true },
+  });
+  return !dbUser?.ageConfirmedAt || !dbUser?.profileType;
+}
+
 export const authConfig: NextAuthConfig = {
   providers: [
     Credentials({
@@ -61,7 +69,6 @@ export const authConfig: NextAuthConfig = {
       const provider = account.provider;
       const providerAccountId = account.providerAccountId;
 
-      // Check if this OAuth account is already linked
       const existing = await db.query.authAccounts.findFirst({
         where: and(
           eq(authAccounts.provider, provider),
@@ -70,7 +77,6 @@ export const authConfig: NextAuthConfig = {
       });
 
       if (existing) {
-        // Already linked — update avatar from provider and set DB id
         if (user.image) {
           await db
             .update(users)
@@ -81,13 +87,11 @@ export const authConfig: NextAuthConfig = {
         return true;
       }
 
-      // Check if a user with this email exists
       let dbUser = await db.query.users.findFirst({
         where: eq(users.email, email),
       });
 
       if (!dbUser) {
-        // Create new user
         const [created] = await db
           .insert(users)
           .values({
@@ -99,14 +103,12 @@ export const authConfig: NextAuthConfig = {
           .returning();
         dbUser = created;
       } else if (user.image && !dbUser.avatar) {
-        // Existing user without avatar — set it from provider
         await db
           .update(users)
           .set({ avatar: user.image })
           .where(eq(users.id, dbUser.id));
       }
 
-      // Link OAuth account
       await db.insert(authAccounts).values({
         provider,
         providerAccountId,
@@ -121,15 +123,18 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.sub;
       }
       session.user.needsConsent = token.needsConsent as boolean;
+      session.user.needsOnboarding = token.needsOnboarding as boolean;
       return session;
     },
     async jwt({ token, user, trigger }) {
       if (user) {
         token.sub = user.id;
         token.needsConsent = await checkNeedsConsent(user.id!);
+        token.needsOnboarding = await checkNeedsOnboarding(user.id!);
       }
       if (trigger === "update") {
         token.needsConsent = await checkNeedsConsent(token.sub!);
+        token.needsOnboarding = await checkNeedsOnboarding(token.sub!);
       }
       return token;
     },
