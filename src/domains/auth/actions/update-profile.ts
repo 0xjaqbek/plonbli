@@ -26,8 +26,19 @@ export async function updateProfile(
     };
   }
 
-  const { name, avatar, bio, role, voivodeship, county, commune, postalCode, latitude, longitude } =
-    parsed.data;
+  const {
+    name,
+    avatar,
+    bio,
+    role,
+    profileType,
+    voivodeship,
+    county,
+    commune,
+    postalCode,
+    latitude,
+    longitude,
+  } = parsed.data;
 
   await db
     .update(users)
@@ -36,6 +47,7 @@ export async function updateProfile(
       avatar: avatar ?? null,
       bio: bio ?? null,
       role,
+      profileType: profileType ?? null,
       voivodeship: voivodeship ?? null,
       county: county ?? null,
       commune: commune ?? null,

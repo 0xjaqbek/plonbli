@@ -46,6 +46,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       avatar: user.avatar,
       bio: user.bio,
       role: user.role,
+      profileType: user.profileType ?? undefined,
       voivodeship: user.voivodeship as ProfileInput["voivodeship"],
       county: user.county,
       commune: user.commune,
@@ -148,6 +149,33 @@ export function ProfileForm({ user }: ProfileFormProps) {
                   <SelectItem value="CONSUMER">{tAuth("roleConsumer")}</SelectItem>
                   <SelectItem value="FARMER">{tAuth("roleFarmer")}</SelectItem>
                   <SelectItem value="BOTH">{tAuth("roleBoth")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="profileType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{tAuth("profileType")}</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value ?? ""}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder={tAuth("profileType")} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="PRIVATE">{tAuth("profileTypePrivate")}</SelectItem>
+                  <SelectItem value="SMALL_FARM">{tAuth("profileTypeSmallFarm")}</SelectItem>
+                  <SelectItem value="MEDIUM_FARM">{tAuth("profileTypeMediumFarm")}</SelectItem>
+                  <SelectItem value="LARGE_FARM">{tAuth("profileTypeLargeFarm")}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
