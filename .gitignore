@@ -52,3 +52,8 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Anchor / Solana
+target/
+test-ledger/
+.anchor/
