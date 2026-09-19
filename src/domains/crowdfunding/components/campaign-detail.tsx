@@ -1,15 +1,25 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Users, Clock, Target, Shield } from "lucide-react";
+import { Shield, Milestone, Gift, CheckCircle2 } from "lucide-react";
 import type { CrowdfundingCampaign } from "@/shared/db/schema";
-import { Button } from "@/shared/ui/button";
+import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-milestones";
+import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
+import { ContributeDialog } from "./contribute-dialog";
 
 type Props = {
   campaign: CrowdfundingCampaign;
+  milestones: CrowdfundingMilestone[];
+  rewardTiers: CrowdfundingRewardTier[];
+  isCreator: boolean;
 };
 
-export function CampaignDetail({ campaign }: Props) {
+export function CampaignDetail({
+  campaign,
+  milestones,
+  rewardTiers,
+  isCreator,
+}: Props) {
   const t = useTranslations("crowdfunding");
 
   const goal = parseFloat(campaign.goalAmount);
@@ -23,6 +33,7 @@ export function CampaignDetail({ campaign }: Props) {
     )
   );
   const isActive = campaign.status === "ACTIVE";
+  const canContribute = isActive && !isCreator;
 
   return (
     <div className="space-y-6">
@@ -88,11 +99,11 @@ export function CampaignDetail({ campaign }: Props) {
           </div>
         </div>
 
-        {isActive && (
-          <Button className="w-full" size="lg">
-            <Target className="mr-2 h-5 w-5" />
-            {t("contribute")}
-          </Button>
+        {canContribute && (
+          <ContributeDialog
+            campaignId={campaign.id}
+            rewardTiers={rewardTiers}
+          />
         )}
       </div>
 
@@ -112,6 +123,107 @@ export function CampaignDetail({ campaign }: Props) {
         <h2>{t("about")}</h2>
         <p className="whitespace-pre-wrap">{campaign.description}</p>
       </div>
+
+      {/* Milestones (public view) */}
+      {milestones.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Milestone className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">{t("backer.milestones")}</h2>
+          </div>
+          <div className="space-y-3">
+            {milestones.map((ms, idx) => (
+              <div
+                key={ms.id}
+                className="flex items-start gap-3 rounded-lg border p-4"
+              >
+                <div
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    ms.status === "RELEASED"
+                      ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                      : ms.status === "APPROVED"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                        : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {ms.status === "RELEASED" ? (
+                    <CheckCircle2 className="h-4 w-4" />
+                  ) : (
+                    idx + 1
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium">{ms.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {ms.description}
+                  </p>
+                  <p className="text-sm font-medium mt-1">
+                    {t("backer.target")}:{" "}
+                    {parseFloat(ms.targetAmount).toLocaleString()}
+                  </p>
+                </div>
+                {ms.status !== "PENDING" && (
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                      ms.status === "RELEASED"
+                        ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                        : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                    }`}
+                  >
+                    {t(`backer.milestone_${ms.status}`)}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Reward tiers (public view) */}
+      {rewardTiers.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Gift className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">
+              {t("backer.rewardTiers")}
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {rewardTiers.map((tier) => {
+              const isFull =
+                tier.maxBackers > 0 &&
+                tier.currentBackers >= tier.maxBackers;
+              return (
+                <div
+                  key={tier.id}
+                  className={`rounded-lg border p-4 space-y-2 ${
+                    isFull ? "opacity-60" : ""
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="font-medium">{tier.title}</h3>
+                    <span className="text-lg font-bold text-primary">
+                      {parseFloat(tier.price).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {tier.description}
+                  </p>
+                  {tier.maxBackers > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      {isFull
+                        ? t("backer.tierFull")
+                        : t("backer.tierRemaining", {
+                            remaining: tier.maxBackers - tier.currentBackers,
+                          })}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

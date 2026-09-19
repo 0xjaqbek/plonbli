@@ -39,10 +39,22 @@ export {
 export { SolanaWalletProvider } from "./components/solana-wallet-provider";
 export { CampaignCard } from "./components/campaign-card";
 export { CampaignDetail } from "./components/campaign-detail";
+export { CampaignManagement } from "./components/campaign-management";
+export { ContributeDialog } from "./components/contribute-dialog";
 export { CreateCampaignForm } from "./components/create-campaign-form";
+export { MilestoneForm } from "./components/milestone-form";
+export { RewardTierForm } from "./components/reward-tier-form";
 
 // Actions
 export { createCampaignAction } from "./actions/create-campaign";
+export { addMilestoneAction } from "./actions/add-milestone";
+export { addRewardTierAction } from "./actions/add-reward-tier";
+export { deleteMilestoneAction } from "./actions/delete-milestone";
+export { deleteRewardTierAction } from "./actions/delete-reward-tier";
+export { activateCampaignAction } from "./actions/activate-campaign";
+export { contributeAction } from "./actions/contribute";
 
 // Queries
 export { getCampaigns, getCampaignById } from "./queries/get-campaigns";
+export { getMilestones } from "./queries/get-milestones";
+export { getRewardTiers } from "./queries/get-reward-tiers";

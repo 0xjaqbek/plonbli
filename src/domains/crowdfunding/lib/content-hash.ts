@@ -5,7 +5,7 @@
 export async function generateContentHash(content: string): Promise<Uint8Array> {
   const encoder = new TextEncoder();
   const data = encoder.encode(content);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data.buffer as ArrayBuffer);
   return new Uint8Array(hashBuffer);
 }
 
