@@ -189,3 +189,42 @@ export {
   pushSubscriptionsRelations,
   notificationPreferencesRelations,
 } from "./relations";
+
+// Crowdfunding
+export {
+  crowdfundingCampaigns,
+  campaignCategoryEnum,
+  campaignFundingModelEnum,
+  campaignStatusEnum,
+  type CrowdfundingCampaign,
+  type NewCrowdfundingCampaign,
+} from "./crowdfunding-campaigns";
+export {
+  crowdfundingMilestones,
+  milestoneStatusEnum,
+  type CrowdfundingMilestone,
+  type NewCrowdfundingMilestone,
+} from "./crowdfunding-milestones";
+export {
+  crowdfundingRewardTiers,
+  type CrowdfundingRewardTier,
+  type NewCrowdfundingRewardTier,
+} from "./crowdfunding-reward-tiers";
+export {
+  crowdfundingContributions,
+  type CrowdfundingContribution,
+  type NewCrowdfundingContribution,
+} from "./crowdfunding-contributions";
+export {
+  userWallets,
+  type UserWallet,
+  type NewUserWallet,
+} from "./user-wallets";
+
+export {
+  crowdfundingCampaignsRelations,
+  crowdfundingMilestonesRelations,
+  crowdfundingRewardTiersRelations,
+  crowdfundingContributionsRelations,
+  userWalletsRelations,
+} from "./relations";

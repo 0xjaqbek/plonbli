@@ -27,6 +27,11 @@ import { authAccounts } from "./auth-accounts";
 import { orders, orderItems, orderStatusHistory } from "./orders";
 import { pickupSlots } from "./pickup-slots";
 import { cartItems } from "./cart-items";
+import { crowdfundingCampaigns } from "./crowdfunding-campaigns";
+import { crowdfundingMilestones } from "./crowdfunding-milestones";
+import { crowdfundingRewardTiers } from "./crowdfunding-reward-tiers";
+import { crowdfundingContributions } from "./crowdfunding-contributions";
+import { userWallets } from "./user-wallets";
 
 export const authAccountsRelations = relations(authAccounts, ({ one }) => ({
   user: one(users, {
@@ -317,6 +322,63 @@ export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one })
 export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
   user: one(users, {
     fields: [notificationPreferences.userId],
+    references: [users.id],
+  }),
+}));
+
+// ── Crowdfunding Relations ────────────────────────────────────────────
+
+export const crowdfundingCampaignsRelations = relations(crowdfundingCampaigns, ({ one, many }) => ({
+  creator: one(users, {
+    fields: [crowdfundingCampaigns.creatorId],
+    references: [users.id],
+  }),
+  group: one(groups, {
+    fields: [crowdfundingCampaigns.groupId],
+    references: [groups.id],
+  }),
+  milestones: many(crowdfundingMilestones),
+  rewardTiers: many(crowdfundingRewardTiers),
+  contributions: many(crowdfundingContributions),
+}));
+
+export const crowdfundingMilestonesRelations = relations(crowdfundingMilestones, ({ one }) => ({
+  campaign: one(crowdfundingCampaigns, {
+    fields: [crowdfundingMilestones.campaignId],
+    references: [crowdfundingCampaigns.id],
+  }),
+}));
+
+export const crowdfundingRewardTiersRelations = relations(crowdfundingRewardTiers, ({ one, many }) => ({
+  campaign: one(crowdfundingCampaigns, {
+    fields: [crowdfundingRewardTiers.campaignId],
+    references: [crowdfundingCampaigns.id],
+  }),
+  product: one(products, {
+    fields: [crowdfundingRewardTiers.productId],
+    references: [products.id],
+  }),
+  contributions: many(crowdfundingContributions),
+}));
+
+export const crowdfundingContributionsRelations = relations(crowdfundingContributions, ({ one }) => ({
+  campaign: one(crowdfundingCampaigns, {
+    fields: [crowdfundingContributions.campaignId],
+    references: [crowdfundingCampaigns.id],
+  }),
+  backer: one(users, {
+    fields: [crowdfundingContributions.backerId],
+    references: [users.id],
+  }),
+  rewardTier: one(crowdfundingRewardTiers, {
+    fields: [crowdfundingContributions.rewardTierId],
+    references: [crowdfundingRewardTiers.id],
+  }),
+}));
+
+export const userWalletsRelations = relations(userWallets, ({ one }) => ({
+  user: one(users, {
+    fields: [userWallets.userId],
     references: [users.id],
   }),
 }));
