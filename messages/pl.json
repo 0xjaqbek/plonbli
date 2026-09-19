@@ -810,5 +810,38 @@
       "q6": "Czy moje dane są bezpieczne?",
       "a6": "Tak. Stosujemy standardowe zabezpieczenia, a Twoje dane osobowe przetwarzamy zgodnie z RODO. Szczegóły w Polityce Prywatności."
     }
+  },
+  "crowdfunding": {
+    "title": "Zbiórki",
+    "createCampaign": "Utwórz zbiórkę",
+    "noCampaigns": "Brak aktywnych zbiórek",
+    "daysLeft": "{count, plural, one {# dzień} few {# dni} other {# dni}}",
+    "ended": "Zakończona",
+    "by": "Autor:",
+    "of": "z",
+    "funded": "Zebrano",
+    "backers": "Wspierających",
+    "daysRemaining": "Dni do końca",
+    "contribute": "Wesprzyj zbiórkę",
+    "onChainVerified": "Zweryfikowana na blockchainie Solana",
+    "about": "O zbiórce",
+    "category": {
+      "FARMER_INVESTMENT": "Inwestycja rolnicza",
+      "GROUP_PRE_ORDER": "Zamówienie grupowe",
+      "COMMUNITY_PROJECT": "Projekt społeczności"
+    },
+    "form": {
+      "title": "Tytuł",
+      "description": "Opis",
+      "category": "Kategoria",
+      "fundingModel": "Model finansowania",
+      "allOrNothing": "Wszystko albo nic",
+      "keepWhatYouRaise": "Zachowaj zebrane",
+      "currency": "Waluta",
+      "goalAmount": "Kwota celu",
+      "deadline": "Termin zakończenia",
+      "create": "Utwórz zbiórkę",
+      "creating": "Tworzenie..."
+    }
   }
 }

@@ -34,3 +34,15 @@ export {
   hashToHex,
   hexToHash,
 } from "./lib/content-hash";
+
+// Components
+export { SolanaWalletProvider } from "./components/solana-wallet-provider";
+export { CampaignCard } from "./components/campaign-card";
+export { CampaignDetail } from "./components/campaign-detail";
+export { CreateCampaignForm } from "./components/create-campaign-form";
+
+// Actions
+export { createCampaignAction } from "./actions/create-campaign";
+
+// Queries
+export { getCampaigns, getCampaignById } from "./queries/get-campaigns";
