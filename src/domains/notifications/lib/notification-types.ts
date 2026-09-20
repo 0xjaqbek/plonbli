@@ -1,4 +1,4 @@
-export type NotificationCategory = "messages" | "social" | "marketplace";
+export type NotificationCategory = "messages" | "social" | "marketplace" | "crowdfunding";
 
 export interface NotificationPayload {
   category: NotificationCategory;
@@ -79,6 +79,32 @@ export function buildNewOrderNotification(
     title: "Nowe zamówienie",
     body: `${customerName} złożył(a) zamówienie ${orderNumber}`,
     url: `/farmer/orders/${orderId}`,
+  };
+}
+
+export function buildContributionNotification(
+  backerName: string,
+  amount: string,
+  campaignTitle: string,
+  campaignId: string
+): NotificationPayload {
+  return {
+    category: "crowdfunding",
+    title: "Nowe wsparcie zbiórki",
+    body: `${backerName} wsparł(a) zbiórkę "${campaignTitle}" kwotą ${amount}`,
+    url: `/crowdfunding/${campaignId}`,
+  };
+}
+
+export function buildCampaignActivatedNotification(
+  campaignTitle: string,
+  campaignId: string
+): NotificationPayload {
+  return {
+    category: "crowdfunding",
+    title: "Zbiórka aktywowana",
+    body: `Twoja zbiórka "${campaignTitle}" jest teraz aktywna`,
+    url: `/crowdfunding/${campaignId}`,
   };
 }
 

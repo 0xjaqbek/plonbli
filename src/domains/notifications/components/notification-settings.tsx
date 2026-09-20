@@ -12,7 +12,7 @@ import { updateNotificationPreferences } from "../actions/update-notification-pr
 import type { NotificationPreferences } from "@/shared/db/schema";
 
 interface Props {
-  preferences: Pick<NotificationPreferences, "messages" | "social" | "marketplace"> | null;
+  preferences: Pick<NotificationPreferences, "messages" | "social" | "marketplace" | "crowdfunding" | "crowdfunding"> | null;
 }
 
 export function NotificationSettings({ preferences }: Props) {
@@ -22,6 +22,7 @@ export function NotificationSettings({ preferences }: Props) {
     messages: preferences?.messages ?? true,
     social: preferences?.social ?? true,
     marketplace: preferences?.marketplace ?? true,
+    crowdfunding: preferences?.crowdfunding ?? true,
   });
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function NotificationSettings({ preferences }: Props) {
   }
 
   async function handleToggle(
-    key: "messages" | "social" | "marketplace",
+    key: "messages" | "social" | "marketplace" | "crowdfunding",
     value: boolean
   ) {
     const updated = { ...prefs, [key]: value };
@@ -69,10 +70,11 @@ export function NotificationSettings({ preferences }: Props) {
     );
   }
 
-  const toggles: { key: "messages" | "social" | "marketplace"; label: string }[] = [
+  const toggles: { key: "messages" | "social" | "marketplace" | "crowdfunding"; label: string }[] = [
     { key: "messages", label: t("messagesLabel") },
     { key: "social", label: t("socialLabel") },
     { key: "marketplace", label: t("marketplaceLabel") },
+    { key: "crowdfunding", label: t("crowdfundingLabel") },
   ];
 
   return (

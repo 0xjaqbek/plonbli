@@ -10,6 +10,8 @@ export {
   buildNewListingNotification,
   buildNewOrderNotification,
   buildOrderStatusNotification,
+  buildContributionNotification,
+  buildCampaignActivatedNotification,
 } from "./lib/notification-types";
 export type { NotificationPayload, NotificationCategory } from "./lib/notification-types";
 export { PushPermissionPrompt } from "./components/push-permission-prompt";

@@ -6,9 +6,10 @@ interface Preferences {
   messages: boolean;
   social: boolean;
   marketplace: boolean;
+  crowdfunding: boolean;
 }
 
-const DEFAULTS: Preferences = { messages: true, social: true, marketplace: true };
+const DEFAULTS: Preferences = { messages: true, social: true, marketplace: true, crowdfunding: true };
 
 export async function getNotificationPreferences(
   userId: string
@@ -19,5 +20,5 @@ export async function getNotificationPreferences(
 
   if (!row) return DEFAULTS;
 
-  return { messages: row.messages, social: row.social, marketplace: row.marketplace };
+  return { messages: row.messages, social: row.social, marketplace: row.marketplace, crowdfunding: row.crowdfunding };
 }
