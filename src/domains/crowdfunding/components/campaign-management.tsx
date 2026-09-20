@@ -3,8 +3,11 @@
 import { useTranslations } from "next-intl";
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Button } from "@/shared/ui/button";
-import { Trash2, Rocket, Milestone, Gift, AlertCircle } from "lucide-react";
+import { Trash2, Rocket, Milestone, Gift, AlertCircle, Wallet } from "lucide-react";
+import type { CrowdfundingCampaign } from "@/shared/db/schema";
 import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-milestones";
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
 import { MilestoneForm } from "./milestone-form";
@@ -12,41 +15,73 @@ import { RewardTierForm } from "./reward-tier-form";
 import { deleteMilestoneAction } from "../actions/delete-milestone";
 import { deleteRewardTierAction } from "../actions/delete-reward-tier";
 import { activateCampaignAction } from "../actions/activate-campaign";
+import { useCreateCampaignOnChain } from "../hooks/use-create-campaign-onchain";
 
 type Props = {
-  campaignId: string;
+  campaign: CrowdfundingCampaign;
   milestones: CrowdfundingMilestone[];
   rewardTiers: CrowdfundingRewardTier[];
 };
 
 export function CampaignManagement({
-  campaignId,
+  campaign,
   milestones,
   rewardTiers,
 }: Props) {
   const t = useTranslations("crowdfunding.manage");
   const router = useRouter();
+  const wallet = useAnchorWallet();
+  const { setVisible } = useWalletModal();
   const [isPending, startTransition] = useTransition();
   const [activateError, setActivateError] = useState<string | null>(null);
+  const { createCampaign, loading: onChainLoading, error: onChainError } =
+    useCreateCampaignOnChain();
 
   function handleDeleteMilestone(milestoneId: string) {
     startTransition(async () => {
-      await deleteMilestoneAction(milestoneId, campaignId);
+      await deleteMilestoneAction(milestoneId, campaign.id);
       router.refresh();
     });
   }
 
   function handleDeleteTier(tierId: string) {
     startTransition(async () => {
-      await deleteRewardTierAction(tierId, campaignId);
+      await deleteRewardTierAction(tierId, campaign.id);
       router.refresh();
     });
   }
 
-  function handleActivate() {
+  async function handleActivate() {
     setActivateError(null);
+
+    if (!wallet) {
+      setVisible(true);
+      return;
+    }
+
+    // Step 1: Create campaign on-chain
+    const onChainResult = await createCampaign({
+      campaignIndex: 0, // First campaign for this wallet
+      goalAmount: parseFloat(campaign.goalAmount),
+      deadline: new Date(campaign.deadline),
+      fundingModel: campaign.fundingModel as "ALL_OR_NOTHING" | "KEEP_WHAT_YOU_RAISE",
+      currencyMint: campaign.currencyMint,
+      title: campaign.title,
+      description: campaign.description,
+    });
+
+    if (!onChainResult) {
+      setActivateError(onChainError || t("onChainFailed"));
+      return;
+    }
+
+    // Step 2: Activate in DB and save pubkey
     startTransition(async () => {
-      const result = await activateCampaignAction(campaignId);
+      const result = await activateCampaignAction(
+        campaign.id,
+        onChainResult.campaignPubkey,
+        onChainResult.signature
+      );
       if (result.error) {
         setActivateError(result.error);
       } else {
@@ -54,6 +89,8 @@ export function CampaignManagement({
       }
     });
   }
+
+  const isActivating = isPending || onChainLoading;
 
   return (
     <div className="space-y-8">
@@ -108,7 +145,7 @@ export function CampaignManagement({
           </div>
         )}
 
-        <MilestoneForm campaignId={campaignId} />
+        <MilestoneForm campaignId={campaign.id} />
       </section>
 
       {/* Reward tiers section */}
@@ -163,22 +200,38 @@ export function CampaignManagement({
           </div>
         )}
 
-        <RewardTierForm campaignId={campaignId} />
+        <RewardTierForm campaignId={campaign.id} />
       </section>
 
       {/* Activate button */}
       <div className="border-t pt-6">
-        {activateError && (
-          <p className="text-sm text-destructive mb-3">{activateError}</p>
+        {(activateError || onChainError) && (
+          <p className="text-sm text-destructive mb-3">
+            {activateError || onChainError}
+          </p>
         )}
+
+        {!wallet && (
+          <p className="text-sm text-muted-foreground mb-3 flex items-center gap-1.5">
+            <Wallet className="h-4 w-4" />
+            {t("connectWalletFirst")}
+          </p>
+        )}
+
         <Button
           size="lg"
           className="w-full"
           onClick={handleActivate}
-          disabled={isPending}
+          disabled={isActivating}
         >
           <Rocket className="mr-2 h-5 w-5" />
-          {isPending ? t("activating") : t("activate")}
+          {isActivating
+            ? onChainLoading
+              ? t("signingOnChain")
+              : t("activating")
+            : wallet
+              ? t("activate")
+              : t("connectAndActivate")}
         </Button>
         <p className="text-xs text-muted-foreground text-center mt-2">
           {t("activateHint")}

@@ -5,6 +5,7 @@ import { getMilestones } from "@/domains/crowdfunding/queries/get-milestones";
 import { getRewardTiers } from "@/domains/crowdfunding/queries/get-reward-tiers";
 import { CampaignDetail } from "@/domains/crowdfunding/components/campaign-detail";
 import { CampaignManagement } from "@/domains/crowdfunding/components/campaign-management";
+import { WalletButton } from "@/domains/crowdfunding/components/wallet-button";
 
 export default async function CampaignPage({
   params,
@@ -29,6 +30,10 @@ export default async function CampaignPage({
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
+      <div className="flex justify-end mb-4">
+        <WalletButton />
+      </div>
+
       <CampaignDetail
         campaign={campaign}
         milestones={milestones}
@@ -39,7 +44,7 @@ export default async function CampaignPage({
       {isCreator && isSetup && (
         <div className="mt-8">
           <CampaignManagement
-            campaignId={id}
+            campaign={campaign}
             milestones={milestones}
             rewardTiers={rewardTiers}
           />

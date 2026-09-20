@@ -98,7 +98,8 @@
     "profile": "Profil",
     "events": "Wydarzenia",
     "cart": "Lista produktów",
-    "orders": "Zapytania"
+    "orders": "Zapytania",
+    "crowdfunding": "Zbiórki"
   },
   "theme": {
     "light": "Jasny",
@@ -711,6 +712,7 @@
     "messagesLabel": "Wiadomości",
     "socialLabel": "Aktywność społeczna",
     "marketplaceLabel": "Oferty i zapytania",
+    "crowdfundingLabel": "Zbiórki",
     "notSupported": "Twoja przeglądarka nie obsługuje powiadomień push."
   },
   "landing": {
@@ -867,7 +869,11 @@
       "cancel": "Anuluj",
       "activate": "Aktywuj zbiórkę",
       "activating": "Aktywowanie...",
-      "activateHint": "Po aktywacji zbiórka stanie się widoczna dla wszystkich i będzie można ją wspierać."
+      "activateHint": "Po aktywacji zbiórka zostanie utworzona na blockchainie Solana i stanie się widoczna dla wszystkich.",
+      "connectWalletFirst": "Podłącz portfel Solana aby aktywować zbiórkę on-chain",
+      "connectAndActivate": "Podłącz portfel i aktywuj",
+      "signingOnChain": "Podpisywanie transakcji...",
+      "onChainFailed": "Nie udało się utworzyć zbiórki na blockchainie"
     },
     "backer": {
       "milestones": "Kamienie milowe",
@@ -887,7 +893,15 @@
       "confirmContribution": "Potwierdź wsparcie",
       "processing": "Przetwarzanie...",
       "thankYou": "Dziękujemy za wsparcie!",
-      "contributionRecorded": "Twoje wsparcie zostało zarejestrowane."
+      "contributionRecorded": "Twoje wsparcie zostało zarejestrowane.",
+      "walletConnected": "Portfel podłączony — transakcja on-chain",
+      "walletNotConnected": "Portfel niepodłączony — tylko zapis w bazie",
+      "signingTransaction": "Podpisywanie transakcji...",
+      "onChainFailed": "Nie udało się wysłać transakcji on-chain"
+    },
+    "wallet": {
+      "connect": "Podłącz portfel",
+      "disconnect": "Odłącz portfel"
     }
   }
 }

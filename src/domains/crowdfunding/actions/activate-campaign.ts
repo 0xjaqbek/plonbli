@@ -8,8 +8,14 @@ import {
 } from "@/shared/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildCampaignActivatedNotification } from "@/domains/notifications/lib/notification-types";
 
-export async function activateCampaignAction(campaignId: string) {
+export async function activateCampaignAction(
+  campaignId: string,
+  campaignPubkey?: string,
+  transactionSignature?: string
+) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: "Unauthorized" };
@@ -49,8 +55,17 @@ export async function activateCampaignAction(campaignId: string) {
 
   await db
     .update(crowdfundingCampaigns)
-    .set({ status: "ACTIVE" })
+    .set({
+      status: "ACTIVE",
+      campaignPubkey: campaignPubkey || null,
+    })
     .where(eq(crowdfundingCampaigns.id, campaignId));
+
+  // Notify creator that campaign is live
+  void sendNotification(
+    session.user.id,
+    buildCampaignActivatedNotification(campaign.title, campaignId)
+  );
 
   revalidatePath(`/crowdfunding/${campaignId}`);
   return { success: true };

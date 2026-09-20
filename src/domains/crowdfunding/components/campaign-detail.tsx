@@ -102,6 +102,8 @@ export function CampaignDetail({
         {canContribute && (
           <ContributeDialog
             campaignId={campaign.id}
+            campaignPubkey={campaign.campaignPubkey}
+            currencyMint={campaign.currencyMint}
             rewardTiers={rewardTiers}
           />
         )}

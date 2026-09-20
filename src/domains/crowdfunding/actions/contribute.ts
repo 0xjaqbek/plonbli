@@ -10,6 +10,8 @@ import {
 import { eq, and, sql } from "drizzle-orm";
 import { contributeSchema } from "../schemas/validation";
 import { revalidatePath } from "next/cache";
+import { sendNotification } from "@/domains/notifications/lib/send-notification";
+import { buildContributionNotification } from "@/domains/notifications/lib/notification-types";
 
 export async function contributeAction(formData: FormData) {
   const session = await auth();
@@ -101,6 +103,17 @@ export async function contributeAction(formData: FormData) {
       backerCount: campaign.backerCount + 1,
     })
     .where(eq(crowdfundingCampaigns.id, campaignId));
+
+  // Notify campaign creator
+  void sendNotification(
+    campaign.creatorId,
+    buildContributionNotification(
+      session.user.name ?? "Wspierający",
+      amount.toString(),
+      campaign.title,
+      campaignId
+    )
+  );
 
   revalidatePath(`/crowdfunding/${campaignId}`);
   return { success: true };

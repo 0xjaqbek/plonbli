@@ -1,0 +1,1020 @@
+{
+  "version": "0.1.0",
+  "name": "plonbli_crowdfunding",
+  "instructions": [
+    {
+      "name": "initializePlatform",
+      "accounts": [
+        {
+          "name": "platformConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "treasury",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "feeBasisPoints",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "createCampaign",
+      "accounts": [
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "currencyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "campaignId",
+          "type": "u64"
+        },
+        {
+          "name": "goalAmount",
+          "type": "u64"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "fundingModel",
+          "type": "u8"
+        },
+        {
+          "name": "contentHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "addMilestone",
+      "accounts": [
+        {
+          "name": "milestone",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "milestoneIndex",
+          "type": "u8"
+        },
+        {
+          "name": "targetAmount",
+          "type": "u64"
+        },
+        {
+          "name": "descriptionHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "addRewardTier",
+      "accounts": [
+        {
+          "name": "rewardTier",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tierIndex",
+          "type": "u8"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "maxBackers",
+          "type": "u32"
+        },
+        {
+          "name": "descriptionHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "isProductLinked",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "activateCampaign",
+      "accounts": [
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "contribute",
+      "accounts": [
+        {
+          "name": "contribution",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "backerTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The backer's token account to transfer from"
+          ]
+        },
+        {
+          "name": "backer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "rewardTier",
+          "type": {
+            "option": "u8"
+          }
+        }
+      ]
+    },
+    {
+      "name": "approveMilestone",
+      "accounts": [
+        {
+          "name": "milestone",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "platformConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "releaseMilestoneFunds",
+      "accounts": [
+        {
+          "name": "milestone",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creatorTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Creator's token account to receive funds"
+          ]
+        },
+        {
+          "name": "treasuryTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Treasury token account for fee collection"
+          ]
+        },
+        {
+          "name": "platformConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "creator",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "finalizeCampaign",
+      "accounts": [
+        {
+          "name": "campaign",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "creatorTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "Creator's token account — receives funds if campaign succeeds with no milestones."
+          ]
+        },
+        {
+          "name": "treasuryTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": [
+            "Treasury token account for fee."
+          ]
+        },
+        {
+          "name": "platformConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "caller",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "Anyone can call finalize after deadline"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimRefund",
+      "accounts": [
+        {
+          "name": "contribution",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "campaign",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "backerTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Backer's token account to receive refund"
+          ]
+        },
+        {
+          "name": "backer",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "updatePlatformConfig",
+      "accounts": [
+        {
+          "name": "platformConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "feeBasisPoints",
+          "type": {
+            "option": "u16"
+          }
+        },
+        {
+          "name": "newTreasury",
+          "type": {
+            "option": "publicKey"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Campaign",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "publicKey"
+          },
+          {
+            "name": "campaignId",
+            "type": "u64"
+          },
+          {
+            "name": "goalAmount",
+            "type": "u64"
+          },
+          {
+            "name": "raisedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "currencyMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "fundingModel",
+            "type": {
+              "defined": "FundingModel"
+            }
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "CampaignStatus"
+            }
+          },
+          {
+            "name": "milestoneCount",
+            "type": "u8"
+          },
+          {
+            "name": "rewardTierCount",
+            "type": "u8"
+          },
+          {
+            "name": "contentHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "backerCount",
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contribution",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "campaign",
+            "type": "publicKey"
+          },
+          {
+            "name": "backer",
+            "type": "publicKey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "rewardTier",
+            "type": {
+              "option": "u8"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "refunded",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Milestone",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "campaign",
+            "type": "publicKey"
+          },
+          {
+            "name": "milestoneIndex",
+            "type": "u8"
+          },
+          {
+            "name": "targetAmount",
+            "type": "u64"
+          },
+          {
+            "name": "descriptionHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "MilestoneStatus"
+            }
+          },
+          {
+            "name": "approvedBy",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PlatformConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeBasisPoints",
+            "type": "u16"
+          },
+          {
+            "name": "treasury",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardTier",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "campaign",
+            "type": "publicKey"
+          },
+          {
+            "name": "tierIndex",
+            "type": "u8"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "maxBackers",
+            "type": "u32"
+          },
+          {
+            "name": "currentBackers",
+            "type": "u32"
+          },
+          {
+            "name": "descriptionHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "isProductLinked",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "FundingModel",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "AllOrNothing"
+          },
+          {
+            "name": "KeepWhatYouRaise"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CampaignStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Setup"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Successful"
+          },
+          {
+            "name": "Failed"
+          },
+          {
+            "name": "Finalized"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Released"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "CampaignCreated",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "creator",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "campaignId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "goalAmount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "currencyMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "deadline",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CampaignActivated",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "ContributionMade",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "backer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "totalRaised",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "MilestoneApproved",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "milestoneIndex",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "approvedBy",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "MilestoneFundsReleased",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "milestoneIndex",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CampaignFinalized",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "status",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "totalRaised",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RefundClaimed",
+      "fields": [
+        {
+          "name": "campaign",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "backer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized: signer is not the expected authority"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidFundingModel",
+      "msg": "Invalid funding model value"
+    },
+    {
+      "code": 6002,
+      "name": "CampaignNotInSetup",
+      "msg": "Campaign is not in Setup status"
+    },
+    {
+      "code": 6003,
+      "name": "CampaignNotActive",
+      "msg": "Campaign is not Active"
+    },
+    {
+      "code": 6004,
+      "name": "CampaignNotExpired",
+      "msg": "Campaign has not reached its deadline yet"
+    },
+    {
+      "code": 6005,
+      "name": "CampaignExpired",
+      "msg": "Campaign deadline has passed"
+    },
+    {
+      "code": 6006,
+      "name": "MaxMilestonesReached",
+      "msg": "Maximum milestones reached for this campaign"
+    },
+    {
+      "code": 6007,
+      "name": "MaxRewardTiersReached",
+      "msg": "Maximum reward tiers reached for this campaign"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidMilestoneIndex",
+      "msg": "Milestone index does not match expected next index"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidRewardTierIndex",
+      "msg": "Reward tier index does not match expected next index"
+    },
+    {
+      "code": 6010,
+      "name": "ZeroContribution",
+      "msg": "Contribution amount must be greater than zero"
+    },
+    {
+      "code": 6011,
+      "name": "RewardTierFull",
+      "msg": "Reward tier is full (max backers reached)"
+    },
+    {
+      "code": 6012,
+      "name": "InsufficientForRewardTier",
+      "msg": "Contribution amount is less than reward tier price"
+    },
+    {
+      "code": 6013,
+      "name": "MilestoneNotPending",
+      "msg": "Milestone is not in Pending status"
+    },
+    {
+      "code": 6014,
+      "name": "MilestoneNotApproved",
+      "msg": "Milestone is not Approved"
+    },
+    {
+      "code": 6015,
+      "name": "RefundNotAvailable",
+      "msg": "Campaign is not Failed — refunds not available"
+    },
+    {
+      "code": 6016,
+      "name": "AlreadyRefunded",
+      "msg": "Contribution already refunded"
+    },
+    {
+      "code": 6017,
+      "name": "CannotFinalize",
+      "msg": "Campaign must be Active to finalize"
+    },
+    {
+      "code": 6018,
+      "name": "GoalNotReached",
+      "msg": "Campaign goal not reached and funding model is AllOrNothing"
+    },
+    {
+      "code": 6019,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6020,
+      "name": "DeadlineInPast",
+      "msg": "Deadline must be in the future"
+    },
+    {
+      "code": 6021,
+      "name": "ZeroGoalAmount",
+      "msg": "Goal amount must be greater than zero"
+    },
+    {
+      "code": 6022,
+      "name": "FeeTooHigh",
+      "msg": "Fee basis points exceeds maximum (1000 = 10%)"
+    },
+    {
+      "code": 6023,
+      "name": "MilestoneAmountsExceedGoal",
+      "msg": "Milestone target amounts must sum to at most the campaign goal"
+    }
+  ],
+  "metadata": {
+    "address": "63fEfSpaubSMFFvGVo5ALKye38XACxTCwBtL1rR1beRX"
+  }
+}
