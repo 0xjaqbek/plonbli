@@ -1,18 +1,47 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Shield, Milestone, Gift, CheckCircle2, Wallet } from "lucide-react";
+import {
+  Shield,
+  Milestone,
+  Gift,
+  CheckCircle2,
+  Wallet,
+  ArrowLeft,
+  Users,
+  Share2,
+  Check,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/shared/ui/button";
 import type { CrowdfundingCampaign } from "@/shared/db/schema";
 import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-milestones";
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
 import { ContributeDialog } from "./contribute-dialog";
+
+function getCurrencyLabel(mint: string): string {
+  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
+  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
+  return mint.slice(0, 4);
+}
 
 type Props = {
   campaign: CrowdfundingCampaign;
   milestones: CrowdfundingMilestone[];
   rewardTiers: CrowdfundingRewardTier[];
   isCreator: boolean;
+  creatorName?: string;
+  creatorAvatar?: string | null;
+  contributions?: Array<{
+    id: string;
+    amount: string;
+    backerName: string;
+    backerAvatar: string | null;
+    createdAt: Date;
+  }>;
 };
 
 export function CampaignDetail({
@@ -20,9 +49,12 @@ export function CampaignDetail({
   milestones,
   rewardTiers,
   isCreator,
+  creatorName,
+  contributions,
 }: Props) {
   const t = useTranslations("crowdfunding");
   const wallet = useAnchorWallet();
+  const currencyLabel = getCurrencyLabel(campaign.currencyMint);
 
   const goal = parseFloat(campaign.goalAmount);
   const raised = parseFloat(campaign.raisedAmount);
@@ -35,17 +67,49 @@ export function CampaignDetail({
     )
   );
   const isActive = campaign.status === "ACTIVE";
+  const isSuccessful = campaign.status === "SUCCESSFUL";
+  const progressBarGreen = isSuccessful || progress >= 100;
   const canContribute = isActive && !isCreator && !!campaign.campaignPubkey;
+  const [copied, setCopied] = useState(false);
+
+  function handleCopyLink() {
+    const url = `${window.location.origin}/crowdfunding/${campaign.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   return (
     <div className="space-y-6">
+      {/* Back navigation + Share */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/crowdfunding"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("backToList")}
+        </Link>
+        <Button variant="outline" size="sm" onClick={handleCopyLink}>
+          {copied ? (
+            <Check className="mr-1.5 h-4 w-4 text-green-500" />
+          ) : (
+            <Share2 className="mr-1.5 h-4 w-4" />
+          )}
+          {copied ? t("linkCopied") : t("shareLink")}
+        </Button>
+      </div>
+
       {/* Image */}
       {campaign.images[0] && (
-        <div className="aspect-video w-full overflow-hidden rounded-lg">
-          <img
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+          <Image
             src={campaign.images[0]}
             alt={campaign.title}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 672px"
           />
         </div>
       )}
@@ -63,6 +127,11 @@ export function CampaignDetail({
           </span>
         </div>
         <h1 className="text-3xl font-bold">{campaign.title}</h1>
+        {creatorName && (
+          <p className="text-sm text-muted-foreground">
+            {t("by")} {creatorName}
+          </p>
+        )}
       </div>
 
       {/* Progress */}
@@ -74,16 +143,18 @@ export function CampaignDetail({
               aria-valuenow={Math.round(progress)}
               aria-valuemin={0}
               aria-valuemax={100}
-              className="h-full rounded-full bg-primary transition-all"
+              className={`h-full rounded-full transition-all ${
+                progressBarGreen ? "bg-green-500" : "bg-primary"
+              }`}
               style={{ width: `${progress}%` }}
             />
           </div>
           <div className="flex justify-between">
             <span className="text-2xl font-bold">
-              {raised.toLocaleString()}
+              {raised.toLocaleString()} {currencyLabel}
             </span>
             <span className="text-muted-foreground">
-              {t("of")} {goal.toLocaleString()}
+              {t("of")} {goal.toLocaleString()} {currencyLabel}
             </span>
           </div>
         </div>
@@ -105,10 +176,24 @@ export function CampaignDetail({
           </div>
         </div>
 
+        {/* Success indicator */}
+        {isSuccessful && (
+          <div className="flex items-center gap-2 rounded-md bg-green-50 dark:bg-green-950 px-3 py-2 text-sm font-medium text-green-700 dark:text-green-300">
+            <CheckCircle2 className="h-4 w-4" />
+            {t("goalReached")}
+          </div>
+        )}
+
+        {/* Wallet explanation for non-crypto users */}
         {canContribute && !wallet && (
-          <div className="flex items-center gap-2 rounded-md bg-amber-50 dark:bg-amber-950 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
-            <Wallet className="h-3.5 w-3.5" />
-            {t("wallet.connectToContribute")}
+          <div className="rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 px-4 py-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-amber-800 dark:text-amber-200">
+              <Wallet className="h-4 w-4" />
+              {t("wallet.connectToContribute")}
+            </div>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              {t("wallet.explanation")}
+            </p>
           </div>
         )}
 
@@ -174,7 +259,7 @@ export function CampaignDetail({
                   </p>
                   <p className="text-sm font-medium mt-1">
                     {t("backer.target")}:{" "}
-                    {parseFloat(ms.targetAmount).toLocaleString()}
+                    {parseFloat(ms.targetAmount).toLocaleString()} {currencyLabel}
                   </p>
                 </div>
                 {ms.status !== "PENDING" && (
@@ -218,7 +303,7 @@ export function CampaignDetail({
                   <div className="flex items-baseline justify-between">
                     <h3 className="font-medium">{tier.title}</h3>
                     <span className="text-lg font-bold text-primary">
-                      {parseFloat(tier.price).toLocaleString()}
+                      {parseFloat(tier.price).toLocaleString()} {currencyLabel}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -236,6 +321,46 @@ export function CampaignDetail({
                 </div>
               );
             })}
+          </div>
+        </section>
+      )}
+
+      {/* Recent backers */}
+      {contributions && contributions.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">{t("recentBackers")}</h2>
+          </div>
+          <div className="space-y-2">
+            {contributions.slice(0, 10).map((c) => (
+              <div
+                key={c.id}
+                className="flex items-center justify-between rounded-lg border px-4 py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                    {c.backerAvatar ? (
+                      <Image
+                        src={c.backerAvatar}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs font-medium">
+                        {c.backerName?.charAt(0)?.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium">{c.backerName}</span>
+                </div>
+                <span className="text-sm font-medium text-primary">
+                  {parseFloat(c.amount).toLocaleString()} {currencyLabel}
+                </span>
+              </div>
+            ))}
           </div>
         </section>
       )}

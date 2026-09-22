@@ -18,6 +18,12 @@ import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-rew
 import { contributeAction } from "../actions/contribute";
 import { useContributeOnChain } from "../hooks/use-contribute-onchain";
 
+function getCurrencyLabel(mint: string): string {
+  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
+  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
+  return mint.slice(0, 4);
+}
+
 type Props = {
   campaignId: string;
   campaignPubkey: string | null;
@@ -49,6 +55,7 @@ export function ContributeDialog({
     error: onChainError,
   } = useContributeOnChain();
 
+  const currencyLabel = getCurrencyLabel(currencyMint);
   const selectedTierData = rewardTiers.find((t) => t.id === selectedTier);
   const minAmount = selectedTierData
     ? parseFloat(selectedTierData.price)
@@ -202,7 +209,7 @@ export function ContributeDialog({
                       <div className="flex items-baseline justify-between">
                         <p className="font-medium">{tier.title}</p>
                         <p className="text-lg font-bold text-primary">
-                          {parseFloat(tier.price).toLocaleString()}
+                          {parseFloat(tier.price).toLocaleString()} {currencyLabel}
                         </p>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
@@ -229,7 +236,7 @@ export function ContributeDialog({
 
             {/* Amount */}
             <div className="space-y-2">
-              <Label htmlFor="contrib-amount">{t("amount")}</Label>
+              <Label htmlFor="contrib-amount">{t("amount")} ({currencyLabel})</Label>
               <Input
                 id="contrib-amount"
                 name="amount"
@@ -243,7 +250,7 @@ export function ContributeDialog({
               />
               {selectedTierData && (
                 <p className="text-xs text-muted-foreground">
-                  {t("minAmount", { min: selectedTierData.price })}
+                  {t("minAmount", { min: `${selectedTierData.price} ${currencyLabel}` })}
                 </p>
               )}
             </div>

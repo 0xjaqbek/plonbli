@@ -51,6 +51,7 @@ export async function getCampaigns(filters?: {
       backerCount: crowdfundingCampaigns.backerCount,
       deadline: crowdfundingCampaigns.deadline,
       status: crowdfundingCampaigns.status,
+      currencyMint: crowdfundingCampaigns.currencyMint,
       createdAt: crowdfundingCampaigns.createdAt,
       creatorName: users.name,
       creatorAvatar: users.avatar,

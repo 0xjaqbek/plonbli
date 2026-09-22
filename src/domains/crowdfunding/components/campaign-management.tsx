@@ -24,6 +24,12 @@ type Props = {
   campaignIndex: number;
 };
 
+function getCurrencyLabel(mint: string): string {
+  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
+  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
+  return mint.slice(0, 4);
+}
+
 export function CampaignManagement({
   campaign,
   milestones,
@@ -38,8 +44,11 @@ export function CampaignManagement({
   const [activateError, setActivateError] = useState<string | null>(null);
   const { createCampaign, loading: onChainLoading, error: onChainError } =
     useCreateCampaignOnChain();
+  const currencyLabel = getCurrencyLabel(campaign.currencyMint);
 
   function handleDeleteMilestone(milestoneId: string) {
+    const confirmed = window.confirm(t("deleteMilestoneConfirm"));
+    if (!confirmed) return;
     startTransition(async () => {
       await deleteMilestoneAction(milestoneId, campaign.id);
       router.refresh();
@@ -47,6 +56,8 @@ export function CampaignManagement({
   }
 
   function handleDeleteTier(tierId: string) {
+    const confirmed = window.confirm(t("deleteTierConfirm"));
+    if (!confirmed) return;
     startTransition(async () => {
       await deleteRewardTierAction(tierId, campaign.id);
       router.refresh();
@@ -137,7 +148,7 @@ export function CampaignManagement({
                     {ms.description}
                   </p>
                   <p className="text-sm font-medium mt-1">
-                    {t("target")}: {parseFloat(ms.targetAmount).toLocaleString()}
+                    {t("target")}: {parseFloat(ms.targetAmount).toLocaleString()} {currencyLabel}
                   </p>
                 </div>
                 <Button
@@ -151,6 +162,18 @@ export function CampaignManagement({
                 </Button>
               </div>
             ))}
+          </div>
+        )}
+
+        {milestones.length > 0 && (
+          <div className="text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+            {t("milestoneSummary", {
+              total: milestones
+                .reduce((sum, ms) => sum + parseFloat(ms.targetAmount), 0)
+                .toLocaleString(),
+              goal: parseFloat(campaign.goalAmount).toLocaleString(),
+              currency: currencyLabel,
+            })}
           </div>
         )}
 
@@ -180,7 +203,7 @@ export function CampaignManagement({
                   <div className="flex items-baseline gap-2">
                     <h3 className="font-medium">{tier.title}</h3>
                     <span className="text-lg font-bold text-primary">
-                      {parseFloat(tier.price).toLocaleString()}
+                      {parseFloat(tier.price).toLocaleString()} {currencyLabel}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">

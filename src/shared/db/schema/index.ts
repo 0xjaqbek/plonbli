@@ -216,6 +216,11 @@ export {
   type NewCrowdfundingContribution,
 } from "./crowdfunding-contributions";
 export {
+  crowdfundingUpdates,
+  type CrowdfundingUpdate,
+  type NewCrowdfundingUpdate,
+} from "./crowdfunding-updates";
+export {
   userWallets,
   type UserWallet,
   type NewUserWallet,
@@ -226,5 +231,6 @@ export {
   crowdfundingMilestonesRelations,
   crowdfundingRewardTiersRelations,
   crowdfundingContributionsRelations,
+  crowdfundingUpdatesRelations,
   userWalletsRelations,
 } from "./relations";

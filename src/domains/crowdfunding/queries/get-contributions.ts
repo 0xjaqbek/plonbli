@@ -47,6 +47,7 @@ export async function getBackedCampaigns(userId: string) {
         goalAmount: crowdfundingCampaigns.goalAmount,
         raisedAmount: crowdfundingCampaigns.raisedAmount,
         deadline: crowdfundingCampaigns.deadline,
+        currencyMint: crowdfundingCampaigns.currencyMint,
       },
       rewardTier: {
         title: crowdfundingRewardTiers.title,

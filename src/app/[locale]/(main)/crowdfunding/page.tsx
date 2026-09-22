@@ -1,11 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/domains/auth/lib/auth";
 import { getCampaigns } from "@/domains/crowdfunding/queries/get-campaigns";
-import { CampaignCard } from "@/domains/crowdfunding/components/campaign-card";
+import { CampaignGrid } from "@/domains/crowdfunding/components/campaign-grid";
 import { WalletButton } from "@/domains/crowdfunding/components/wallet-button";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+
+const PAGE_SIZE = 12;
 
 export default async function CrowdfundingPage({
   searchParams,
@@ -16,9 +18,11 @@ export default async function CrowdfundingPage({
   const session = await auth();
   const params = await searchParams;
 
+  const categoryFilter = typeof params.category === "string" ? params.category : undefined;
   const campaigns = await getCampaigns({
     status: typeof params.status === "string" ? params.status : undefined,
-    category: typeof params.category === "string" ? params.category : undefined,
+    category: categoryFilter,
+    limit: PAGE_SIZE,
   });
 
   return (
@@ -44,21 +48,40 @@ export default async function CrowdfundingPage({
         </div>
       </div>
 
-      {campaigns.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          {t("noCampaigns")}
-        </div>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {campaigns.map((campaign) => (
-            <CampaignCard
-              key={campaign.id}
-              {...campaign}
-              deadline={campaign.deadline}
-            />
-          ))}
-        </div>
-      )}
+      {/* Category filter */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <Link
+          href="/crowdfunding"
+          className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+            !params.category
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
+        >
+          {t("filter.all")}
+        </Link>
+        {["FARMER_INVESTMENT", "GROUP_PRE_ORDER", "COMMUNITY_PROJECT"].map(
+          (cat) => (
+            <Link
+              key={cat}
+              href={`/crowdfunding?category=${cat}`}
+              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+                params.category === cat
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {t(`category.${cat}`)}
+            </Link>
+          )
+        )}
+      </div>
+
+      <CampaignGrid
+        initialCampaigns={campaigns}
+        category={categoryFilter}
+        pageSize={PAGE_SIZE}
+      />
     </div>
   );
 }

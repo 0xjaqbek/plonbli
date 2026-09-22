@@ -819,6 +819,7 @@
     "noCampaigns": "Brak aktywnych zbiórek",
     "loginToCreate": "Zaloguj się aby utworzyć",
     "daysLeft": "{count, plural, one {# dzień} few {# dni} other {# dni}}",
+    "lastDay": "Ostatni dzień",
     "ended": "Zakończona",
     "by": "Autor:",
     "of": "z",
@@ -828,6 +829,20 @@
     "contribute": "Wesprzyj zbiórkę",
     "onChainVerified": "Zweryfikowana na blockchainie Solana",
     "about": "O zbiórce",
+    "backToList": "Wróć do zbiórek",
+    "goalReached": "Cel osiągnięty!",
+    "recentBackers": "Ostatni wspierający",
+    "shareLink": "Udostępnij link",
+    "linkCopied": "Skopiowano!",
+    "loadMore": "Załaduj więcej",
+    "nav": {
+      "all": "Wszystkie zbiórki",
+      "myCampaigns": "Moje zbiórki",
+      "backed": "Wsparte"
+    },
+    "filter": {
+      "all": "Wszystkie"
+    },
     "category": {
       "FARMER_INVESTMENT": "Inwestycja rolnicza",
       "GROUP_PRE_ORDER": "Zamówienie grupowe",
@@ -840,11 +855,17 @@
       "fundingModel": "Model finansowania",
       "allOrNothing": "Wszystko albo nic",
       "keepWhatYouRaise": "Zachowaj zebrane",
+      "fundingModelHint": "\"Wszystko albo nic\" — jeśli cel nie zostanie osiągnięty, wpłaty zostaną zwrócone. \"Zachowaj zebrane\" — otrzymujesz zebrane środki niezależnie od osiągnięcia celu.",
       "currency": "Waluta",
       "goalAmount": "Kwota celu",
       "deadline": "Termin zakończenia",
       "create": "Utwórz zbiórkę",
-      "creating": "Tworzenie..."
+      "creating": "Tworzenie...",
+      "introTitle": "Jak działa tworzenie zbiórki?",
+      "introDescription": "Wypełnij formularz aby utworzyć zbiórkę w trybie konfiguracji. Następnie dodaj kamienie milowe (wymagany min. 1) i opcjonalnie progi nagród. Gdy wszystko będzie gotowe, aktywuj zbiórkę — wymaga to portfela Solana i podpisania transakcji on-chain.",
+      "images": "Zdjęcia",
+      "imagesHint": "Podaj adresy URL zdjęć oddzielone przecinkami",
+      "imagePlaceholder": "https://example.com/image1.jpg, https://example.com/image2.jpg"
     },
     "manage": {
       "setupBanner": "Ta zbiórka jest w trybie konfiguracji. Dodaj kamienie milowe i progi nagród, a następnie aktywuj zbiórkę.",
@@ -876,7 +897,10 @@
       "signingOnChain": "Podpisywanie transakcji...",
       "onChainFailed": "Nie udało się utworzyć zbiórki na blockchainie",
       "activateConfirm": "Czy na pewno chcesz aktywować zbiórkę? Ta operacja jest nieodwracalna.",
-      "onChainCreatedButDbFailed": "Zbiórka została utworzona na blockchainie (pubkey: {pubkey}), ale zapis w bazie danych się nie powiódł. Skontaktuj się z pomocą techniczną podając ten klucz."
+      "onChainCreatedButDbFailed": "Zbiórka została utworzona na blockchainie (pubkey: {pubkey}), ale zapis w bazie danych się nie powiódł. Skontaktuj się z pomocą techniczną podając ten klucz.",
+      "deleteMilestoneConfirm": "Czy na pewno chcesz usunąć ten kamień milowy?",
+      "deleteTierConfirm": "Czy na pewno chcesz usunąć ten próg nagrody?",
+      "milestoneSummary": "Suma kamieni milowych: {total} {currency} z {goal} {currency} celu"
     },
     "backer": {
       "milestones": "Kamienie milowe",
@@ -907,7 +931,8 @@
     "wallet": {
       "connect": "Podłącz portfel",
       "disconnect": "Odłącz portfel",
-      "connectToContribute": "Podłącz portfel Solana aby wesprzeć zbiórkę"
+      "connectToContribute": "Podłącz portfel Solana aby wesprzeć zbiórkę",
+      "explanation": "Zbiórki działają na blockchainie Solana. Aby wesprzeć projekt, potrzebujesz portfela Solana (np. Phantom, Solflare). Twoje środki trafiają bezpośrednio na smart contract."
     },
     "errors": {
       "WALLET_NOT_CONNECTED": "Podłącz portfel Solana",
@@ -930,16 +955,30 @@
       "claimRefund": "Odbierz zwrot",
       "claimingRefund": "Przetwarzanie zwrotu...",
       "refundConfirm": "Czy na pewno chcesz odebrać zwrot w kwocie {amount}?",
+      "refundConfirmTitle": "Potwierdzenie zwrotu",
       "refundSuccess": "Zwrot został zrealizowany",
       "refundSuccessAmount": "Zwrot w kwocie {amount} został zrealizowany",
       "refundError": "Nie udało się zrealizować zwrotu"
+    },
+    "updates": {
+      "title": "Aktualności",
+      "addUpdate": "Dodaj wpis",
+      "updateTitle": "Tytuł",
+      "updateContent": "Treść",
+      "titlePlaceholder": "Np. Nowe zdjęcia z budowy",
+      "contentPlaceholder": "Podziel się aktualnościami z projektu...",
+      "post": "Opublikuj",
+      "posting": "Publikowanie...",
+      "cancel": "Anuluj",
+      "noUpdates": "Brak aktualności. Twórca nie opublikował jeszcze żadnych wpisów."
     },
     "edit": {
       "title": "Edytuj zbiórkę",
       "save": "Zapisz zmiany",
       "saving": "Zapisywanie...",
       "notFound": "Nie znaleziono zbiórki lub brak uprawnień",
-      "onlySetup": "Edycja jest możliwa tylko dla zbiórek w trybie konfiguracji"
+      "onlySetup": "Edycja jest możliwa tylko dla zbiórek w trybie konfiguracji",
+      "backToCampaign": "Wróć do zbiórki"
     },
     "status": {
       "SETUP": "Konfiguracja",

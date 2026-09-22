@@ -6,8 +6,15 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { Target } from "lucide-react";
 import { ClaimRefundButton } from "./claim-refund-button";
+
+function getCurrencyLabel(mint: string): string {
+  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
+  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
+  return mint.slice(0, 4);
+}
 
 export default async function BackedCampaignsPage() {
   const session = await auth();
@@ -41,11 +48,13 @@ export default async function BackedCampaignsPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="relative h-12 w-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
                       {item.campaign.images?.[0] ? (
-                        <img
+                        <Image
                           src={item.campaign.images[0]}
                           alt={item.campaign.title}
+                          width={48}
+                          height={48}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -82,7 +91,7 @@ export default async function BackedCampaignsPage() {
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <span className="font-medium">
                     {t("backed.contributedAmount", {
-                      amount: parseFloat(item.contribution.amount).toLocaleString(),
+                      amount: `${parseFloat(item.contribution.amount).toLocaleString()} ${getCurrencyLabel(item.campaign.currencyMint)}`,
                     })}
                   </span>
 
@@ -100,9 +109,9 @@ export default async function BackedCampaignsPage() {
 
                   {/* Progress */}
                   <span className="text-muted-foreground">
-                    {parseFloat(item.campaign.raisedAmount).toLocaleString()}{" "}
+                    {parseFloat(item.campaign.raisedAmount).toLocaleString()} {getCurrencyLabel(item.campaign.currencyMint)}{" "}
                     {t("of")}{" "}
-                    {parseFloat(item.campaign.goalAmount).toLocaleString()}
+                    {parseFloat(item.campaign.goalAmount).toLocaleString()} {getCurrencyLabel(item.campaign.currencyMint)}
                   </span>
 
                   {/* Refund status for FAILED campaigns */}

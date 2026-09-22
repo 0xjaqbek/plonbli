@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Users, Clock, Target } from "lucide-react";
+import { Users, Clock, Target, CheckCircle2 } from "lucide-react";
+
+function getCurrencyLabel(mint?: string): string {
+  if (!mint) return "";
+  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
+  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
+  return mint.slice(0, 4);
+}
 
 type CampaignCardProps = {
   id: string;
@@ -18,6 +26,7 @@ type CampaignCardProps = {
   status: string;
   creatorName: string;
   creatorAvatar: string | null;
+  currencyMint?: string;
 };
 
 export function CampaignCard({
@@ -26,36 +35,42 @@ export function CampaignCard({
   description,
   images,
   category,
-  fundingModel,
   goalAmount,
   raisedAmount,
   backerCount,
   deadline,
   status,
   creatorName,
+  currencyMint,
 }: CampaignCardProps) {
   const t = useTranslations("crowdfunding");
+  const currencyLabel = getCurrencyLabel(currencyMint);
 
   const goal = parseFloat(goalAmount);
   const raised = parseFloat(raisedAmount);
   const progress = goal > 0 ? Math.min((raised / goal) * 100, 100) : 0;
-  const daysLeft = Math.max(
-    0,
-    Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  const rawDaysLeft = Math.ceil(
+    (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );
+  const daysLeft = Math.max(0, rawDaysLeft);
+
+  const isSuccessful = status === "SUCCESSFUL";
+  const progressBarGreen = isSuccessful || progress >= 100;
 
   return (
     <Link
       href={`/crowdfunding/${id}`}
-      className="block rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow"
+      className="block rounded-lg border bg-card shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
       {/* Image */}
-      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+      <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
         {images[0] ? (
-          <img
+          <Image
             src={images[0]}
             alt={title}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (
           <div className="flex h-full items-center justify-center">
@@ -84,19 +99,29 @@ export function CampaignCard({
               aria-valuenow={Math.round(progress)}
               aria-valuemin={0}
               aria-valuemax={100}
-              className="h-full rounded-full bg-primary transition-all"
+              className={`h-full rounded-full transition-all ${
+                progressBarGreen ? "bg-green-500" : "bg-primary"
+              }`}
               style={{ width: `${progress}%` }}
             />
           </div>
           <div className="flex justify-between text-sm">
             <span className="font-medium">
-              {raised.toLocaleString()} / {goal.toLocaleString()}
+              {raised.toLocaleString()} {currencyLabel} / {goal.toLocaleString()} {currencyLabel}
             </span>
             <span className="text-muted-foreground">
               {progress.toFixed(0)}%
             </span>
           </div>
         </div>
+
+        {/* Goal reached indicator */}
+        {progressBarGreen && (
+          <div className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            {t("goalReached")}
+          </div>
+        )}
 
         {/* Meta */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -106,9 +131,11 @@ export function CampaignCard({
           </span>
           <span className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            {daysLeft > 0
-              ? t("daysLeft", { count: daysLeft })
-              : t("ended")}
+            {daysLeft === 0 && status === "ACTIVE"
+              ? t("lastDay")
+              : daysLeft > 0 && status === "ACTIVE"
+                ? t("daysLeft", { count: daysLeft })
+                : t("ended")}
           </span>
         </div>
 
