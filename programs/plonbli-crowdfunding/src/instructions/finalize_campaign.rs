@@ -20,10 +20,12 @@ pub struct FinalizeCampaign<'info> {
     pub vault: Account<'info, TokenAccount>,
 
     /// Creator's token account — receives funds if campaign succeeds with no milestones.
+    /// Validated only when used for transfer.
     #[account(mut)]
     pub creator_token_account: Option<Account<'info, TokenAccount>>,
 
     /// Treasury token account for fee.
+    /// Validated only when used for transfer.
     #[account(mut)]
     pub treasury_token_account: Option<Account<'info, TokenAccount>>,
 
@@ -66,6 +68,16 @@ pub fn handler(ctx: Context<FinalizeCampaign>) -> Result<()> {
             .as_ref()
             .ok_or(error!(CrowdfundError::Unauthorized))?;
 
+        // Validate creator_token_account
+        require!(
+            creator_token_account.mint == campaign.currency_mint,
+            CrowdfundError::Unauthorized
+        );
+        require!(
+            creator_token_account.owner == campaign.creator,
+            CrowdfundError::Unauthorized
+        );
+
         let total = campaign.raised_amount;
         let fee = (total as u128)
             .checked_mul(ctx.accounts.platform_config.fee_basis_points as u128)
@@ -101,6 +113,16 @@ pub fn handler(ctx: Context<FinalizeCampaign>) -> Result<()> {
 
         if fee > 0 {
             if let Some(treasury_token_account) = ctx.accounts.treasury_token_account.as_ref() {
+                // Validate treasury_token_account
+                require!(
+                    treasury_token_account.mint == campaign.currency_mint,
+                    CrowdfundError::Unauthorized
+                );
+                require!(
+                    treasury_token_account.owner == ctx.accounts.platform_config.treasury,
+                    CrowdfundError::Unauthorized
+                );
+
                 token::transfer(
                     CpiContext::new_with_signer(
                         ctx.accounts.token_program.to_account_info(),
@@ -118,16 +140,11 @@ pub fn handler(ctx: Context<FinalizeCampaign>) -> Result<()> {
     }
 
     let campaign = &mut ctx.accounts.campaign;
-    let status_u8 = match new_status {
-        CampaignStatus::Successful => 2,
-        CampaignStatus::Failed => 3,
-        _ => 0,
-    };
     campaign.status = new_status;
 
     emit!(CampaignFinalized {
         campaign: campaign.key(),
-        status: status_u8,
+        status: new_status.to_u8(),
         total_raised: campaign.raised_amount,
     });
 

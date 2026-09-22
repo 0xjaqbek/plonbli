@@ -73,4 +73,10 @@ pub enum CrowdfundError {
 
     #[msg("Milestone target amounts must sum to at most the campaign goal")]
     MilestoneAmountsExceedGoal,
+
+    #[msg("Reward tier price must be greater than zero")]
+    ZeroRewardTierPrice,
+
+    #[msg("Campaign must be Successful to release milestone funds")]
+    CampaignNotSuccessful,
 }

@@ -25,6 +25,18 @@ pub enum CampaignStatus {
     Finalized,
 }
 
+impl CampaignStatus {
+    pub fn to_u8(&self) -> u8 {
+        match self {
+            CampaignStatus::Setup => 0,
+            CampaignStatus::Active => 1,
+            CampaignStatus::Successful => 2,
+            CampaignStatus::Failed => 3,
+            CampaignStatus::Finalized => 4,
+        }
+    }
+}
+
 #[account]
 pub struct Campaign {
     pub creator: Pubkey,            // 32

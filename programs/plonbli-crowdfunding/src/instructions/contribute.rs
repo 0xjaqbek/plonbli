@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use crate::errors::CrowdfundError;
 use crate::events::ContributionMade;
-use crate::state::{Campaign, CampaignStatus, Contribution};
+use crate::state::{Campaign, CampaignStatus, Contribution, RewardTier};
 
 #[derive(Accounts)]
 pub struct Contribute<'info> {
@@ -20,6 +20,10 @@ pub struct Contribute<'info> {
         constraint = campaign.status == CampaignStatus::Active @ CrowdfundError::CampaignNotActive,
     )]
     pub campaign: Account<'info, Campaign>,
+
+    /// Optional reward tier account — must be provided if reward_tier param is Some
+    #[account(mut)]
+    pub reward_tier_account: Option<Account<'info, RewardTier>>,
 
     #[account(
         mut,
@@ -57,6 +61,45 @@ pub fn handler(
         CrowdfundError::CampaignExpired
     );
 
+    // Validate reward tier if specified
+    if let Some(tier_index) = reward_tier {
+        let tier_account = ctx
+            .accounts
+            .reward_tier_account
+            .as_mut()
+            .ok_or(error!(CrowdfundError::InsufficientForRewardTier))?;
+
+        // Verify tier belongs to this campaign
+        require!(
+            tier_account.campaign == campaign.key(),
+            CrowdfundError::Unauthorized
+        );
+        require!(
+            tier_account.tier_index == tier_index,
+            CrowdfundError::InvalidRewardTierIndex
+        );
+
+        // Enforce minimum contribution
+        require!(
+            amount >= tier_account.price,
+            CrowdfundError::InsufficientForRewardTier
+        );
+
+        // Check capacity (0 = unlimited)
+        if tier_account.max_backers > 0 {
+            require!(
+                tier_account.current_backers < tier_account.max_backers,
+                CrowdfundError::RewardTierFull
+            );
+        }
+
+        // Increment backer count on tier
+        tier_account.current_backers = tier_account
+            .current_backers
+            .checked_add(1)
+            .ok_or(error!(CrowdfundError::Overflow))?;
+    }
+
     // Transfer tokens from backer to vault
     token::transfer(
         CpiContext::new(
@@ -87,6 +130,7 @@ pub fn handler(
             .amount
             .checked_add(amount)
             .ok_or(error!(CrowdfundError::Overflow))?;
+        contribution.timestamp = clock.unix_timestamp;
     }
 
     // Update campaign totals

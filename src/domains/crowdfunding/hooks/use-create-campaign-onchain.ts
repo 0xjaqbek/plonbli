@@ -27,7 +27,7 @@ export function useCreateCampaignOnChain() {
   const createCampaign = useCallback(
     async (params: CreateCampaignParams) => {
       if (!wallet) {
-        setError("Podłącz portfel Solana");
+        setError("WALLET_NOT_CONNECTED");
         return null;
       }
 
@@ -79,7 +79,7 @@ export function useCreateCampaignOnChain() {
           campaignPubkey: campaignPda.toBase58(),
         };
       } catch (err: any) {
-        setError(err.message || "Błąd transakcji on-chain");
+        setError(err.message || "TRANSACTION_FAILED");
         setLoading(false);
         return null;
       }

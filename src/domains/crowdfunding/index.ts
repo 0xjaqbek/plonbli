@@ -48,22 +48,25 @@ export { RewardTierForm } from "./components/reward-tier-form";
 
 // Actions
 export { createCampaignAction } from "./actions/create-campaign";
+export { updateCampaignAction } from "./actions/update-campaign";
 export { addMilestoneAction } from "./actions/add-milestone";
 export { addRewardTierAction } from "./actions/add-reward-tier";
 export { deleteMilestoneAction } from "./actions/delete-milestone";
 export { deleteRewardTierAction } from "./actions/delete-reward-tier";
 export { activateCampaignAction } from "./actions/activate-campaign";
 export { contributeAction } from "./actions/contribute";
+export { finalizeCampaignAction, finalizeExpiredCampaigns } from "./actions/finalize-campaign";
+export { claimRefundAction } from "./actions/claim-refund";
 
 // Queries
+export { getCampaigns, getCampaignById } from "./queries/get-campaigns";
+export { getMilestones } from "./queries/get-milestones";
+export { getRewardTiers } from "./queries/get-reward-tiers";
+export { getContributionsByCampaign, getBackedCampaigns } from "./queries/get-contributions";
+
 // Hooks
 export { useCreateCampaignOnChain } from "./hooks/use-create-campaign-onchain";
 export { useContributeOnChain } from "./hooks/use-contribute-onchain";
 
 // Program
 export { getProgram, getReadonlyProgram } from "./lib/program";
-
-// Queries
-export { getCampaigns, getCampaignById } from "./queries/get-campaigns";
-export { getMilestones } from "./queries/get-milestones";
-export { getRewardTiers } from "./queries/get-reward-tiers";

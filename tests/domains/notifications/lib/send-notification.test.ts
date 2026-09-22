@@ -42,6 +42,7 @@ describe("sendNotification", () => {
       messages: true,
       social: true,
       marketplace: true,
+      crowdfunding: true,
     });
 
     const { sendNotification } = await import(
@@ -70,6 +71,7 @@ describe("sendNotification", () => {
       messages: false,
       social: true,
       marketplace: true,
+      crowdfunding: true,
     });
 
     const { sendNotification } = await import(
@@ -98,6 +100,7 @@ describe("sendNotification", () => {
       messages: true,
       social: true,
       marketplace: true,
+      crowdfunding: true,
     });
 
     mockSendEachForMulticast.mockResolvedValueOnce({
@@ -135,6 +138,7 @@ describe("sendNotification", () => {
       messages: true,
       social: true,
       marketplace: true,
+      crowdfunding: true,
     });
 
     mockSendEachForMulticast.mockResolvedValueOnce({
@@ -175,6 +179,7 @@ describe("sendNotification", () => {
       messages: true,
       social: true,
       marketplace: true,
+      crowdfunding: true,
     });
 
     mockSendEachForMulticast.mockRejectedValueOnce(new Error("FCM down"));

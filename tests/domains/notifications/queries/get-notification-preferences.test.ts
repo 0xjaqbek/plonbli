@@ -24,7 +24,7 @@ describe("getNotificationPreferences", () => {
     );
     const prefs = await getNotificationPreferences("user-1");
 
-    expect(prefs).toEqual({ messages: true, social: true, marketplace: true });
+    expect(prefs).toEqual({ messages: true, social: true, marketplace: true, crowdfunding: true });
   });
 
   it("returns stored preferences when row exists", async () => {

@@ -5,7 +5,7 @@ import { z } from "zod";
 export const createCampaignSchema = z.object({
   title: z.string().min(3, "Tytuł jest wymagany").max(200),
   description: z.string().min(10, "Opis musi mieć co najmniej 10 znaków").max(10000),
-  images: z.array(z.string().url()).default([]),
+  images: z.array(z.string().url()).max(10).default([]),
   category: z.enum(["FARMER_INVESTMENT", "GROUP_PRE_ORDER", "COMMUNITY_PROJECT"]),
   groupId: z.string().optional(),
   fundingModel: z.enum(["ALL_OR_NOTHING", "KEEP_WHAT_YOU_RAISE"]),
@@ -20,7 +20,7 @@ export const createCampaignSchema = z.object({
 export const updateCampaignSchema = z.object({
   title: z.string().min(3).max(200).optional(),
   description: z.string().min(10).max(10000).optional(),
-  images: z.array(z.string().url()).optional(),
+  images: z.array(z.string().url()).max(10).optional(),
 });
 
 // ── Milestone Schemas ─────────────────────────────────────────────────

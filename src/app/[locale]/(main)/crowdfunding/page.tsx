@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { auth } from "@/domains/auth/lib/auth";
 import { getCampaigns } from "@/domains/crowdfunding/queries/get-campaigns";
 import { CampaignCard } from "@/domains/crowdfunding/components/campaign-card";
 import { WalletButton } from "@/domains/crowdfunding/components/wallet-button";
@@ -12,6 +13,7 @@ export default async function CrowdfundingPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const t = await getTranslations("crowdfunding");
+  const session = await auth();
   const params = await searchParams;
 
   const campaigns = await getCampaigns({
@@ -25,12 +27,20 @@ export default async function CrowdfundingPage({
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <div className="flex items-center gap-3">
           <WalletButton />
-          <Button asChild>
-            <Link href="/crowdfunding/create">
-              <Plus className="mr-2 h-4 w-4" />
-              {t("createCampaign")}
-            </Link>
-          </Button>
+          {session?.user ? (
+            <Button asChild>
+              <Link href="/crowdfunding/create">
+                <Plus className="mr-2 h-4 w-4" />
+                {t("createCampaign")}
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/auth/login">
+                {t("loginToCreate")}
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 

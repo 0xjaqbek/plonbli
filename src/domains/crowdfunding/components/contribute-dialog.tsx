@@ -69,23 +69,33 @@ export function ContributeDialog({
   function handleSubmit(formData: FormData) {
     setError(null);
 
-    startTransition(async () => {
-      // If wallet connected and campaign is on-chain, do on-chain first
-      if (wallet && campaignPubkey) {
-        const onChainResult = await contributeOnChain({
-          campaignPubkey,
-          amount: parseFloat(amount),
-          rewardTier: selectedTierIndex,
-          currencyMint,
-        });
+    if (!wallet) {
+      setError(tCommon("errors.WALLET_NOT_CONNECTED"));
+      return;
+    }
 
-        if (!onChainResult) {
-          setError(onChainError || t("onChainFailed"));
-          return;
-        }
+    if (!campaignPubkey) {
+      setError(t("onChainFailed"));
+      return;
+    }
+
+    startTransition(async () => {
+      // On-chain contribution is mandatory — wallet required
+      const onChainResult = await contributeOnChain({
+        campaignPubkey,
+        amount: parseFloat(amount),
+        rewardTier: selectedTierIndex,
+        currencyMint,
+      });
+
+      if (!onChainResult) {
+        setError(onChainError || t("onChainFailed"));
+        return;
       }
 
-      // Record in DB
+      // Record in DB with on-chain reference
+      formData.set("contributionPubkey", onChainResult.contributionPubkey);
+      formData.set("transactionSignature", onChainResult.signature);
       const result = await contributeAction(formData);
       if (result.error) {
         setError(
@@ -116,7 +126,7 @@ export function ContributeDialog({
           {tCommon("contribute")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("contributeTitle")}</DialogTitle>
         </DialogHeader>
@@ -139,18 +149,16 @@ export function ContributeDialog({
             )}
 
             {/* Wallet status */}
-            {campaignPubkey && (
-              <div
-                className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs ${
-                  wallet
-                    ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                <Wallet className="h-3.5 w-3.5" />
-                {wallet ? t("walletConnected") : t("walletNotConnected")}
-              </div>
-            )}
+            <div
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs ${
+                wallet
+                  ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
+                  : "bg-destructive/10 text-destructive"
+              }`}
+            >
+              <Wallet className="h-3.5 w-3.5" />
+              {wallet ? t("walletConnected") : t("walletRequired")}
+            </div>
 
             {/* Reward tier selection */}
             {rewardTiers.length > 0 && (
@@ -181,6 +189,7 @@ export function ContributeDialog({
                       key={tier.id}
                       type="button"
                       disabled={isFull}
+                      aria-disabled={isFull ? "true" : undefined}
                       className={`w-full rounded-lg border p-3 text-left transition-colors ${
                         isFull
                           ? "opacity-50 cursor-not-allowed"
@@ -208,6 +217,9 @@ export function ContributeDialog({
                                   tier.maxBackers - tier.currentBackers,
                               })}
                         </p>
+                      )}
+                      {isFull && (
+                        <p className="sr-only">{t("tierFullDescription")}</p>
                       )}
                     </button>
                   );
@@ -238,12 +250,14 @@ export function ContributeDialog({
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
-            <Button type="submit" className="w-full" disabled={isProcessing}>
-              {isProcessing
-                ? onChainLoading
-                  ? t("signingTransaction")
-                  : t("processing")
-                : t("confirmContribution")}
+            <Button type="submit" className="w-full" disabled={isProcessing || !wallet}>
+              {!wallet
+                ? t("walletRequired")
+                : isProcessing
+                  ? onChainLoading
+                    ? t("signingTransaction")
+                    : t("processing")
+                  : t("confirmContribution")}
             </Button>
           </form>
         )}

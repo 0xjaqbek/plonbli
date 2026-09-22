@@ -29,9 +29,11 @@ pub struct ApproveMilestone<'info> {
 }
 
 pub fn handler(ctx: Context<ApproveMilestone>) -> Result<()> {
+    let clock = Clock::get()?;
     let milestone = &mut ctx.accounts.milestone;
     milestone.status = MilestoneStatus::Approved;
     milestone.approved_by = Some(ctx.accounts.admin.key());
+    milestone.approved_at = Some(clock.unix_timestamp);
 
     emit!(MilestoneApproved {
         campaign: ctx.accounts.campaign.key(),

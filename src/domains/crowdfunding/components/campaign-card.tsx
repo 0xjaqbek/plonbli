@@ -80,6 +80,10 @@ export function CampaignCard({
         <div className="space-y-1">
           <div className="h-2 rounded-full bg-muted overflow-hidden">
             <div
+              role="progressbar"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
               className="h-full rounded-full bg-primary transition-all"
               style={{ width: `${progress}%` }}
             />

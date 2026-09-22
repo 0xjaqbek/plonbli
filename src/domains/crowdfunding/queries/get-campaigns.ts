@@ -1,11 +1,13 @@
 import { db } from "@/shared/db";
 import { crowdfundingCampaigns, users } from "@/shared/db/schema";
-import { desc, eq, and, gte, or } from "drizzle-orm";
+import { desc, eq, and, or, sql } from "drizzle-orm";
 
 export async function getCampaigns(filters?: {
   status?: string;
   category?: string;
   creatorId?: string;
+  limit?: number;
+  offset?: number;
 }) {
   const conditions = [];
 
@@ -33,6 +35,9 @@ export async function getCampaigns(filters?: {
     );
   }
 
+  const limit = filters?.limit ?? 50;
+  const offset = filters?.offset ?? 0;
+
   return db
     .select({
       id: crowdfundingCampaigns.id,
@@ -53,7 +58,9 @@ export async function getCampaigns(filters?: {
     .from(crowdfundingCampaigns)
     .innerJoin(users, eq(crowdfundingCampaigns.creatorId, users.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(crowdfundingCampaigns.createdAt));
+    .orderBy(desc(crowdfundingCampaigns.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function getCampaignById(id: string) {

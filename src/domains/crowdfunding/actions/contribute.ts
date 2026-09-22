@@ -26,8 +26,10 @@ export async function contributeAction(formData: FormData) {
   }
 
   const { campaignId, amount, rewardTierId } = parsed.data;
+  const contributionPubkey = raw.contributionPubkey as string | undefined;
+  const transactionSignature = raw.transactionSignature as string | undefined;
 
-  // Verify campaign is ACTIVE
+  // Verify campaign is ACTIVE and deadline not passed (server-side check)
   const [campaign] = await db
     .select()
     .from(crowdfundingCampaigns)
@@ -43,17 +45,15 @@ export async function contributeAction(formData: FormData) {
     return { error: "Zbiórka nie jest aktywna" };
   }
 
-  // Cannot back own campaign
   if (campaign.creatorId === session.user.id) {
     return { error: "Nie możesz wspierać własnej zbiórki" };
   }
 
-  // Verify deadline not passed
   if (new Date(campaign.deadline).getTime() <= Date.now()) {
     return { error: "Termin zbiórki upłynął" };
   }
 
-  // If reward tier selected, verify it exists and has capacity
+  // If reward tier selected, validate and atomically claim slot
   if (rewardTierId) {
     const [tier] = await db
       .select()
@@ -70,42 +70,60 @@ export async function contributeAction(formData: FormData) {
       return { error: "Wybrany próg nagrody nie istnieje" };
     }
 
-    if (tier.maxBackers > 0 && tier.currentBackers >= tier.maxBackers) {
-      return { error: "Ten próg nagrody jest już pełny" };
-    }
-
-    // Check minimum amount for tier
     if (amount < parseFloat(tier.price)) {
       return { error: `Minimalna kwota dla tego progu to ${tier.price}` };
     }
 
-    // Increment tier backer count
-    await db
-      .update(crowdfundingRewardTiers)
-      .set({ currentBackers: tier.currentBackers + 1 })
-      .where(eq(crowdfundingRewardTiers.id, rewardTierId));
+    // Atomic capacity check + increment to prevent race conditions
+    if (tier.maxBackers > 0) {
+      const result = await db
+        .update(crowdfundingRewardTiers)
+        .set({
+          currentBackers: sql`${crowdfundingRewardTiers.currentBackers} + 1`,
+        })
+        .where(
+          and(
+            eq(crowdfundingRewardTiers.id, rewardTierId),
+            sql`${crowdfundingRewardTiers.currentBackers} < ${crowdfundingRewardTiers.maxBackers}`
+          )
+        )
+        .returning({ id: crowdfundingRewardTiers.id });
+
+      if (result.length === 0) {
+        return { error: "Ten próg nagrody jest już pełny" };
+      }
+    } else {
+      // Unlimited tier — just increment
+      await db
+        .update(crowdfundingRewardTiers)
+        .set({
+          currentBackers: sql`${crowdfundingRewardTiers.currentBackers} + 1`,
+        })
+        .where(eq(crowdfundingRewardTiers.id, rewardTierId));
+    }
   }
 
-  // Record contribution
+  // Record contribution with on-chain reference
   await db.insert(crowdfundingContributions).values({
     campaignId,
     backerId: session.user.id,
     rewardTierId: rewardTierId || null,
     amount: amount.toString(),
+    contributionPubkey: contributionPubkey || null,
+    transactionSignature: transactionSignature || null,
   });
 
-  // Update campaign cached totals
-  const currentRaised = parseFloat(campaign.raisedAmount);
+  // Atomic update of campaign totals to prevent race conditions
   await db
     .update(crowdfundingCampaigns)
     .set({
-      raisedAmount: (currentRaised + amount).toString(),
-      backerCount: campaign.backerCount + 1,
+      raisedAmount: sql`(cast(${crowdfundingCampaigns.raisedAmount} as numeric) + ${amount})::text`,
+      backerCount: sql`${crowdfundingCampaigns.backerCount} + 1`,
     })
     .where(eq(crowdfundingCampaigns.id, campaignId));
 
-  // Notify campaign creator
-  void sendNotification(
+  // Notify campaign creator (fire-and-forget with error logging)
+  sendNotification(
     campaign.creatorId,
     buildContributionNotification(
       session.user.name ?? "Wspierający",
@@ -113,7 +131,7 @@ export async function contributeAction(formData: FormData) {
       campaign.title,
       campaignId
     )
-  );
+  ).catch((err) => console.error("[contribute] notification failed:", err));
 
   revalidatePath(`/crowdfunding/${campaignId}`);
   return { success: true };

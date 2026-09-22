@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Shield, Milestone, Gift, CheckCircle2 } from "lucide-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { Shield, Milestone, Gift, CheckCircle2, Wallet } from "lucide-react";
 import type { CrowdfundingCampaign } from "@/shared/db/schema";
 import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-milestones";
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
@@ -21,6 +22,7 @@ export function CampaignDetail({
   isCreator,
 }: Props) {
   const t = useTranslations("crowdfunding");
+  const wallet = useAnchorWallet();
 
   const goal = parseFloat(campaign.goalAmount);
   const raised = parseFloat(campaign.raisedAmount);
@@ -33,7 +35,7 @@ export function CampaignDetail({
     )
   );
   const isActive = campaign.status === "ACTIVE";
-  const canContribute = isActive && !isCreator;
+  const canContribute = isActive && !isCreator && !!campaign.campaignPubkey;
 
   return (
     <div className="space-y-6">
@@ -68,6 +70,10 @@ export function CampaignDetail({
         <div className="space-y-2">
           <div className="h-3 rounded-full bg-muted overflow-hidden">
             <div
+              role="progressbar"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
               className="h-full rounded-full bg-primary transition-all"
               style={{ width: `${progress}%` }}
             />
@@ -98,6 +104,13 @@ export function CampaignDetail({
             </p>
           </div>
         </div>
+
+        {canContribute && !wallet && (
+          <div className="flex items-center gap-2 rounded-md bg-amber-50 dark:bg-amber-950 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+            <Wallet className="h-3.5 w-3.5" />
+            {t("wallet.connectToContribute")}
+          </div>
+        )}
 
         {canContribute && (
           <ContributeDialog

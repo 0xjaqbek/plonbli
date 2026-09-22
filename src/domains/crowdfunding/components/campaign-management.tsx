@@ -21,12 +21,14 @@ type Props = {
   campaign: CrowdfundingCampaign;
   milestones: CrowdfundingMilestone[];
   rewardTiers: CrowdfundingRewardTier[];
+  campaignIndex: number;
 };
 
 export function CampaignManagement({
   campaign,
   milestones,
   rewardTiers,
+  campaignIndex,
 }: Props) {
   const t = useTranslations("crowdfunding.manage");
   const router = useRouter();
@@ -59,9 +61,13 @@ export function CampaignManagement({
       return;
     }
 
+    // Confirmation step — this is an irreversible on-chain action
+    const confirmed = window.confirm(t("activateConfirm"));
+    if (!confirmed) return;
+
     // Step 1: Create campaign on-chain
     const onChainResult = await createCampaign({
-      campaignIndex: 0, // First campaign for this wallet
+      campaignIndex,
       goalAmount: parseFloat(campaign.goalAmount),
       deadline: new Date(campaign.deadline),
       fundingModel: campaign.fundingModel as "ALL_OR_NOTHING" | "KEEP_WHAT_YOU_RAISE",
@@ -83,7 +89,10 @@ export function CampaignManagement({
         onChainResult.signature
       );
       if (result.error) {
-        setActivateError(result.error);
+        // On-chain succeeded but DB failed — inform user with pubkey for manual recovery
+        setActivateError(
+          `${result.error}\n${t("onChainCreatedButDbFailed")}: ${onChainResult.campaignPubkey}`
+        );
       } else {
         router.refresh();
       }

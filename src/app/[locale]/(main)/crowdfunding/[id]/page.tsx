@@ -1,11 +1,38 @@
 import { notFound } from "next/navigation";
 import { auth } from "@/domains/auth/lib/auth";
-import { getCampaignById } from "@/domains/crowdfunding/queries/get-campaigns";
+import { getCampaignById, getCampaigns } from "@/domains/crowdfunding/queries/get-campaigns";
 import { getMilestones } from "@/domains/crowdfunding/queries/get-milestones";
 import { getRewardTiers } from "@/domains/crowdfunding/queries/get-reward-tiers";
 import { CampaignDetail } from "@/domains/crowdfunding/components/campaign-detail";
 import { CampaignManagement } from "@/domains/crowdfunding/components/campaign-management";
 import { WalletButton } from "@/domains/crowdfunding/components/wallet-button";
+
+async function CampaignManagementWrapper({
+  campaign,
+  milestones,
+  rewardTiers,
+  creatorId,
+}: {
+  campaign: any;
+  milestones: any;
+  rewardTiers: any;
+  creatorId: string;
+}) {
+  // Count all campaigns by this creator to derive a unique on-chain index
+  const creatorCampaigns = await getCampaigns({ creatorId, limit: 1000 });
+  const campaignIndex = creatorCampaigns.length;
+
+  return (
+    <div className="mt-8">
+      <CampaignManagement
+        campaign={campaign}
+        milestones={milestones}
+        rewardTiers={rewardTiers}
+        campaignIndex={campaignIndex}
+      />
+    </div>
+  );
+}
 
 export default async function CampaignPage({
   params,
@@ -42,13 +69,12 @@ export default async function CampaignPage({
       />
 
       {isCreator && isSetup && (
-        <div className="mt-8">
-          <CampaignManagement
-            campaign={campaign}
-            milestones={milestones}
-            rewardTiers={rewardTiers}
-          />
-        </div>
+        <CampaignManagementWrapper
+          campaign={campaign}
+          milestones={milestones}
+          rewardTiers={rewardTiers}
+          creatorId={campaign.creatorId}
+        />
       )}
     </div>
   );

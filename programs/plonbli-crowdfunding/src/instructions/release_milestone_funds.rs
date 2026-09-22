@@ -16,8 +16,7 @@ pub struct ReleaseMilestoneFunds<'info> {
     #[account(
         mut,
         has_one = creator @ CrowdfundError::Unauthorized,
-        constraint = campaign.status == CampaignStatus::Active
-            || campaign.status == CampaignStatus::Successful @ CrowdfundError::CampaignNotActive,
+        constraint = campaign.status == CampaignStatus::Successful @ CrowdfundError::CampaignNotSuccessful,
     )]
     pub campaign: Account<'info, Campaign>,
 
@@ -58,7 +57,7 @@ pub fn handler(ctx: Context<ReleaseMilestoneFunds>) -> Result<()> {
     let milestone = &mut ctx.accounts.milestone;
     let release_amount = milestone.target_amount;
 
-    // Calculate fee
+    // Calculate fee (rounds down — platform absorbs dust)
     let fee = (release_amount as u128)
         .checked_mul(ctx.accounts.platform_config.fee_basis_points as u128)
         .ok_or(error!(CrowdfundError::Overflow))?

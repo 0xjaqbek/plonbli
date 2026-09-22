@@ -48,9 +48,21 @@ export async function activateCampaignAction(
     return { error: "Dodaj co najmniej jeden kamień milowy przed aktywacją" };
   }
 
-  // Verify deadline is still in the future
+  // Server-side deadline check (don't trust client)
   if (new Date(campaign.deadline).getTime() <= Date.now()) {
     return { error: "Termin zakończenia musi być w przyszłości" };
+  }
+
+  // Validate milestone targets don't exceed goal
+  const [{ total }] = await db
+    .select({
+      total: sql<string>`coalesce(sum(cast(${crowdfundingMilestones.targetAmount} as numeric)), 0)::text`,
+    })
+    .from(crowdfundingMilestones)
+    .where(eq(crowdfundingMilestones.campaignId, campaignId));
+
+  if (parseFloat(total) > parseFloat(campaign.goalAmount)) {
+    return { error: "Suma celów kamieni milowych przekracza cel zbiórki" };
   }
 
   await db
@@ -62,10 +74,10 @@ export async function activateCampaignAction(
     .where(eq(crowdfundingCampaigns.id, campaignId));
 
   // Notify creator that campaign is live
-  void sendNotification(
+  sendNotification(
     session.user.id,
     buildCampaignActivatedNotification(campaign.title, campaignId)
-  );
+  ).catch((err) => console.error("[activate] notification failed:", err));
 
   revalidatePath(`/crowdfunding/${campaignId}`);
   return { success: true };

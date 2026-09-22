@@ -12,10 +12,12 @@ export function CreateCampaignForm() {
   const t = useTranslations("crowdfunding");
   const [state, formAction, pending] = useActionState(
     async (_prev: any, formData: FormData) => {
-      return createCampaignAction(formData);
+      return createCampaignAction(formData) as any;
     },
-    null
+    null as { error?: Record<string, string[]> | string } | null
   );
+
+  const fieldErrors = state?.error && typeof state.error !== "string" ? state.error : null;
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -23,8 +25,8 @@ export function CreateCampaignForm() {
       <div className="space-y-2">
         <Label htmlFor="title">{t("form.title")}</Label>
         <Input id="title" name="title" required maxLength={200} />
-        {state?.error?.title && (
-          <p className="text-sm text-destructive">{state.error.title}</p>
+        {fieldErrors?.title && (
+          <p className="text-sm text-destructive">{fieldErrors.title}</p>
         )}
       </div>
 
@@ -38,8 +40,8 @@ export function CreateCampaignForm() {
           rows={6}
           maxLength={10000}
         />
-        {state?.error?.description && (
-          <p className="text-sm text-destructive">{state.error.description}</p>
+        {fieldErrors?.description && (
+          <p className="text-sm text-destructive">{fieldErrors.description}</p>
         )}
       </div>
 
@@ -111,8 +113,8 @@ export function CreateCampaignForm() {
           min="0.01"
           required
         />
-        {state?.error?.goalAmount && (
-          <p className="text-sm text-destructive">{state.error.goalAmount}</p>
+        {fieldErrors?.goalAmount && (
+          <p className="text-sm text-destructive">{fieldErrors.goalAmount}</p>
         )}
       </div>
 
@@ -120,8 +122,8 @@ export function CreateCampaignForm() {
       <div className="space-y-2">
         <Label htmlFor="deadline">{t("form.deadline")}</Label>
         <Input id="deadline" name="deadline" type="datetime-local" required />
-        {state?.error?.deadline && (
-          <p className="text-sm text-destructive">{state.error.deadline}</p>
+        {fieldErrors?.deadline && (
+          <p className="text-sm text-destructive">{fieldErrors.deadline}</p>
         )}
       </div>
 

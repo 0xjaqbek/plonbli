@@ -27,7 +27,7 @@ export function useContributeOnChain() {
   const contribute = useCallback(
     async (params: ContributeParams) => {
       if (!wallet) {
-        setError("Podłącz portfel Solana");
+        setError("WALLET_NOT_CONNECTED");
         return null;
       }
 
@@ -74,7 +74,7 @@ export function useContributeOnChain() {
           contributionPubkey: contributionPda.toBase58(),
         };
       } catch (err: any) {
-        setError(err.message || "Błąd transakcji on-chain");
+        setError(err.message || "TRANSACTION_FAILED");
         setLoading(false);
         return null;
       }

@@ -43,6 +43,8 @@ pub fn handler(
         CrowdfundError::InvalidRewardTierIndex
     );
 
+    require!(price > 0, CrowdfundError::ZeroRewardTierPrice);
+
     let tier = &mut ctx.accounts.reward_tier;
     tier.campaign = campaign.key();
     tier.tier_index = tier_index;

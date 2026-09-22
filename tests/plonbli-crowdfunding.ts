@@ -592,11 +592,18 @@ describe("plonbli-crowdfunding", () => {
         backer2.publicKey.toBuffer(),
       ]);
 
+      const rewardTier0Pda = findPda([
+        Buffer.from("reward_tier"),
+        campaignPda.toBuffer(),
+        Buffer.from([0]),
+      ]);
+
       await program.methods
         .contribute(new BN(500_000), 0) // with reward tier 0
         .accounts({
           contribution: contributionPda,
           campaign: campaignPda,
+          rewardTierAccount: rewardTier0Pda,
           vault: vaultPda,
           backerTokenAccount: backer2TokenAccount,
           backer: backer2.publicKey,
@@ -1145,6 +1152,492 @@ describe("plonbli-crowdfunding", () => {
 
       assert.equal(creatorBalanceAfter - creatorBalanceBefore, 292_500);
       assert.equal(treasuryBalanceAfter - treasuryBalanceBefore, 7_500);
+    });
+  });
+
+  // ── Reward Tier Validation ──────────────────────────────────────────
+
+  describe("reward tier validation", () => {
+    it("rejects reward tier with zero price", async () => {
+      const tierPda = findPda([
+        Buffer.from("reward_tier"),
+        campaignPda.toBuffer(),
+        Buffer.from([1]), // tier index 1 (tier 0 already exists)
+      ]);
+
+      try {
+        await program.methods
+          .addRewardTier(
+            1,
+            new BN(0), // zero price
+            50,
+            Array.from(Buffer.alloc(32, 7)) as any,
+            false
+          )
+          .accounts({
+            rewardTier: tierPda,
+            campaign: campaignPda,
+            creator: creator.publicKey,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([creator])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        assert.include(err.toString(), "ZeroRewardTierPrice");
+      }
+    });
+  });
+
+  // ── Reward Tier Contribute Validation (Campaign 2) ──────────────────
+
+  describe("validates reward tier in contribute", () => {
+    const CAMPAIGN_ID_2 = new BN(2);
+    let campaign2Pda: PublicKey;
+    let vault2Pda: PublicKey;
+    let tier2Pda: PublicKey;
+
+    before(async () => {
+      campaign2Pda = findPda([
+        Buffer.from("campaign"),
+        creator.publicKey.toBuffer(),
+        CAMPAIGN_ID_2.toArrayLike(Buffer, "le", 8),
+      ]);
+      vault2Pda = findPda([Buffer.from("vault"), campaign2Pda.toBuffer()]);
+      tier2Pda = findPda([
+        Buffer.from("reward_tier"),
+        campaign2Pda.toBuffer(),
+        Buffer.from([0]),
+      ]);
+
+      // Create campaign 2
+      await program.methods
+        .createCampaign(
+          CAMPAIGN_ID_2,
+          GOAL_AMOUNT,
+          getFutureDeadline(3600),
+          0, // AllOrNothing
+          Array.from(CONTENT_HASH) as any
+        )
+        .accounts({
+          campaign: campaign2Pda,
+          vault: vault2Pda,
+          currencyMint: mint,
+          creator: creator.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Add milestone (required to activate)
+      const milestone2Pda = findPda([
+        Buffer.from("milestone"),
+        campaign2Pda.toBuffer(),
+        Buffer.from([0]),
+      ]);
+
+      await program.methods
+        .addMilestone(
+          0,
+          new BN(1_000_000),
+          Array.from(Buffer.alloc(32, 8)) as any
+        )
+        .accounts({
+          milestone: milestone2Pda,
+          campaign: campaign2Pda,
+          creator: creator.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Add reward tier with price=500_000, maxBackers=1
+      await program.methods
+        .addRewardTier(
+          0,
+          new BN(500_000), // price
+          1, // maxBackers
+          Array.from(Buffer.alloc(32, 9)) as any,
+          true
+        )
+        .accounts({
+          rewardTier: tier2Pda,
+          campaign: campaign2Pda,
+          creator: creator.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Activate campaign 2
+      await program.methods
+        .activateCampaign()
+        .accounts({
+          campaign: campaign2Pda,
+          creator: creator.publicKey,
+        })
+        .signers([creator])
+        .rpc();
+    });
+
+    it("rejects contribution with amount < reward tier price", async () => {
+      const contributionPda = findPda([
+        Buffer.from("contribution"),
+        campaign2Pda.toBuffer(),
+        backer1.publicKey.toBuffer(),
+      ]);
+
+      try {
+        await program.methods
+          .contribute(new BN(100_000), 0) // 100_000 < 500_000 tier price
+          .accounts({
+            contribution: contributionPda,
+            campaign: campaign2Pda,
+            rewardTierAccount: tier2Pda,
+            vault: vault2Pda,
+            backerTokenAccount: backer1TokenAccount,
+            backer: backer1.publicKey,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([backer1])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        assert.include(err.toString(), "InsufficientForRewardTier");
+      }
+    });
+
+    it("first contribution at exact tier price succeeds", async () => {
+      const contributionPda = findPda([
+        Buffer.from("contribution"),
+        campaign2Pda.toBuffer(),
+        backer1.publicKey.toBuffer(),
+      ]);
+
+      await program.methods
+        .contribute(new BN(500_000), 0) // exact tier price
+        .accounts({
+          contribution: contributionPda,
+          campaign: campaign2Pda,
+          vault: vault2Pda,
+          backerTokenAccount: backer1TokenAccount,
+          backer: backer1.publicKey,
+          rewardTierAccount: tier2Pda,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([backer1])
+        .rpc();
+
+      const tier = await program.account.rewardTier.fetch(tier2Pda);
+      assert.equal(tier.currentBackers, 1);
+    });
+
+    it("second contribution to full tier fails", async () => {
+      const contributionPda = findPda([
+        Buffer.from("contribution"),
+        campaign2Pda.toBuffer(),
+        backer2.publicKey.toBuffer(),
+      ]);
+
+      try {
+        await program.methods
+          .contribute(new BN(500_000), 0)
+          .accounts({
+            contribution: contributionPda,
+            campaign: campaign2Pda,
+            vault: vault2Pda,
+            backerTokenAccount: backer2TokenAccount,
+            backer: backer2.publicKey,
+            rewardTierAccount: tier2Pda,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([backer2])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        assert.include(err.toString(), "RewardTierFull");
+      }
+    });
+  });
+
+  // ── Release Milestone Funds Requires Successful Status ──────────────
+
+  describe("requires Successful status to release milestone funds", () => {
+    it("rejects release when campaign is Active (not finalized)", async () => {
+      // Campaign 1 (campaignPda) is Active — milestone 1 is still Pending.
+      // Approve milestone 1 first so the milestone itself is Approved.
+      const milestone1Pda = findPda([
+        Buffer.from("milestone"),
+        campaignPda.toBuffer(),
+        Buffer.from([1]),
+      ]);
+
+      await program.methods
+        .approveMilestone()
+        .accounts({
+          milestone: milestone1Pda,
+          campaign: campaignPda,
+          platformConfig: platformConfigPda,
+          admin: admin.publicKey,
+        })
+        .signers([admin])
+        .rpc();
+
+      // Now try to release — campaign is Active, not Successful
+      try {
+        await program.methods
+          .releaseMilestoneFunds()
+          .accounts({
+            milestone: milestone1Pda,
+            campaign: campaignPda,
+            vault: vaultPda,
+            creatorTokenAccount: creatorTokenAccount,
+            treasuryTokenAccount: treasuryTokenAccount,
+            platformConfig: platformConfigPda,
+            creator: creator.publicKey,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .signers([creator])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        assert.include(err.toString(), "CampaignNotSuccessful");
+      }
+    });
+  });
+
+  // ── Activate Campaign Requires At Least One Milestone ───────────────
+
+  describe("activate_campaign requires at least one milestone", () => {
+    it("rejects activation with no milestones", async () => {
+      const noMilestoneCampaignId = new BN(300);
+      const noMilestoneCampaignPda = findPda([
+        Buffer.from("campaign"),
+        creator.publicKey.toBuffer(),
+        noMilestoneCampaignId.toArrayLike(Buffer, "le", 8),
+      ]);
+      const noMilestoneVaultPda = findPda([
+        Buffer.from("vault"),
+        noMilestoneCampaignPda.toBuffer(),
+      ]);
+
+      // Create campaign with no milestones
+      await program.methods
+        .createCampaign(
+          noMilestoneCampaignId,
+          GOAL_AMOUNT,
+          getFutureDeadline(3600),
+          0, // AllOrNothing
+          Array.from(CONTENT_HASH) as any
+        )
+        .accounts({
+          campaign: noMilestoneCampaignPda,
+          vault: noMilestoneVaultPda,
+          currencyMint: mint,
+          creator: creator.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Try to activate without adding any milestones
+      try {
+        await program.methods
+          .activateCampaign()
+          .accounts({
+            campaign: noMilestoneCampaignPda,
+            creator: creator.publicKey,
+          })
+          .signers([creator])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        // constraint: campaign.milestone_count >= 1 @ InvalidMilestoneIndex
+        assert.ok(err);
+      }
+    });
+  });
+
+  // ── Activate Campaign Requires Deadline in Future ───────────────────
+
+  describe("activate_campaign requires deadline in future", () => {
+    it("rejects activation with past deadline", async () => {
+      const pastDeadlineCampaignId = new BN(400);
+      const pastDeadlineCampaignPda = findPda([
+        Buffer.from("campaign"),
+        creator.publicKey.toBuffer(),
+        pastDeadlineCampaignId.toArrayLike(Buffer, "le", 8),
+      ]);
+      const pastDeadlineVaultPda = findPda([
+        Buffer.from("vault"),
+        pastDeadlineCampaignPda.toBuffer(),
+      ]);
+
+      // Create campaign with deadline 2 seconds from now
+      await program.methods
+        .createCampaign(
+          pastDeadlineCampaignId,
+          GOAL_AMOUNT,
+          getFutureDeadline(2), // 2 seconds from now
+          0, // AllOrNothing
+          Array.from(CONTENT_HASH) as any
+        )
+        .accounts({
+          campaign: pastDeadlineCampaignPda,
+          vault: pastDeadlineVaultPda,
+          currencyMint: mint,
+          creator: creator.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Add a milestone (required for activation)
+      const milestonePda = findPda([
+        Buffer.from("milestone"),
+        pastDeadlineCampaignPda.toBuffer(),
+        Buffer.from([0]),
+      ]);
+
+      await program.methods
+        .addMilestone(
+          0,
+          new BN(500_000),
+          Array.from(Buffer.alloc(32, 10)) as any
+        )
+        .accounts({
+          milestone: milestonePda,
+          campaign: pastDeadlineCampaignPda,
+          creator: creator.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Wait for deadline to pass
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // Try to activate with expired deadline
+      try {
+        await program.methods
+          .activateCampaign()
+          .accounts({
+            campaign: pastDeadlineCampaignPda,
+            creator: creator.publicKey,
+          })
+          .signers([creator])
+          .rpc();
+        assert.fail("Should have thrown");
+      } catch (err: any) {
+        assert.include(err.toString(), "DeadlineInPast");
+      }
+    });
+  });
+
+  // ── Approve Milestone Sets approved_at Timestamp ────────────────────
+
+  describe("approve_milestone sets approved_at timestamp", () => {
+    it("sets approved_at to a value close to current time", async () => {
+      const approveTestCampaignId = new BN(500);
+      const approveTestCampaignPda = findPda([
+        Buffer.from("campaign"),
+        creator.publicKey.toBuffer(),
+        approveTestCampaignId.toArrayLike(Buffer, "le", 8),
+      ]);
+      const approveTestVaultPda = findPda([
+        Buffer.from("vault"),
+        approveTestCampaignPda.toBuffer(),
+      ]);
+
+      // Create campaign
+      await program.methods
+        .createCampaign(
+          approveTestCampaignId,
+          GOAL_AMOUNT,
+          getFutureDeadline(3600),
+          0,
+          Array.from(CONTENT_HASH) as any
+        )
+        .accounts({
+          campaign: approveTestCampaignPda,
+          vault: approveTestVaultPda,
+          currencyMint: mint,
+          creator: creator.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Add milestone
+      const milestonePda = findPda([
+        Buffer.from("milestone"),
+        approveTestCampaignPda.toBuffer(),
+        Buffer.from([0]),
+      ]);
+
+      await program.methods
+        .addMilestone(
+          0,
+          new BN(500_000),
+          Array.from(Buffer.alloc(32, 11)) as any
+        )
+        .accounts({
+          milestone: milestonePda,
+          campaign: approveTestCampaignPda,
+          creator: creator.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Activate campaign
+      await program.methods
+        .activateCampaign()
+        .accounts({
+          campaign: approveTestCampaignPda,
+          creator: creator.publicKey,
+        })
+        .signers([creator])
+        .rpc();
+
+      const beforeApprove = Math.floor(Date.now() / 1000);
+
+      // Approve milestone
+      await program.methods
+        .approveMilestone()
+        .accounts({
+          milestone: milestonePda,
+          campaign: approveTestCampaignPda,
+          platformConfig: platformConfigPda,
+          admin: admin.publicKey,
+        })
+        .signers([admin])
+        .rpc();
+
+      const afterApprove = Math.floor(Date.now() / 1000);
+
+      const milestone = await program.account.milestone.fetch(milestonePda);
+      assert.isNotNull(milestone.approvedAt, "approved_at should be set");
+
+      const approvedAt = milestone.approvedAt.toNumber();
+      // Allow a reasonable window (cluster clock may differ slightly)
+      assert.isAtLeast(
+        approvedAt,
+        beforeApprove - 30,
+        "approved_at should be close to current time (not too early)"
+      );
+      assert.isAtMost(
+        approvedAt,
+        afterApprove + 30,
+        "approved_at should be close to current time (not too late)"
+      );
     });
   });
 });

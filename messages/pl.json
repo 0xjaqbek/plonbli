@@ -817,6 +817,7 @@
     "title": "Zbiórki",
     "createCampaign": "Utwórz zbiórkę",
     "noCampaigns": "Brak aktywnych zbiórek",
+    "loginToCreate": "Zaloguj się aby utworzyć",
     "daysLeft": "{count, plural, one {# dzień} few {# dni} other {# dni}}",
     "ended": "Zakończona",
     "by": "Autor:",
@@ -873,7 +874,9 @@
       "connectWalletFirst": "Podłącz portfel Solana aby aktywować zbiórkę on-chain",
       "connectAndActivate": "Podłącz portfel i aktywuj",
       "signingOnChain": "Podpisywanie transakcji...",
-      "onChainFailed": "Nie udało się utworzyć zbiórki na blockchainie"
+      "onChainFailed": "Nie udało się utworzyć zbiórki na blockchainie",
+      "activateConfirm": "Czy na pewno chcesz aktywować zbiórkę? Ta operacja jest nieodwracalna.",
+      "onChainCreatedButDbFailed": "Zbiórka została utworzona na blockchainie (pubkey: {pubkey}), ale zapis w bazie danych się nie powiódł. Skontaktuj się z pomocą techniczną podając ten klucz."
     },
     "backer": {
       "milestones": "Kamienie milowe",
@@ -882,6 +885,7 @@
       "milestone_APPROVED": "Zatwierdzony",
       "milestone_RELEASED": "Wypłacony",
       "tierFull": "Brak miejsc",
+      "tierFullDescription": "Ten próg nagrody jest już pełny i niedostępny",
       "tierRemaining": "Pozostało {remaining} miejsc",
       "contributeTitle": "Wesprzyj zbiórkę",
       "selectTier": "Wybierz nagrodę (opcjonalnie)",
@@ -896,12 +900,63 @@
       "contributionRecorded": "Twoje wsparcie zostało zarejestrowane.",
       "walletConnected": "Portfel podłączony — transakcja on-chain",
       "walletNotConnected": "Portfel niepodłączony — tylko zapis w bazie",
+      "walletRequired": "Wymagany portfel Solana",
       "signingTransaction": "Podpisywanie transakcji...",
       "onChainFailed": "Nie udało się wysłać transakcji on-chain"
     },
     "wallet": {
       "connect": "Podłącz portfel",
-      "disconnect": "Odłącz portfel"
+      "disconnect": "Odłącz portfel",
+      "connectToContribute": "Podłącz portfel Solana aby wesprzeć zbiórkę"
+    },
+    "errors": {
+      "WALLET_NOT_CONNECTED": "Podłącz portfel Solana",
+      "TRANSACTION_FAILED": "Błąd transakcji on-chain",
+      "milestoneSumExceedsGoal": "Suma celów kamieni milowych przekracza cel zbiórki"
+    },
+    "myCampaigns": {
+      "title": "Moje zbiórki",
+      "noCampaigns": "Nie masz jeszcze żadnych zbiórek",
+      "createFirst": "Utwórz swoją pierwszą zbiórkę"
+    },
+    "backed": {
+      "title": "Wsparte zbiórki",
+      "noBacked": "Nie wspierasz jeszcze żadnej zbiórki",
+      "browseAll": "Przeglądaj zbiórki",
+      "contributedAmount": "Wpłata: {amount}",
+      "rewardTier": "Nagroda: {tier}",
+      "noReward": "Bez nagrody",
+      "refundClaimed": "Zwrot zrealizowany",
+      "claimRefund": "Odbierz zwrot",
+      "claimingRefund": "Przetwarzanie zwrotu...",
+      "refundConfirm": "Czy na pewno chcesz odebrać zwrot w kwocie {amount}?",
+      "refundSuccess": "Zwrot został zrealizowany",
+      "refundSuccessAmount": "Zwrot w kwocie {amount} został zrealizowany",
+      "refundError": "Nie udało się zrealizować zwrotu"
+    },
+    "edit": {
+      "title": "Edytuj zbiórkę",
+      "save": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "notFound": "Nie znaleziono zbiórki lub brak uprawnień",
+      "onlySetup": "Edycja jest możliwa tylko dla zbiórek w trybie konfiguracji"
+    },
+    "status": {
+      "SETUP": "Konfiguracja",
+      "ACTIVE": "Aktywna",
+      "SUCCESSFUL": "Zakończona sukcesem",
+      "FAILED": "Nieudana",
+      "CANCELLED": "Anulowana"
+    },
+    "error": {
+      "title": "Coś poszło nie tak",
+      "description": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+      "retry": "Spróbuj ponownie",
+      "backToList": "Wróć do listy zbiórek"
+    },
+    "loading": {
+      "campaigns": "Ładowanie zbiórek...",
+      "campaign": "Ładowanie zbiórki..."
     }
   }
 }

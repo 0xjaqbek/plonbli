@@ -26,8 +26,14 @@ export async function createCampaignAction(formData: FormData) {
 
   const { title, description, images, category, groupId, fundingModel, currencyMint, goalAmount, deadline } = parsed.data;
 
-  // Generate content hash for on-chain bridge
-  const contentHash = await generateContentHash(`${title}\n${description}`);
+  // Server-side deadline re-validation
+  if (new Date(deadline).getTime() <= Date.now()) {
+    return { error: "Termin musi być w przyszłości" };
+  }
+
+  // Generate content hash for on-chain bridge (includes all metadata)
+  const hashInput = [title, description, category, fundingModel, goalAmount.toString(), deadline].join("\n");
+  const contentHash = await generateContentHash(hashInput);
   const contentHashHex = hashToHex(contentHash);
 
   const [campaign] = await db
