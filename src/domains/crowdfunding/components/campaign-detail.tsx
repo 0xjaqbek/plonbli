@@ -21,6 +21,7 @@ import type { CrowdfundingCampaign } from "@/shared/db/schema";
 import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-milestones";
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
 import { ContributeDialog } from "./contribute-dialog";
+import { ActionBlink } from "./action-blink";
 
 function getCurrencyLabel(mint: string): string {
   if (mint === "So11111111111111111111111111111111111111112") return "SOL";
@@ -206,6 +207,11 @@ export function CampaignDetail({
           />
         )}
       </div>
+
+      {/* Alternative: contribute via Solana Action (no wallet connection needed) */}
+      {canContribute && (
+        <ActionBlink campaignId={campaign.id} />
+      )}
 
       {/* On-chain verification */}
       {campaign.campaignPubkey && (

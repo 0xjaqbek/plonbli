@@ -23,7 +23,7 @@ export {
 export {
   findPlatformConfigPda,
   findCampaignPda,
-  findVaultPda,
+  // findVaultPda intentionally NOT exported — internal use only
   findMilestonePda,
   findRewardTierPda,
   findContributionPda,
@@ -42,6 +42,7 @@ export { CampaignDetail } from "./components/campaign-detail";
 export { CampaignManagement } from "./components/campaign-management";
 export { ContributeDialog } from "./components/contribute-dialog";
 export { WalletButton } from "./components/wallet-button";
+export { ActionBlink } from "./components/action-blink";
 export { CreateCampaignForm } from "./components/create-campaign-form";
 export { MilestoneForm } from "./components/milestone-form";
 export { RewardTierForm } from "./components/reward-tier-form";

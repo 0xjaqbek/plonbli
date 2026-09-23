@@ -1,5 +1,6 @@
 import {
   pgTable,
+  pgEnum,
   text,
   timestamp,
   boolean,
@@ -10,6 +11,12 @@ import { crowdfundingCampaigns } from "./crowdfunding-campaigns";
 import { crowdfundingRewardTiers } from "./crowdfunding-reward-tiers";
 import { users } from "./users";
 
+export const contributionSourceEnum = pgEnum("contribution_source", [
+  "APP",
+  "ACTION",
+  "SYNC",
+]);
+
 export const crowdfundingContributions = pgTable(
   "crowdfunding_contributions",
   {
@@ -19,9 +26,9 @@ export const crowdfundingContributions = pgTable(
     campaignId: text("campaign_id")
       .notNull()
       .references(() => crowdfundingCampaigns.id, { onDelete: "cascade" }),
-    backerId: text("backer_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    backerId: text("backer_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     rewardTierId: text("reward_tier_id").references(
       () => crowdfundingRewardTiers.id,
       { onDelete: "set null" }
@@ -31,8 +38,10 @@ export const crowdfundingContributions = pgTable(
     amount: text("amount").notNull(),
 
     // On-chain bridge
+    walletAddress: text("wallet_address"),
     contributionPubkey: text("contribution_pubkey"),
     transactionSignature: text("transaction_signature"),
+    source: contributionSourceEnum("source").notNull().default("APP"),
 
     refunded: boolean("refunded").notNull().default(false),
 
@@ -43,6 +52,7 @@ export const crowdfundingContributions = pgTable(
   (table) => [
     index("idx_cf_contributions_campaign").on(table.campaignId),
     index("idx_cf_contributions_backer").on(table.backerId),
+    index("idx_cf_contributions_wallet").on(table.walletAddress),
   ]
 );
 

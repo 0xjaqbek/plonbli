@@ -39,6 +39,29 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/api/actions/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, OPTIONS" },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization, Accept-Encoding",
+          },
+          { key: "X-Action-Version", value: "2.2" },
+          { key: "X-Blockchain-Ids", value: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" },
+        ],
+      },
+      {
+        source: "/actions.json",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withPWA(withNextIntl(nextConfig));

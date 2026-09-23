@@ -1,0 +1,8 @@
+{
+  "rules": [
+    {
+      "pathPattern": "/api/actions/contribute/**",
+      "apiPath": "/api/actions/contribute/**"
+    }
+  ]
+}

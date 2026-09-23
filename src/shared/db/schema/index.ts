@@ -212,6 +212,7 @@ export {
 } from "./crowdfunding-reward-tiers";
 export {
   crowdfundingContributions,
+  contributionSourceEnum,
   type CrowdfundingContribution,
   type NewCrowdfundingContribution,
 } from "./crowdfunding-contributions";

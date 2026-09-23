@@ -926,7 +926,17 @@
       "walletNotConnected": "Portfel niepodłączony — tylko zapis w bazie",
       "walletRequired": "Wymagany portfel Solana",
       "signingTransaction": "Podpisywanie transakcji...",
-      "onChainFailed": "Nie udało się wysłać transakcji on-chain"
+      "onChainFailed": "Nie udało się wysłać transakcji on-chain",
+      "actionBlink": {
+        "title": "Wesprzyj bez łączenia portfela",
+        "description": "Zeskanuj kod QR lub otwórz link w portfelu Solana (Phantom, Backpack itp.) aby wesprzeć kampanię bez logowania do aplikacji.",
+        "copyLink": "Kopiuj link",
+        "copied": "Skopiowano!",
+        "step1": "Zeskanuj QR lub otwórz link w portfelu",
+        "step2": "Wybierz kwotę i nagrodę",
+        "step3": "Zatwierdź transakcję w portfelu"
+      },
+      "anonymousBacker": "Anonimowy wspierający"
     },
     "wallet": {
       "connect": "Podłącz portfel",
