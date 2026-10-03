@@ -2,6 +2,16 @@ use anchor_lang::prelude::*;
 
 declare_id!("63fEfSpaubSMFFvGVo5ALKye38XACxTCwBtL1rR1beRX");
 
+#[cfg(not(feature = "no-entrypoint"))]
+solana_security_txt::security_txt! {
+    name: "Plonbli Crowdfunding",
+    project_url: "https://plonbli.pl",
+    contacts: "email:jaqbek.eth@gmail.com",
+    policy: "Report suspected vulnerabilities privately to jaqbek.eth@gmail.com before public disclosure.",
+    preferred_languages: "pl,en",
+    source_code: "https://github.com/0xjaqbek/plonbli/tree/feature/solana-crowdfunding/programs/plonbli-crowdfunding"
+}
+
 pub mod errors;
 pub mod events;
 pub mod instructions;
