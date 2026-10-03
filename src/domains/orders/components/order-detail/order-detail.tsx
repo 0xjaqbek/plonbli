@@ -15,6 +15,10 @@ import { cancelOrder } from "../../actions/cancel-order";
 import { createConversation } from "@/domains/messaging";
 import type { OrderDetail as OrderDetailType } from "../../queries/get-order";
 import { useBadges } from "@/shared/lib/badge-context";
+import {
+  DELIVERY_METHOD_TRANSLATION_KEYS,
+  ORDER_STATUS_TRANSLATION_KEYS,
+} from "../../lib/translation-keys";
 
 interface OrderDetailProps {
   order: OrderDetailType;
@@ -76,7 +80,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
           </p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-1">
-          {t(`status${order.status.charAt(0) + order.status.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase())}` as any)}
+          {t(ORDER_STATUS_TRANSLATION_KEYS[order.status])}
         </Badge>
       </div>
 
@@ -105,7 +109,7 @@ export function OrderDetail({ order, isCustomer }: OrderDetailProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <p>{t(`delivery${order.deliveryMethod.charAt(0) + order.deliveryMethod.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase())}` as any)}</p>
+          <p>{t(DELIVERY_METHOD_TRANSLATION_KEYS[order.deliveryMethod])}</p>
           {order.deliveryAddress && <p className="text-sm text-muted-foreground">{order.deliveryAddress}</p>}
           {order.trackingNumber && (
             <div className="flex items-center gap-2">

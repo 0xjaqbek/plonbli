@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PublicKey } from "@solana/web3.js";
+import BN from "bn.js";
 
 // Mock DB
 vi.mock("@/shared/db", () => ({
@@ -32,6 +33,10 @@ vi.mock("@coral-xyz/anchor", () => ({
 // Mock IDL
 vi.mock("@/domains/crowdfunding/lib/idl.json", () => ({
   default: { instructions: [], accounts: [], types: [], events: [], errors: [] },
+}));
+
+vi.mock("@solana/spl-token", () => ({
+  getMint: vi.fn().mockResolvedValue({ decimals: 9 }),
 }));
 
 // Mock Connection
@@ -175,7 +180,7 @@ describe("GET /api/crowdfunding/sync", () => {
     // Configure BorshCoder decode mock
     mockDecode.mockReturnValue({
       backer: backerKey,
-      amount: { toString: () => "1000000000" },
+      amount: new BN("1000000000"),
       rewardTier: null,
     });
 

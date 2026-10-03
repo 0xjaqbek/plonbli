@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
 use crate::errors::CrowdfundError;
 use crate::state::{Campaign, CampaignStatus, Milestone, MilestoneStatus};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 #[instruction(milestone_index: u8)]

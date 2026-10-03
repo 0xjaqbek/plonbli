@@ -9,18 +9,15 @@ import {
   type ActionGetResponse,
   type ActionPostResponse,
 } from "@solana/actions";
-import BN from "bn.js";
+import { getMint } from "@solana/spl-token";
 import { getCampaignById } from "@/domains/crowdfunding/queries/get-campaigns";
 import { getRewardTiers } from "@/domains/crowdfunding/queries/get-reward-tiers";
 import { buildContributeInstructions } from "@/domains/crowdfunding/lib/instruction-builder";
-import { SOLANA_RPC_URL } from "@/domains/crowdfunding/lib/constants";
-
-function getCurrencyLabel(mint: string): string {
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
-    return "USDC";
-  return mint.slice(0, 6);
-}
+import {
+  SOLANA_RPC_URL,
+  getCurrencyLabel,
+} from "@/domains/crowdfunding/lib/constants";
+import { parseTokenAmount } from "@/domains/crowdfunding/lib/token-amount";
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: ACTIONS_CORS_HEADERS });
@@ -227,12 +224,13 @@ export async function POST(
     }
   }
 
-  // Convert amount to smallest units (9 decimals for SOL/wSOL)
-  const amountBN = new BN(Math.round(amountFloat * 1_000_000_000));
   const campaignPubkey = new PublicKey(campaign.campaignPubkey);
   const currencyMint = new PublicKey(campaign.currencyMint);
 
   try {
+    const connection = new Connection(SOLANA_RPC_URL, "confirmed");
+    const mint = await getMint(connection, currencyMint);
+    const amountBN = parseTokenAmount(amountStr, mint.decimals);
     const instructions = await buildContributeInstructions({
       campaignPubkey,
       backerPubkey,
@@ -241,7 +239,6 @@ export async function POST(
       rewardTier,
     });
 
-    const connection = new Connection(SOLANA_RPC_URL, "confirmed");
     const { blockhash, lastValidBlockHeight } =
       await connection.getLatestBlockhash();
 
@@ -271,8 +268,8 @@ export async function POST(
     };
 
     return NextResponse.json(response, { headers: ACTIONS_CORS_HEADERS });
-  } catch (err: any) {
-    console.error("[actions/contribute] build tx error:", err);
+  } catch (error: unknown) {
+    console.error("[actions/contribute] build tx error:", error);
     return NextResponse.json(
       { message: "Nie udało się przygotować transakcji" },
       { status: 500, headers: ACTIONS_CORS_HEADERS }

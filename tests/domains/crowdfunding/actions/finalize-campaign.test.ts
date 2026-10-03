@@ -26,6 +26,11 @@ vi.mock("@/domains/notifications/lib/notification-types", () => ({
   buildCampaignActivatedNotification: vi.fn().mockReturnValue({}),
 }));
 
+vi.mock("@/domains/crowdfunding/lib/read-campaign-onchain", () => ({
+  readCampaignOnChain: vi.fn(),
+  verifyProgramTransaction: vi.fn().mockResolvedValue(undefined),
+}));
+
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function mockDbChain(returnValue: any = []) {
@@ -64,7 +69,7 @@ describe("finalizeCampaignAction", () => {
       "@/domains/crowdfunding/actions/finalize-campaign"
     );
     const result = await finalizeCampaignAction("campaign-1");
-    expect(result).toEqual({ error: "Zbi\u00f3rka nie jest aktywna" });
+    expect(result).toEqual({ error: "Campaign is not active on Solana" });
   });
 
   it("returns error when deadline has not passed yet", async () => {
@@ -78,6 +83,7 @@ describe("finalizeCampaignAction", () => {
       goalAmount: "1000",
       fundingModel: "ALL_OR_NOTHING",
       title: "Test",
+      campaignPubkey: "11111111111111111111111111111112",
     };
     const chain = mockDbChain([campaign]);
     vi.mocked(db.select).mockReturnValue(chain as any);
@@ -87,7 +93,7 @@ describe("finalizeCampaignAction", () => {
     );
     const result = await finalizeCampaignAction("campaign-1");
     expect(result).toEqual({
-      error: "Termin zbi\u00f3rki jeszcze nie up\u0142yn\u0105\u0142",
+      error: "Campaign deadline has not passed",
     });
   });
 
@@ -102,12 +108,20 @@ describe("finalizeCampaignAction", () => {
       goalAmount: "1000",
       fundingModel: "ALL_OR_NOTHING",
       title: "Test",
+      campaignPubkey: "11111111111111111111111111111112",
     };
     const selectChain = mockDbChain([campaign]);
     vi.mocked(db.select).mockReturnValue(selectChain as any);
 
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
+
+    const { readCampaignOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain).mockResolvedValue({
+      status: "SUCCESSFUL",
+    } as Awaited<ReturnType<typeof readCampaignOnChain>>);
 
     const { finalizeCampaignAction } = await import(
       "@/domains/crowdfunding/actions/finalize-campaign"
@@ -127,12 +141,20 @@ describe("finalizeCampaignAction", () => {
       goalAmount: "1000",
       fundingModel: "ALL_OR_NOTHING",
       title: "Test",
+      campaignPubkey: "11111111111111111111111111111112",
     };
     const selectChain = mockDbChain([campaign]);
     vi.mocked(db.select).mockReturnValue(selectChain as any);
 
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
+
+    const { readCampaignOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain).mockResolvedValue({
+      status: "FAILED",
+    } as Awaited<ReturnType<typeof readCampaignOnChain>>);
 
     const { finalizeCampaignAction } = await import(
       "@/domains/crowdfunding/actions/finalize-campaign"
@@ -152,12 +174,20 @@ describe("finalizeCampaignAction", () => {
       goalAmount: "1000",
       fundingModel: "KEEP_WHAT_YOU_RAISE",
       title: "Test",
+      campaignPubkey: "11111111111111111111111111111112",
     };
     const selectChain = mockDbChain([campaign]);
     vi.mocked(db.select).mockReturnValue(selectChain as any);
 
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
+
+    const { readCampaignOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain).mockResolvedValue({
+      status: "SUCCESSFUL",
+    } as Awaited<ReturnType<typeof readCampaignOnChain>>);
 
     const { finalizeCampaignAction } = await import(
       "@/domains/crowdfunding/actions/finalize-campaign"
@@ -191,6 +221,7 @@ describe("finalizeExpiredCampaigns", () => {
       goalAmount: "1000",
       fundingModel: "ALL_OR_NOTHING",
       title: "Campaign 1",
+      campaignPubkey: "11111111111111111111111111111112",
     };
     const campaign2 = {
       id: "c-2",
@@ -201,6 +232,7 @@ describe("finalizeExpiredCampaigns", () => {
       goalAmount: "500",
       fundingModel: "KEEP_WHAT_YOU_RAISE",
       title: "Campaign 2",
+      campaignPubkey: "11111111111111111111111111111113",
     };
 
     const chain1 = mockDbChain([campaign1]);
@@ -213,6 +245,17 @@ describe("finalizeExpiredCampaigns", () => {
 
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
+
+    const { readCampaignOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain)
+      .mockResolvedValueOnce({
+        status: "SUCCESSFUL",
+      } as Awaited<ReturnType<typeof readCampaignOnChain>>)
+      .mockResolvedValueOnce({
+        status: "SUCCESSFUL",
+      } as Awaited<ReturnType<typeof readCampaignOnChain>>);
 
     const { finalizeExpiredCampaigns } = await import(
       "@/domains/crowdfunding/actions/finalize-campaign"

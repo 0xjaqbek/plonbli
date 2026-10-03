@@ -40,7 +40,8 @@ describe("createCropLogSchema", () => {
   it("accepts optional images array", () => {
     const result = createCropLogSchema.safeParse({
       ...validInput,
-      images: ["img1.jpg", "img2.jpg"],
+      images: ["https://example.com/img1.jpg", "https://example.com/img2.jpg"],
+      imageHashes: ["a".repeat(64), "b".repeat(64)],
     });
     expect(result.success).toBe(true);
     if (result.success) {

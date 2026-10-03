@@ -17,6 +17,9 @@ export default async function CrowdfundingPage({
   const t = await getTranslations("crowdfunding");
   const session = await auth();
   const params = await searchParams;
+  // A single server-request snapshot keeps all client cards deterministic.
+  // eslint-disable-next-line react-hooks/purity
+  const referenceTime = Date.now();
 
   const categoryFilter = typeof params.category === "string" ? params.category : undefined;
   const campaigns = await getCampaigns({
@@ -81,6 +84,7 @@ export default async function CrowdfundingPage({
         initialCampaigns={campaigns}
         category={categoryFilter}
         pageSize={PAGE_SIZE}
+        referenceTime={referenceTime}
       />
     </div>
   );

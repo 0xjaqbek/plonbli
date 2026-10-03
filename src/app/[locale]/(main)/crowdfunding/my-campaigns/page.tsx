@@ -17,6 +17,9 @@ export default async function MyCampaignsPage() {
   const t = await getTranslations("crowdfunding");
 
   const campaigns = await getCampaigns({ creatorId: session.user.id });
+  // A single server-request snapshot keeps all client cards deterministic.
+  // eslint-disable-next-line react-hooks/purity
+  const referenceTime = Date.now();
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-6">
@@ -64,6 +67,7 @@ export default async function MyCampaignsPage() {
               <CampaignCard
                 {...campaign}
                 deadline={campaign.deadline}
+                referenceTime={referenceTime}
               />
             </div>
           ))}

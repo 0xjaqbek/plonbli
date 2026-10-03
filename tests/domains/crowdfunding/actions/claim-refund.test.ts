@@ -5,13 +5,23 @@ vi.mock("@/domains/auth/lib/auth", () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("@/shared/db", () => ({
-  db: {
+vi.mock("@/shared/db", () => {
+  const db: any = {
     select: vi.fn(),
     insert: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
-  },
+  };
+  db.transaction = vi.fn((callback) => callback(db));
+  return { db };
+});
+
+vi.mock("@/domains/crowdfunding/lib/read-campaign-onchain", () => ({
+  verifyProgramTransaction: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@/domains/crowdfunding/lib/verify-contribution", () => ({
+  readContributionOnChain: vi.fn().mockResolvedValue({ refunded: true }),
 }));
 
 vi.mock("next/cache", () => ({
@@ -43,7 +53,12 @@ const contribution = {
   backerId: "user-1",
   amount: "100",
   refunded: false,
+  rewardTierId: null,
+  walletAddress: "wallet-1",
+  contributionPubkey: "contribution-pda",
 };
+
+const receipt = { signature: "refund-signature", walletAddress: "wallet-1" };
 
 // ── Tests ────────────────────────────────────────────────────────────
 
@@ -59,7 +74,7 @@ describe("claimRefundAction", () => {
     const { claimRefundAction } = await import(
       "@/domains/crowdfunding/actions/claim-refund"
     );
-    const result = await claimRefundAction("contrib-1");
+    const result = await claimRefundAction("contrib-1", receipt);
     expect(result).toEqual({ error: "Unauthorized" });
   });
 
@@ -76,7 +91,7 @@ describe("claimRefundAction", () => {
     const { claimRefundAction } = await import(
       "@/domains/crowdfunding/actions/claim-refund"
     );
-    const result = await claimRefundAction("contrib-999");
+    const result = await claimRefundAction("contrib-999", receipt);
     expect(result).toEqual({
       error: "Wp\u0142ata nie zosta\u0142a znaleziona",
     });
@@ -96,7 +111,7 @@ describe("claimRefundAction", () => {
     const { claimRefundAction } = await import(
       "@/domains/crowdfunding/actions/claim-refund"
     );
-    const result = await claimRefundAction("contrib-1");
+    const result = await claimRefundAction("contrib-1", receipt);
     expect(result).toEqual({
       error: "Zwrot zosta\u0142 ju\u017c zrealizowany",
     });
@@ -121,10 +136,10 @@ describe("claimRefundAction", () => {
     const { claimRefundAction } = await import(
       "@/domains/crowdfunding/actions/claim-refund"
     );
-    const result = await claimRefundAction("contrib-1");
+    const result = await claimRefundAction("contrib-1", receipt);
     expect(result).toEqual({
       error:
-        "Zwroty dost\u0119pne tylko dla nieudanych zbi\u00f3rek",
+        "Zwroty s\u0105 dost\u0119pne tylko dla nieudanych zbi\u00f3rek Solana",
     });
   });
 
@@ -139,20 +154,24 @@ describe("claimRefundAction", () => {
     const contribChain = mockDbChain([{ ...contribution }]);
     // Second select: campaign is FAILED
     const campaignChain = mockDbChain([
-      { id: "campaign-1", status: "FAILED" },
+      {
+        id: "campaign-1",
+        status: "FAILED",
+        campaignPubkey: "campaign-pda",
+      },
     ]);
 
     vi.mocked(db.select)
       .mockReturnValueOnce(contribChain as any)
       .mockReturnValueOnce(campaignChain as any);
 
-    const updateChain = mockDbChain([]);
+    const updateChain = mockDbChain([{ id: "contrib-1" }]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
 
     const { claimRefundAction } = await import(
       "@/domains/crowdfunding/actions/claim-refund"
     );
-    const result = await claimRefundAction("contrib-1");
+    const result = await claimRefundAction("contrib-1", receipt);
     expect(result).toEqual({ success: true, amount: "100" });
     expect(db.update).toHaveBeenCalled();
   });

@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
 use crate::errors::CrowdfundError;
 use crate::state::PlatformConfig;
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct InitializePlatform<'info> {

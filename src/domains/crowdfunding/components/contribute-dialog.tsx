@@ -17,12 +17,7 @@ import {
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
 import { contributeAction } from "../actions/contribute";
 import { useContributeOnChain } from "../hooks/use-contribute-onchain";
-
-function getCurrencyLabel(mint: string): string {
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
-  return mint.slice(0, 4);
-}
+import { getCurrencyLabel } from "../lib/constants";
 
 type Props = {
   campaignId: string;
@@ -90,7 +85,7 @@ export function ContributeDialog({
       // On-chain contribution is mandatory — wallet required
       const onChainResult = await contributeOnChain({
         campaignPubkey,
-        amount: parseFloat(amount),
+        amount,
         rewardTier: selectedTierIndex,
         currencyMint,
       });
@@ -103,6 +98,7 @@ export function ContributeDialog({
       // Record in DB with on-chain reference
       formData.set("contributionPubkey", onChainResult.contributionPubkey);
       formData.set("transactionSignature", onChainResult.signature);
+      formData.set("walletAddress", onChainResult.walletAddress);
       const result = await contributeAction(formData);
       if (result.error) {
         setError(

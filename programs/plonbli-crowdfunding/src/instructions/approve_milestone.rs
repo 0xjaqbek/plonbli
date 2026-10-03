@@ -1,7 +1,7 @@
-use anchor_lang::prelude::*;
 use crate::errors::CrowdfundError;
 use crate::events::MilestoneApproved;
 use crate::state::{Campaign, CampaignStatus, Milestone, MilestoneStatus, PlatformConfig};
+use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
 pub struct ApproveMilestone<'info> {

@@ -4,7 +4,8 @@ import { auth } from "@/domains/auth/lib/auth";
 import { db } from "@/shared/db";
 import { crowdfundingCampaigns } from "@/shared/db/schema";
 import { createCampaignSchema } from "../schemas/validation";
-import { generateContentHash, hashToHex } from "../lib/content-hash";
+import { hashToHex } from "../lib/content-hash";
+import { generateCampaignContentHash } from "../lib/campaign-content";
 import { redirect } from "next/navigation";
 
 export async function createCampaignAction(formData: FormData) {
@@ -32,8 +33,17 @@ export async function createCampaignAction(formData: FormData) {
   }
 
   // Generate content hash for on-chain bridge (includes all metadata)
-  const hashInput = [title, description, category, fundingModel, goalAmount.toString(), deadline].join("\n");
-  const contentHash = await generateContentHash(hashInput);
+  const normalizedDeadline = new Date(deadline).toISOString();
+  const contentHash = await generateCampaignContentHash({
+    title,
+    description,
+    images: images || [],
+    category,
+    fundingModel,
+    currencyMint,
+    goalAmount: goalAmount.toString(),
+    deadline: normalizedDeadline,
+  });
   const contentHashHex = hashToHex(contentHash);
 
   const [campaign] = await db
@@ -48,7 +58,7 @@ export async function createCampaignAction(formData: FormData) {
       currencyMint,
       fundingModel,
       goalAmount: goalAmount.toString(),
-      deadline: new Date(deadline),
+      deadline: new Date(normalizedDeadline),
       contentHash: contentHashHex,
     })
     .returning();

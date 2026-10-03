@@ -23,6 +23,8 @@ export function PushPermissionPrompt() {
     ) {
       return;
     }
+    // This effect synchronizes browser permission and local-storage state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShow(true);
   }, []);
 

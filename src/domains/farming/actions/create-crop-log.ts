@@ -5,7 +5,7 @@ import { createCropLogSchema, type CreateCropLogInput } from "../schemas/validat
 import { PostgresCropLogRepository } from "../repository/postgres";
 
 type CreateCropLogResult =
-  | { success: true; logId: string }
+  | { success: true; logId: string; contentHash: string }
   | { success: false; error?: string; errors?: Record<string, string[]> };
 
 export async function createCropLog(
@@ -30,5 +30,5 @@ export async function createCropLog(
     ...parsed.data,
   });
 
-  return { success: true, logId: record.id };
+  return { success: true, logId: record.id, contentHash: record.contentHash };
 }

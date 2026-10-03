@@ -2,13 +2,13 @@ use anchor_lang::prelude::*;
 
 #[account]
 pub struct Contribution {
-    pub campaign: Pubkey,       // 32
-    pub backer: Pubkey,         // 32
-    pub amount: u64,            // 8
+    pub campaign: Pubkey,        // 32
+    pub backer: Pubkey,          // 32
+    pub amount: u64,             // 8
     pub reward_tier: Option<u8>, // 1 + 1
-    pub timestamp: i64,         // 8
-    pub refunded: bool,         // 1
-    pub bump: u8,               // 1
+    pub timestamp: i64,          // 8
+    pub refunded: bool,          // 1
+    pub bump: u8,                // 1
 }
 
 impl Contribution {

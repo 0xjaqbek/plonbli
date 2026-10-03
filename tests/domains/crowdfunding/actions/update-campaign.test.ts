@@ -19,8 +19,10 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("@/domains/crowdfunding/lib/content-hash", () => ({
-  generateContentHash: vi.fn().mockResolvedValue(new Uint8Array(32)),
   hashToHex: vi.fn().mockReturnValue("b".repeat(64)),
+}));
+vi.mock("@/domains/crowdfunding/lib/campaign-content", () => ({
+  generateCampaignContentHash: vi.fn().mockResolvedValue(new Uint8Array(32)),
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -56,6 +58,12 @@ const setupCampaign = {
   status: "SETUP",
   title: "Existing title",
   description: "Existing description with enough chars",
+  images: [],
+  category: "FARMER_INVESTMENT",
+  fundingModel: "ALL_OR_NOTHING",
+  currencyMint: "So11111111111111111111111111111111111111112",
+  goalAmount: "1000",
+  deadline: new Date(Date.now() + 86_400_000),
 };
 
 // ── Tests ────────────────────────────────────────────────────────────
@@ -158,8 +166,11 @@ describe("updateCampaignAction", () => {
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
 
-    const { generateContentHash, hashToHex } = await import(
+    const { hashToHex } = await import(
       "@/domains/crowdfunding/lib/content-hash"
+    );
+    const { generateCampaignContentHash } = await import(
+      "@/domains/crowdfunding/lib/campaign-content"
     );
 
     const { updateCampaignAction } = await import(
@@ -171,7 +182,7 @@ describe("updateCampaignAction", () => {
     );
 
     expect(result).toEqual({ success: true });
-    expect(generateContentHash).toHaveBeenCalled();
+    expect(generateCampaignContentHash).toHaveBeenCalled();
     expect(hashToHex).toHaveBeenCalled();
     expect(db.update).toHaveBeenCalled();
   });

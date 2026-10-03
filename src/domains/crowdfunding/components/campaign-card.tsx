@@ -4,13 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Users, Clock, Target, CheckCircle2 } from "lucide-react";
-
-function getCurrencyLabel(mint?: string): string {
-  if (!mint) return "";
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
-  return mint.slice(0, 4);
-}
+import { getCurrencyLabel } from "../lib/constants";
 
 type CampaignCardProps = {
   id: string;
@@ -27,6 +21,7 @@ type CampaignCardProps = {
   creatorName: string;
   creatorAvatar: string | null;
   currencyMint?: string;
+  referenceTime: number;
 };
 
 export function CampaignCard({
@@ -42,6 +37,7 @@ export function CampaignCard({
   status,
   creatorName,
   currencyMint,
+  referenceTime,
 }: CampaignCardProps) {
   const t = useTranslations("crowdfunding");
   const currencyLabel = getCurrencyLabel(currencyMint);
@@ -50,7 +46,7 @@ export function CampaignCard({
   const raised = parseFloat(raisedAmount);
   const progress = goal > 0 ? Math.min((raised / goal) * 100, 100) : 0;
   const rawDaysLeft = Math.ceil(
-    (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    (new Date(deadline).getTime() - referenceTime) / (1000 * 60 * 60 * 24)
   );
   const daysLeft = Math.max(0, rawDaysLeft);
 

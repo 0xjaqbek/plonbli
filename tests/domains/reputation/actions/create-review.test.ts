@@ -5,6 +5,21 @@ vi.mock("@/domains/auth/lib/auth", () => ({
   auth: vi.fn(),
 }));
 
+vi.mock("@/shared/db", () => ({
+  db: { select: vi.fn() },
+}));
+
+function mockSelectResult(result: any[]) {
+  const chain: any = {};
+  chain.select = vi.fn().mockReturnValue(chain);
+  chain.from = vi.fn().mockReturnValue(chain);
+  chain.innerJoin = vi.fn().mockReturnValue(chain);
+  chain.leftJoin = vi.fn().mockReturnValue(chain);
+  chain.where = vi.fn().mockReturnValue(chain);
+  chain.limit = vi.fn().mockResolvedValue(result);
+  return chain;
+}
+
 vi.mock("@/domains/reputation/repository/postgres", () => {
   const MockRepo = class {
     create = vi.fn().mockResolvedValue({
@@ -62,6 +77,10 @@ describe("createReview", () => {
       user: { id: "user-1", email: "a@b.com", name: "A" },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
+    const { db } = await import("@/shared/db");
+    vi.mocked(db.select)
+      .mockReturnValueOnce(mockSelectResult([{ id: "order-1" }]) as any)
+      .mockReturnValueOnce(mockSelectResult([]) as any);
 
     const result = await createReview({
       targetId: "user-2",

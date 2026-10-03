@@ -14,7 +14,7 @@ export async function getOrder(orderId: string) {
         },
       },
       statusHistory: {
-        orderBy: (h: any, { asc }: any) => [asc(h.createdAt)],
+        orderBy: (history, { asc }) => [asc(history.createdAt)],
       },
       pickupSlot: true,
     },

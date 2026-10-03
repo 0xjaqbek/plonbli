@@ -1,8 +1,8 @@
-use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
 use crate::errors::CrowdfundError;
 use crate::events::CampaignCreated;
 use crate::state::{Campaign, CampaignStatus, FundingModel};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 #[derive(Accounts)]
 #[instruction(campaign_id: u64)]
@@ -46,7 +46,10 @@ pub fn handler(
     require!(goal_amount > 0, CrowdfundError::ZeroGoalAmount);
 
     let clock = Clock::get()?;
-    require!(deadline > clock.unix_timestamp, CrowdfundError::DeadlineInPast);
+    require!(
+        deadline > clock.unix_timestamp,
+        CrowdfundError::DeadlineInPast
+    );
 
     let model = FundingModel::from_u8(funding_model)?;
 

@@ -5,7 +5,8 @@ import { db } from "@/shared/db";
 import { crowdfundingCampaigns } from "@/shared/db/schema";
 import { eq, and } from "drizzle-orm";
 import { updateCampaignSchema } from "../schemas/validation";
-import { generateContentHash, hashToHex } from "../lib/content-hash";
+import { hashToHex } from "../lib/content-hash";
+import { generateCampaignContentHash } from "../lib/campaign-content";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -53,11 +54,21 @@ export async function updateCampaignAction(
   if (parsed.data.description) updates.description = parsed.data.description;
   if (parsed.data.images) updates.images = parsed.data.images;
 
-  // Regenerate content hash if title or description changed
+  // Regenerate the canonical hash whenever any committed content changes.
   const newTitle = parsed.data.title ?? campaign.title;
   const newDescription = parsed.data.description ?? campaign.description;
-  if (parsed.data.title || parsed.data.description) {
-    const contentHash = await generateContentHash(`${newTitle}\n${newDescription}`);
+  const newImages = parsed.data.images ?? campaign.images;
+  if (parsed.data.title || parsed.data.description || parsed.data.images) {
+    const contentHash = await generateCampaignContentHash({
+      title: newTitle,
+      description: newDescription,
+      images: newImages,
+      category: campaign.category,
+      fundingModel: campaign.fundingModel,
+      currencyMint: campaign.currencyMint,
+      goalAmount: campaign.goalAmount,
+      deadline: campaign.deadline.toISOString(),
+    });
     updates.contentHash = hashToHex(contentHash);
   }
 

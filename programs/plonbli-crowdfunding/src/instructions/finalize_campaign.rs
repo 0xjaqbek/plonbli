@@ -1,8 +1,8 @@
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use crate::errors::CrowdfundError;
 use crate::events::CampaignFinalized;
 use crate::state::{Campaign, CampaignStatus, FundingModel, PlatformConfig};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct FinalizeCampaign<'info> {
@@ -84,7 +84,9 @@ pub fn handler(ctx: Context<FinalizeCampaign>) -> Result<()> {
             .ok_or(error!(CrowdfundError::Overflow))?
             .checked_div(10_000)
             .ok_or(error!(CrowdfundError::Overflow))? as u64;
-        let creator_amount = total.checked_sub(fee).ok_or(error!(CrowdfundError::Overflow))?;
+        let creator_amount = total
+            .checked_sub(fee)
+            .ok_or(error!(CrowdfundError::Overflow))?;
 
         let creator_key = campaign.creator;
         let campaign_id_bytes = campaign.campaign_id.to_le_bytes();
@@ -112,30 +114,33 @@ pub fn handler(ctx: Context<FinalizeCampaign>) -> Result<()> {
         }
 
         if fee > 0 {
-            if let Some(treasury_token_account) = ctx.accounts.treasury_token_account.as_ref() {
-                // Validate treasury_token_account
-                require!(
-                    treasury_token_account.mint == campaign.currency_mint,
-                    CrowdfundError::Unauthorized
-                );
-                require!(
-                    treasury_token_account.owner == ctx.accounts.platform_config.treasury,
-                    CrowdfundError::Unauthorized
-                );
+            let treasury_token_account = ctx
+                .accounts
+                .treasury_token_account
+                .as_ref()
+                .ok_or(error!(CrowdfundError::Unauthorized))?;
+            // Validate treasury_token_account
+            require!(
+                treasury_token_account.mint == campaign.currency_mint,
+                CrowdfundError::Unauthorized
+            );
+            require!(
+                treasury_token_account.owner == ctx.accounts.platform_config.treasury,
+                CrowdfundError::Unauthorized
+            );
 
-                token::transfer(
-                    CpiContext::new_with_signer(
-                        ctx.accounts.token_program.to_account_info(),
-                        Transfer {
-                            from: ctx.accounts.vault.to_account_info(),
-                            to: treasury_token_account.to_account_info(),
-                            authority: ctx.accounts.campaign.to_account_info(),
-                        },
-                        signer_seeds,
-                    ),
-                    fee,
-                )?;
-            }
+            token::transfer(
+                CpiContext::new_with_signer(
+                    ctx.accounts.token_program.to_account_info(),
+                    Transfer {
+                        from: ctx.accounts.vault.to_account_info(),
+                        to: treasury_token_account.to_account_info(),
+                        authority: ctx.accounts.campaign.to_account_info(),
+                    },
+                    signer_seeds,
+                ),
+                fee,
+            )?;
         }
     }
 

@@ -15,6 +15,20 @@ interface ImageUploadProps {
   maxFiles: number;
   value: string[];
   onChange: (urls: string[]) => void;
+  onUploaded?: (assets: UploadedImage[]) => void;
+  onRemove?: (url: string) => void;
+}
+
+export type UploadedImage = {
+  url: string;
+  sha256: string;
+};
+
+async function hashBlob(blob: Blob): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export function ImageUpload({
@@ -22,6 +36,8 @@ export function ImageUpload({
   maxFiles,
   value,
   onChange,
+  onUploaded,
+  onRemove,
 }: ImageUploadProps) {
   const t = useTranslations("images");
   const [uploading, setUploading] = useState(false);
@@ -45,6 +61,7 @@ export function ImageUpload({
 
       // Compress
       const compressed = await compressImage(file);
+      const sha256 = await hashBlob(compressed);
       setProgress(40);
 
       // Get signed URL
@@ -68,7 +85,7 @@ export function ImageUpload({
       }
 
       setProgress(100);
-      return result.publicUrl;
+      return { url: result.publicUrl, sha256 } satisfies UploadedImage;
     },
     [folder, t]
   );
@@ -81,15 +98,16 @@ export function ImageUpload({
     if (toUpload.length === 0) return;
 
     setUploading(true);
-    const newUrls: string[] = [];
+    const uploadedAssets: UploadedImage[] = [];
 
     for (const file of toUpload) {
-      const url = await uploadFile(file);
-      if (url) newUrls.push(url);
+      const asset = await uploadFile(file);
+      if (asset) uploadedAssets.push(asset);
     }
 
-    if (newUrls.length > 0) {
-      onChange([...value, ...newUrls]);
+    if (uploadedAssets.length > 0) {
+      onChange([...value, ...uploadedAssets.map((asset) => asset.url)]);
+      onUploaded?.(uploadedAssets);
     }
 
     setUploading(false);
@@ -97,6 +115,7 @@ export function ImageUpload({
   }
 
   function handleRemove(index: number) {
+    onRemove?.(value[index]);
     onChange(value.filter((_, i) => i !== index));
   }
 

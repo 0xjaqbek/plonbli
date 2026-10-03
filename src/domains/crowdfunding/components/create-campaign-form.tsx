@@ -15,20 +15,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import { CROWDFUNDING_CURRENCIES } from "../lib/constants";
+
+type CampaignFormState = {
+  error?: Record<string, string[] | undefined> | string;
+} | null;
 
 export function CreateCampaignForm() {
   const t = useTranslations("crowdfunding");
   const [category, setCategory] = useState("FARMER_INVESTMENT");
   const [fundingModel, setFundingModel] = useState("ALL_OR_NOTHING");
-  const [currencyMint, setCurrencyMint] = useState(
-    "So11111111111111111111111111111111111111112"
+  const [currencyMint, setCurrencyMint] = useState<string>(
+    CROWDFUNDING_CURRENCIES[0].mint
   );
 
-  const [state, formAction, pending] = useActionState(
-    async (_prev: any, formData: FormData) => {
-      return createCampaignAction(formData) as any;
+  const [state, formAction, pending] = useActionState<
+    CampaignFormState,
+    FormData
+  >(
+    async (_previousState, formData) => {
+      const result = await createCampaignAction(formData);
+      return result ?? null;
     },
-    null as { error?: Record<string, string[]> | string } | null
+    null
   );
 
   const fieldErrors =
@@ -145,12 +154,11 @@ export function CreateCampaignForm() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="So11111111111111111111111111111111111111112">
-              SOL
-            </SelectItem>
-            <SelectItem value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">
-              USDC
-            </SelectItem>
+            {CROWDFUNDING_CURRENCIES.map((currency) => (
+              <SelectItem key={currency.mint} value={currency.mint}>
+                {currency.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

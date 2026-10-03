@@ -10,6 +10,7 @@ export async function getReviewsByTarget(targetId: string) {
       dimensions: reviews.dimensions,
       comment: reviews.comment,
       contentHash: reviews.contentHash,
+      verificationSource: reviews.verificationSource,
       createdAt: reviews.createdAt,
       reviewer: {
         id: users.id,
@@ -36,6 +37,7 @@ export async function getReviewsByProxyFarmer(proxyFarmerId: string) {
       dimensions: reviews.dimensions,
       comment: reviews.comment,
       contentHash: reviews.contentHash,
+      verificationSource: reviews.verificationSource,
       createdAt: reviews.createdAt,
       reviewer: {
         id: users.id,

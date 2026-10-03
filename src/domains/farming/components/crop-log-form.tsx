@@ -16,12 +16,15 @@ import {
 } from "@/shared/ui/select";
 import { ImageUpload } from "@/shared/ui/image-upload";
 import { createCropLog } from "../actions/create-crop-log";
+import { anchorCropLogAction } from "../actions/anchor-crop-log";
+import { useAnchorCropLog } from "../hooks/use-anchor-crop-log";
 
 interface CropLogFormProps {
   products?: { id: string; name: string }[];
+  campaigns?: { id: string; title: string; campaignPubkey: string | null }[];
 }
 
-export function CropLogForm({ products }: CropLogFormProps) {
+export function CropLogForm({ products, campaigns }: CropLogFormProps) {
   const t = useTranslations("farming");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -30,33 +33,85 @@ export function CropLogForm({ products }: CropLogFormProps) {
   >("PLANTING");
   const [description, setDescription] = useState("");
   const [productId, setProductId] = useState("");
+  const [campaignId, setCampaignId] = useState("");
   const [crop, setCrop] = useState("");
   const [area, setArea] = useState("");
   const [quantity, setQuantity] = useState("");
   const [method, setMethod] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [imageHashes, setImageHashes] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
+  const {
+    anchorCropLog,
+    connected,
+    loading: anchorLoading,
+    error: anchorError,
+  } = useAnchorCropLog();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (!connected) {
+      setError(t("walletRequired"));
+      return;
+    }
+
+    if (
+      !window.confirm(t("anchorConfirm"))
+    ) {
+      return;
+    }
 
     const data: Record<string, string> = {};
     if (crop) data.crop = crop;
     if (area) data.area = area;
     if (quantity) data.quantity = quantity;
     if (method) data.method = method;
+    const orderedImageHashes = images.map((url) => imageHashes[url]);
+    if (orderedImageHashes.some((hash) => !hash)) {
+      setError(t("imageHashMissing"));
+      return;
+    }
 
     startTransition(async () => {
       const result = await createCropLog({
         type,
         description: description.trim(),
         productId: productId || undefined,
+        campaignId: campaignId || undefined,
         images,
+        imageHashes: orderedImageHashes,
         data: Object.keys(data).length > 0 ? data : undefined,
       });
 
       if (result.success) {
+        const selectedCampaign = campaigns?.find(
+          (campaign) => campaign.id === campaignId
+        );
+        const receipt = await anchorCropLog({
+          logId: result.logId,
+          contentHash: result.contentHash,
+          campaignPubkey: selectedCampaign?.campaignPubkey ?? undefined,
+        });
+
+        if (!receipt) {
+          setError(t("anchorFailed", { error: anchorError ?? "unknown" }));
+          router.refresh();
+          return;
+        }
+
+        const anchorResult = await anchorCropLogAction({
+          logId: result.logId,
+          walletAddress: receipt.walletAddress,
+          transactionSignature: receipt.signature,
+        });
+        if (anchorResult.error) {
+          setError(anchorResult.error);
+          router.refresh();
+          return;
+        }
+
         router.refresh();
         setDescription("");
         setCrop("");
@@ -64,6 +119,8 @@ export function CropLogForm({ products }: CropLogFormProps) {
         setQuantity("");
         setMethod("");
         setImages([]);
+        setImageHashes({});
+        setCampaignId("");
       } else if (result.error) {
         setError(result.error);
       }
@@ -124,6 +181,24 @@ export function CropLogForm({ products }: CropLogFormProps) {
         </div>
       )}
 
+      {campaigns && campaigns.length > 0 && (
+        <div className="space-y-2">
+          <Label>{t("campaignLabel")}</Label>
+          <Select value={campaignId} onValueChange={setCampaignId}>
+            <SelectTrigger>
+              <SelectValue placeholder={t("campaignPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {campaigns.map((campaign) => (
+                <SelectItem key={campaign.id} value={campaign.id}>
+                  {campaign.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label>{t("images")}</Label>
         <ImageUpload
@@ -131,6 +206,21 @@ export function CropLogForm({ products }: CropLogFormProps) {
           maxFiles={5}
           value={images}
           onChange={setImages}
+          onUploaded={(assets) =>
+            setImageHashes((current) => ({
+              ...current,
+              ...Object.fromEntries(
+                assets.map((asset) => [asset.url, asset.sha256])
+              ),
+            }))
+          }
+          onRemove={(url) =>
+            setImageHashes((current) => {
+              const next = { ...current };
+              delete next[url];
+              return next;
+            })
+          }
         />
       </div>
 
@@ -171,7 +261,11 @@ export function CropLogForm({ products }: CropLogFormProps) {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button type="submit" isLoading={isPending} className="w-full">
+      <Button
+        type="submit"
+        isLoading={isPending || anchorLoading}
+        className="w-full"
+      >
         {t("addEntry")}
       </Button>
     </form>

@@ -58,20 +58,20 @@ describe("buildContributeInstructions", () => {
     mockGetAccountInfo.mockResolvedValue(null);
   });
 
-  it("returns a single instruction when ATA already exists", async () => {
+  it("wraps native SOL before contributing when the ATA already exists", async () => {
     mockGetAccountInfo.mockResolvedValue({ data: Buffer.alloc(165) });
 
     const instructions = await buildContributeInstructions(defaultParams());
 
-    expect(instructions).toHaveLength(1);
+    expect(instructions).toHaveLength(3);
   });
 
-  it("returns two instructions (createATA + contribute) when ATA does not exist", async () => {
+  it("creates the ATA and wraps native SOL before contributing", async () => {
     mockGetAccountInfo.mockResolvedValue(null);
 
     const instructions = await buildContributeInstructions(defaultParams());
 
-    expect(instructions).toHaveLength(2);
+    expect(instructions).toHaveLength(4);
   });
 
   it("contribute instruction has the correct program ID", async () => {
@@ -83,14 +83,14 @@ describe("buildContributeInstructions", () => {
     expect(contributeIx.programId.equals(CROWDFUNDING_PROGRAM_ID)).toBe(true);
   });
 
-  it("contribute instruction has exactly 7 accounts in correct order", async () => {
+  it("contribute instruction has exactly 8 accounts in correct order", async () => {
     mockGetAccountInfo.mockResolvedValue({ data: Buffer.alloc(165) });
 
     const instructions = await buildContributeInstructions(defaultParams());
     const contributeIx = instructions[instructions.length - 1];
     const keys = contributeIx.keys;
 
-    expect(keys).toHaveLength(7);
+    expect(keys).toHaveLength(8);
 
     const expectedVault = findVaultPda(campaignPubkey);
     const expectedContribution = findContributionPda(
@@ -101,11 +101,12 @@ describe("buildContributeInstructions", () => {
     // Account order: contribution, campaign, vault, backerATA, backer, tokenProgram, systemProgram
     expect(keys[0].pubkey.equals(expectedContribution)).toBe(true);
     expect(keys[1].pubkey.equals(campaignPubkey)).toBe(true);
-    expect(keys[2].pubkey.equals(expectedVault)).toBe(true);
+    expect(keys[2].pubkey.equals(CROWDFUNDING_PROGRAM_ID)).toBe(true);
+    expect(keys[3].pubkey.equals(expectedVault)).toBe(true);
     // keys[3] is backerATA — derived from currencyMint + backerPubkey
-    expect(keys[4].pubkey.equals(backerPubkey)).toBe(true);
-    expect(keys[5].pubkey.equals(TOKEN_PROGRAM_ID)).toBe(true);
-    expect(keys[6].pubkey.equals(SystemProgram.programId)).toBe(true);
+    expect(keys[5].pubkey.equals(backerPubkey)).toBe(true);
+    expect(keys[6].pubkey.equals(TOKEN_PROGRAM_ID)).toBe(true);
+    expect(keys[7].pubkey.equals(SystemProgram.programId)).toBe(true);
   });
 
   it("backer account is marked as signer", async () => {
@@ -115,7 +116,7 @@ describe("buildContributeInstructions", () => {
     const contributeIx = instructions[instructions.length - 1];
 
     // backer is at index 4
-    expect(contributeIx.keys[4].isSigner).toBe(true);
+    expect(contributeIx.keys[5].isSigner).toBe(true);
   });
 
   it("vault, contribution, campaign, and backerATA are writable", async () => {
@@ -127,8 +128,8 @@ describe("buildContributeInstructions", () => {
     // contribution (0), campaign (1), vault (2), backerATA (3) — all writable
     expect(contributeIx.keys[0].isWritable).toBe(true); // contribution
     expect(contributeIx.keys[1].isWritable).toBe(true); // campaign
-    expect(contributeIx.keys[2].isWritable).toBe(true); // vault
-    expect(contributeIx.keys[3].isWritable).toBe(true); // backerATA
+    expect(contributeIx.keys[3].isWritable).toBe(true); // vault
+    expect(contributeIx.keys[4].isWritable).toBe(true); // backerATA
   });
 
   it("tokenProgram and systemProgram are not writable", async () => {
@@ -137,8 +138,8 @@ describe("buildContributeInstructions", () => {
     const instructions = await buildContributeInstructions(defaultParams());
     const contributeIx = instructions[instructions.length - 1];
 
-    expect(contributeIx.keys[5].isWritable).toBe(false); // tokenProgram
-    expect(contributeIx.keys[6].isWritable).toBe(false); // systemProgram
+    expect(contributeIx.keys[6].isWritable).toBe(false); // tokenProgram
+    expect(contributeIx.keys[7].isWritable).toBe(false); // systemProgram
   });
 
   it("instruction data encodes rewardTier as null when not provided", async () => {
@@ -192,7 +193,7 @@ describe("buildContributeInstructions", () => {
     );
 
     // vault PDA (index 2) should differ
-    expect(contributeA.keys[2].pubkey.equals(contributeB.keys[2].pubkey)).toBe(
+    expect(contributeA.keys[3].pubkey.equals(contributeB.keys[3].pubkey)).toBe(
       false
     );
   });

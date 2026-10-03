@@ -80,4 +80,34 @@ describe("computeCropLogHash", () => {
 
     expect(hashWithout).not.toBe(hashWith);
   });
+
+  it("v2 commits the image bytes hash and previous entry hash", async () => {
+    const { computeCropLogHashV2 } = await import(
+      "@/domains/farming/repository/postgres"
+    );
+    const base = {
+      farmerId: "farmer-1",
+      productId: null,
+      campaignId: "campaign-1",
+      type: "GROWING" as const,
+      description: "Rośliny mają 20 cm",
+      images: ["https://cdn.example/photo.jpg"],
+      imageHashes: ["a".repeat(64)],
+      data: null,
+      previousHash: "b".repeat(64),
+      timestamp: "2026-03-28T10:00:00.000Z",
+    };
+    const original = await computeCropLogHashV2(base);
+    const changedBytes = await computeCropLogHashV2({
+      ...base,
+      imageHashes: ["c".repeat(64)],
+    });
+    const changedLink = await computeCropLogHashV2({
+      ...base,
+      previousHash: "d".repeat(64),
+    });
+
+    expect(original).not.toBe(changedBytes);
+    expect(original).not.toBe(changedLink);
+  });
 });

@@ -1,9 +1,11 @@
 export interface CropLogEntry {
   farmerId: string;
   productId?: string;
+  campaignId?: string;
   type: "PLANTING" | "GROWING" | "TREATMENT" | "HARVEST" | "OTHER";
   description: string;
   images: string[];
+  imageHashes: string[];
   data?: {
     crop?: string;
     area?: string;
@@ -16,6 +18,10 @@ export interface CropLogRecord extends CropLogEntry {
   id: string;
   contentHash: string;
   previousHash: string | null;
+  hashVersion: number;
+  farmerWalletAddress?: string;
+  anchorTransactionSignature?: string;
+  anchoredAt?: Date;
   createdAt: Date;
 }
 

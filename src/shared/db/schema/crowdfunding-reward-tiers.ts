@@ -27,6 +27,10 @@ export const crowdfundingRewardTiers = pgTable(
     description: text("description").notNull(),
     descriptionHash: text("description_hash"),
 
+    // On-chain bridge
+    rewardTierPubkey: text("reward_tier_pubkey").unique(),
+    createTransactionSignature: text("create_transaction_signature"),
+
     // Pricing & capacity
     price: text("price").notNull(),
     maxBackers: integer("max_backers").notNull().default(0),

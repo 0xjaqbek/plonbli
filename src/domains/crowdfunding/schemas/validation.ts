@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isSupportedCurrencyMint } from "../lib/constants";
 
 // ── Campaign Schemas ──────────────────────────────────────────────────
 
@@ -9,7 +10,13 @@ export const createCampaignSchema = z.object({
   category: z.enum(["FARMER_INVESTMENT", "GROUP_PRE_ORDER", "COMMUNITY_PROJECT"]),
   groupId: z.string().optional(),
   fundingModel: z.enum(["ALL_OR_NOTHING", "KEEP_WHAT_YOU_RAISE"]),
-  currencyMint: z.string().min(1, "Waluta jest wymagana"),
+  currencyMint: z
+    .string()
+    .min(1, "Waluta jest wymagana")
+    .refine(
+      isSupportedCurrencyMint,
+      "Waluta nie jest obsługiwana w wybranej sieci Solana"
+    ),
   goalAmount: z.coerce.number().positive("Cel musi być większy od 0"),
   deadline: z.string().refine(
     (val) => new Date(val).getTime() > Date.now(),

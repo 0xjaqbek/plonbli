@@ -67,7 +67,7 @@ const CATEGORY_SLUGS = {
 } as const;
 
 // Will be resolved at runtime from existing categories
-let categoryIdBySlug: Record<string, string> = {};
+  const categoryIdBySlug: Record<string, string> = {};
 
 const FARMERS = [
   {

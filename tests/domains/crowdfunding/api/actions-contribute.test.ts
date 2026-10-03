@@ -13,6 +13,10 @@ vi.mock("@/domains/crowdfunding/lib/instruction-builder", () => ({
 }));
 vi.mock("@/domains/crowdfunding/lib/constants", () => ({
   SOLANA_RPC_URL: "https://api.devnet.solana.com",
+  getCurrencyLabel: vi.fn().mockReturnValue("SOL"),
+}));
+vi.mock("@solana/spl-token", () => ({
+  getMint: vi.fn().mockResolvedValue({ decimals: 9 }),
 }));
 
 // Mock @solana/web3.js Connection + Transaction
@@ -116,7 +120,7 @@ describe("OPTIONS /api/actions/contribute/[campaignId]", () => {
 
 describe("GET /api/actions/contribute/[campaignId]", () => {
   it("returns 404 when campaign not found", async () => {
-    vi.mocked(getCampaignById).mockResolvedValue(undefined);
+    vi.mocked(getCampaignById).mockResolvedValue(null as any);
 
     const req = new NextRequest(
       "http://localhost/api/actions/contribute/camp-missing"

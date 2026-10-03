@@ -5,17 +5,23 @@ import {
   Connection,
 } from "@solana/web3.js";
 import {
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   createAssociatedTokenAccountInstruction,
+  createSyncNativeInstruction,
 } from "@solana/spl-token";
-import { BorshCoder } from "@coral-xyz/anchor";
+import { BorshCoder, type Idl } from "@coral-xyz/anchor";
 import BN from "bn.js";
 import IDL from "./idl.json";
 import { CROWDFUNDING_PROGRAM_ID, SOLANA_RPC_URL } from "./constants";
-import { findVaultPda, findContributionPda } from "./pda";
+import {
+  findVaultPda,
+  findContributionPda,
+  findRewardTierPda,
+} from "./pda";
 
-const coder = new BorshCoder(IDL as any);
+const coder = new BorshCoder(IDL as unknown as Idl);
 
 type BuildContributeParams = {
   campaignPubkey: PublicKey;
@@ -64,6 +70,17 @@ export async function buildContributeInstructions(
     );
   }
 
+  if (currencyMint.equals(NATIVE_MINT)) {
+    instructions.push(
+      SystemProgram.transfer({
+        fromPubkey: backerPubkey,
+        toPubkey: backerAta,
+        lamports: BigInt(amount.toString()),
+      }),
+      createSyncNativeInstruction(backerAta)
+    );
+  }
+
   // Encode instruction data using Anchor's BorshCoder
   const data = coder.instruction.encode("contribute", {
     amount,
@@ -71,7 +88,9 @@ export async function buildContributeInstructions(
   });
 
   // Build accounts array matching IDL order exactly:
-  // contribution, campaign, vault, backerTokenAccount, backer, tokenProgram, systemProgram
+  // contribution, campaign, optional reward tier, vault, backer token
+  // account, backer, token program, system program. Anchor represents a
+  // missing optional account with the program id sentinel.
   const keys = [
     {
       pubkey: contributionPda,
@@ -82,6 +101,14 @@ export async function buildContributeInstructions(
       pubkey: campaignPubkey,
       isSigner: false,
       isWritable: true,
+    },
+    {
+      pubkey:
+        rewardTier === null
+          ? CROWDFUNDING_PROGRAM_ID
+          : findRewardTierPda(campaignPubkey, rewardTier),
+      isSigner: false,
+      isWritable: rewardTier !== null,
     },
     {
       pubkey: vaultPda,

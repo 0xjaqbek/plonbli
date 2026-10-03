@@ -11,12 +11,15 @@ export interface ReviewEntry {
     accuracy?: number;
   };
   comment?: string;
+  verificationSource: "UNVERIFIED" | "ORDER" | "CAMPAIGN";
+  verificationEvidenceId: string;
 }
 
 export interface ReviewRecord extends ReviewEntry {
   id: string;
   contentHash: string;
   previousHash: string | null;
+  hashVersion: number;
   createdAt: Date;
 }
 

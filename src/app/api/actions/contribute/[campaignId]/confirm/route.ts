@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { ACTIONS_CORS_HEADERS } from "@solana/actions";
-import { BorshCoder } from "@coral-xyz/anchor";
+import { getMint } from "@solana/spl-token";
 import { db } from "@/shared/db";
 import {
   crowdfundingCampaigns,
@@ -9,16 +9,12 @@ import {
   crowdfundingRewardTiers,
   userWallets,
 } from "@/shared/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { getCampaignById } from "@/domains/crowdfunding/queries/get-campaigns";
 import { findContributionPda } from "@/domains/crowdfunding/lib/pda";
-import {
-  CROWDFUNDING_PROGRAM_ID,
-  SOLANA_RPC_URL,
-} from "@/domains/crowdfunding/lib/constants";
-import IDL from "@/domains/crowdfunding/lib/idl.json";
-
-const coder = new BorshCoder(IDL as any);
+import { SOLANA_RPC_URL } from "@/domains/crowdfunding/lib/constants";
+import { formatTokenAmount } from "@/domains/crowdfunding/lib/token-amount";
+import { verifyContributionOnChain } from "@/domains/crowdfunding/lib/verify-contribution";
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: ACTIONS_CORS_HEADERS });
@@ -58,9 +54,8 @@ export async function POST(
     );
   }
 
-  // Fetch campaign
   const campaign = await getCampaignById(campaignId);
-  if (!campaign || !campaign.campaignPubkey) {
+  if (!campaign?.campaignPubkey) {
     return NextResponse.json(
       { message: "Kampania nie została znaleziona" },
       { status: 404, headers: ACTIONS_CORS_HEADERS }
@@ -68,68 +63,38 @@ export async function POST(
   }
 
   const campaignPubkey = new PublicKey(campaign.campaignPubkey);
-  const connection = new Connection(SOLANA_RPC_URL, "confirmed");
+  const contributionPda = findContributionPda(campaignPubkey, backerPubkey);
+
+  let verified;
+  try {
+    verified = await verifyContributionOnChain({
+      campaignPubkey: campaignPubkey.toBase58(),
+      contributionPubkey: contributionPda.toBase58(),
+      backerWalletAddress: backerPubkey.toBase58(),
+      transactionSignature: signature,
+    });
+  } catch (verificationError) {
+    console.error("[actions/confirm] verification failed:", verificationError);
+    return NextResponse.json(
+      { message: "Nie udało się zweryfikować transakcji i podpisu portfela" },
+      { status: 400, headers: ACTIONS_CORS_HEADERS }
+    );
+  }
 
   try {
-    // Verify transaction on-chain
-    const tx = await connection.getTransaction(signature, {
-      commitment: "confirmed",
-      maxSupportedTransactionVersion: 0,
-    });
+    const connection = new Connection(SOLANA_RPC_URL, "confirmed");
+    const mint = await getMint(connection, new PublicKey(campaign.currencyMint));
+    const amountHuman = formatTokenAmount(verified.amount, mint.decimals);
+    const rewardTierIndex = verified.rewardTierIndex;
 
-    if (!tx) {
-      return NextResponse.json(
-        { message: "Transakcja nie została znaleziona — spróbuj ponownie za chwilę" },
-        { status: 404, headers: ACTIONS_CORS_HEADERS }
-      );
-    }
-
-    if (tx.meta?.err) {
-      return NextResponse.json(
-        { message: "Transakcja zakończyła się błędem" },
-        { status: 400, headers: ACTIONS_CORS_HEADERS }
-      );
-    }
-
-    // Read on-chain Contribution PDA to get canonical data
-    const contributionPda = findContributionPda(campaignPubkey, backerPubkey);
-    const contributionAccount = await connection.getAccountInfo(contributionPda);
-
-    if (!contributionAccount) {
-      return NextResponse.json(
-        { message: "Nie znaleziono wpłaty on-chain" },
-        { status: 404, headers: ACTIONS_CORS_HEADERS }
-      );
-    }
-
-    // Decode contribution account data
-    const contributionData = coder.accounts.decode(
-      "contribution",
-      contributionAccount.data
-    );
-
-    const onChainAmount = (contributionData.amount as any).toString();
-    const rewardTierIndex =
-      contributionData.rewardTier !== null && contributionData.rewardTier !== undefined
-        ? Number(contributionData.rewardTier)
-        : null;
-
-    // Convert on-chain amount (lamports) to human-readable
-    const amountHuman = (
-      Number(onChainAmount) / 1_000_000_000
-    ).toString();
-
-    // Look up plonbli user via wallet
     const walletAddress = backerPubkey.toBase58();
     const [linkedWallet] = await db
       .select({ userId: userWallets.userId })
       .from(userWallets)
       .where(eq(userWallets.publicKey, walletAddress))
       .limit(1);
-
     const backerId = linkedWallet?.userId ?? null;
 
-    // Find reward tier DB id if tier was selected
     let rewardTierId: string | null = null;
     if (rewardTierIndex !== null) {
       const [tier] = await db
@@ -142,44 +107,65 @@ export async function POST(
           )
         )
         .limit(1);
-      rewardTierId = tier?.id ?? null;
+      if (!tier) {
+        return NextResponse.json(
+          { message: "Próg nagrody z transakcji nie istnieje w kampanii" },
+          { status: 409, headers: ACTIONS_CORS_HEADERS }
+        );
+      }
+      rewardTierId = tier.id;
     }
 
-    // Check if contribution already exists in DB
-    const contributionPubkeyStr = contributionPda.toBase58();
+    const contributionPubkey = contributionPda.toBase58();
     const [existing] = await db
-      .select({ id: crowdfundingContributions.id })
+      .select({
+        id: crowdfundingContributions.id,
+        amount: crowdfundingContributions.amount,
+      })
       .from(crowdfundingContributions)
-      .where(
-        eq(crowdfundingContributions.contributionPubkey, contributionPubkeyStr)
-      )
+      .where(eq(crowdfundingContributions.contributionPubkey, contributionPubkey))
       .limit(1);
 
     if (existing) {
-      // Update existing with latest on-chain data
+      const delta = parseFloat(amountHuman) - parseFloat(existing.amount);
+      if (delta < 0) {
+        return NextResponse.json(
+          { message: "Kwota wpłaty on-chain jest niższa niż zapisana" },
+          { status: 409, headers: ACTIONS_CORS_HEADERS }
+        );
+      }
+
       await db
         .update(crowdfundingContributions)
         .set({
           amount: amountHuman,
+          rewardTierId,
           transactionSignature: signature,
           walletAddress,
           backerId: backerId ?? undefined,
         })
         .where(eq(crowdfundingContributions.id, existing.id));
+
+      if (delta > 0) {
+        await db
+          .update(crowdfundingCampaigns)
+          .set({
+            raisedAmount: sql`(cast(${crowdfundingCampaigns.raisedAmount} as numeric) + ${delta})::text`,
+          })
+          .where(eq(crowdfundingCampaigns.id, campaignId));
+      }
     } else {
-      // Insert new contribution
       await db.insert(crowdfundingContributions).values({
         campaignId,
         backerId,
         rewardTierId,
         amount: amountHuman,
         walletAddress,
-        contributionPubkey: contributionPubkeyStr,
+        contributionPubkey,
         transactionSignature: signature,
         source: "ACTION",
       });
 
-      // Update campaign totals
       await db
         .update(crowdfundingCampaigns)
         .set({
@@ -188,7 +174,6 @@ export async function POST(
         })
         .where(eq(crowdfundingCampaigns.id, campaignId));
 
-      // Increment tier backer count if applicable
       if (rewardTierId) {
         await db
           .update(crowdfundingRewardTiers)
@@ -206,10 +191,10 @@ export async function POST(
       },
       { headers: ACTIONS_CORS_HEADERS }
     );
-  } catch (err: any) {
-    console.error("[actions/confirm] error:", err);
+  } catch (error: unknown) {
+    console.error("[actions/confirm] reconciliation error:", error);
     return NextResponse.json(
-      { message: "Nie udało się zweryfikować transakcji" },
+      { message: "Nie udało się zapisać zweryfikowanej transakcji" },
       { status: 500, headers: ACTIONS_CORS_HEADERS }
     );
   }

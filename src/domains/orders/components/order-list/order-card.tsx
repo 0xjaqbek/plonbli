@@ -7,6 +7,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent } from "@/shared/ui/card";
 import { User } from "lucide-react";
 import type { OrderStatus } from "../../types";
+import { ORDER_STATUS_TRANSLATION_KEYS } from "../../lib/translation-keys";
 
 interface OrderCardProps {
   orderId: string;
@@ -23,6 +24,7 @@ const STATUS_VARIANTS: Record<OrderStatus, "default" | "secondary" | "destructiv
   PENDING: "outline",
   MODIFIED: "secondary",
   CONFIRMED: "default",
+  PAID: "default",
   PREPARING: "default",
   SHIPPED: "default",
   READY_FOR_PICKUP: "default",
@@ -35,7 +37,7 @@ export function OrderCard({
 }: OrderCardProps) {
   const t = useTranslations("orders");
 
-  const statusLabel = t(`status${status.charAt(0) + status.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase())}` as any);
+  const statusLabel = t(ORDER_STATUS_TRANSLATION_KEYS[status]);
 
   return (
     <Link href={href}>

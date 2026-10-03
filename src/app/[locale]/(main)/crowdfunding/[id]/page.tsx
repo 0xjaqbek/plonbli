@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/domains/auth/lib/auth";
 import { getCampaignById } from "@/domains/crowdfunding/queries/get-campaigns";
 import { getMilestones } from "@/domains/crowdfunding/queries/get-milestones";
@@ -9,38 +10,12 @@ import { CampaignDetail } from "@/domains/crowdfunding/components/campaign-detai
 import { CampaignManagement } from "@/domains/crowdfunding/components/campaign-management";
 import { CampaignUpdates } from "@/domains/crowdfunding/components/campaign-updates";
 import { WalletButton } from "@/domains/crowdfunding/components/wallet-button";
+import { getCropLogsByCampaign } from "@/domains/farming/queries/get-crop-logs";
+import { CropLogList } from "@/domains/farming/components/crop-log-list";
+import { getCropLogComments } from "@/domains/farming/queries/get-crop-log-comments";
 import { db } from "@/shared/db";
-import { users, crowdfundingCampaigns } from "@/shared/db/schema";
-import { eq, sql } from "drizzle-orm";
-
-async function CampaignManagementWrapper({
-  campaign,
-  milestones,
-  rewardTiers,
-  creatorId,
-}: {
-  campaign: any;
-  milestones: any;
-  rewardTiers: any;
-  creatorId: string;
-}) {
-  const countResult = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(crowdfundingCampaigns)
-    .where(eq(crowdfundingCampaigns.creatorId, creatorId));
-  const campaignIndex = countResult[0]?.count ?? 0;
-
-  return (
-    <div className="mt-8">
-      <CampaignManagement
-        campaign={campaign}
-        milestones={milestones}
-        rewardTiers={rewardTiers}
-        campaignIndex={campaignIndex}
-      />
-    </div>
-  );
-}
+import { users } from "@/shared/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function CampaignPage({
   params,
@@ -49,6 +24,7 @@ export default async function CampaignPage({
 }) {
   const { id } = await params;
   const session = await auth();
+  const t = await getTranslations("crowdfunding");
 
   const campaign = await getCampaignById(id);
   if (!campaign) {
@@ -58,7 +34,7 @@ export default async function CampaignPage({
   const isCreator = session?.user?.id === campaign.creatorId;
   const isSetup = campaign.status === "SETUP";
 
-  const [milestones, rewardTiers, contributions, creatorResult, updates] =
+  const [milestones, rewardTiers, contributions, creatorResult, updates, productionEntries] =
     await Promise.all([
       getMilestones(id),
       getRewardTiers(id),
@@ -69,10 +45,19 @@ export default async function CampaignPage({
         .where(eq(users.id, campaign.creatorId))
         .limit(1),
       getUpdatesByCampaign(id),
+      getCropLogsByCampaign(id),
     ]);
 
   const creatorName = creatorResult[0]?.name ?? "";
   const creatorAvatar = creatorResult[0]?.avatar ?? null;
+  const productionComments = await getCropLogComments(
+    productionEntries.map((entry) => entry.id)
+  );
+
+  // A server-request snapshot prevents client re-renders from changing
+  // time-sensitive campaign controls.
+  // eslint-disable-next-line react-hooks/purity
+  const currentTime = Date.now();
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
@@ -85,6 +70,7 @@ export default async function CampaignPage({
         milestones={milestones}
         rewardTiers={rewardTiers}
         isCreator={isCreator}
+        currentTime={currentTime}
         creatorName={creatorName}
         creatorAvatar={creatorAvatar}
         contributions={contributions}
@@ -98,13 +84,25 @@ export default async function CampaignPage({
         />
       </div>
 
+      {productionEntries.length > 0 && (
+        <div className="mt-8 space-y-4">
+          <h2 className="text-xl font-semibold">{t("productionTimeline")}</h2>
+          <CropLogList
+            entries={productionEntries}
+            comments={productionComments}
+            canComment={!!session?.user?.id}
+          />
+        </div>
+      )}
+
       {isCreator && isSetup && (
-        <CampaignManagementWrapper
-          campaign={campaign}
-          milestones={milestones}
-          rewardTiers={rewardTiers}
-          creatorId={campaign.creatorId}
-        />
+        <div className="mt-8">
+          <CampaignManagement
+            campaign={campaign}
+            milestones={milestones}
+            rewardTiers={rewardTiers}
+          />
+        </div>
       )}
     </div>
   );

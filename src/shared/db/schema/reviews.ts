@@ -5,11 +5,19 @@ import {
   timestamp,
   integer,
   jsonb,
+  pgEnum,
+  smallint,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
 import { products } from "./products";
 import { proxyFarmers } from "./proxy-farmers";
+
+export const reviewVerificationSourceEnum = pgEnum(
+  "review_verification_source",
+  ["UNVERIFIED", "ORDER", "CAMPAIGN"]
+);
 
 export const reviews = pgTable("reviews", {
   id: text("id")
@@ -35,10 +43,19 @@ export const reviews = pgTable("reviews", {
   comment: text("comment"),
   contentHash: varchar("content_hash", { length: 64 }).notNull(),
   previousHash: varchar("previous_hash", { length: 64 }),
+  hashVersion: smallint("hash_version").notNull().default(2),
+  verificationSource: reviewVerificationSourceEnum("verification_source")
+    .notNull()
+    .default("UNVERIFIED"),
+  verificationEvidenceId: text("verification_evidence_id"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  uniqueIndex("idx_reviews_verification_evidence").on(
+    table.verificationEvidenceId
+  ),
+]);
 
 export type Review = typeof reviews.$inferSelect;
 export type NewReview = typeof reviews.$inferInsert;

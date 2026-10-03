@@ -28,9 +28,10 @@ type Props = {
   initialCampaigns: Campaign[];
   category?: string;
   pageSize: number;
+  referenceTime: number;
 };
 
-export function CampaignGrid({ initialCampaigns, category, pageSize }: Props) {
+export function CampaignGrid({ initialCampaigns, category, pageSize, referenceTime }: Props) {
   const t = useTranslations("crowdfunding");
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [hasMore, setHasMore] = useState(initialCampaigns.length >= pageSize);
@@ -66,6 +67,7 @@ export function CampaignGrid({ initialCampaigns, category, pageSize }: Props) {
             key={campaign.id}
             {...campaign}
             deadline={campaign.deadline}
+            referenceTime={referenceTime}
           />
         ))}
       </div>

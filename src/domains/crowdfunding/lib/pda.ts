@@ -1,5 +1,4 @@
 import { PublicKey } from "@solana/web3.js";
-// @ts-ignore — bn.js has no types in this project
 import BN from "bn.js";
 import { CROWDFUNDING_PROGRAM_ID } from "./constants";
 

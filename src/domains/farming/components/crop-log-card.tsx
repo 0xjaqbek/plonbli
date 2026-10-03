@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Sprout, ShieldCheck } from "lucide-react";
+import { ExternalLink, ShieldAlert, ShieldCheck, Sprout } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import {
   Card,
@@ -12,9 +12,14 @@ import {
 import { ImageLightbox } from "@/shared/ui/image-lightbox";
 import { ShareButton } from "@/domains/social/components/share-button";
 import type { FarmerCropLog } from "../queries/get-crop-logs";
+import { SOLANA_NETWORK } from "@/domains/crowdfunding/lib/constants";
+import type { CropLogCommentView } from "../queries/get-crop-log-comments";
+import { CropLogComments } from "./crop-log-comments";
 
 interface CropLogCardProps {
   entry: FarmerCropLog;
+  comments?: CropLogCommentView[];
+  canComment?: boolean;
 }
 
 const typeKeys: Record<string, string> = {
@@ -25,7 +30,11 @@ const typeKeys: Record<string, string> = {
   OTHER: "typeOther",
 };
 
-export function CropLogCard({ entry }: CropLogCardProps) {
+export function CropLogCard({
+  entry,
+  comments = [],
+  canComment = false,
+}: CropLogCardProps) {
   const t = useTranslations("farming");
 
   return (
@@ -42,10 +51,21 @@ export function CropLogCard({ entry }: CropLogCardProps) {
                 {entry.product.name}
               </Badge>
             )}
-            <Badge variant="secondary" className="text-[10px] gap-1">
-              <ShieldCheck className="h-3 w-3" />
-              {entry.contentHash.slice(0, 8)}...
-            </Badge>
+            {entry.hashVersion === 1 ? (
+              <Badge variant="outline" className="text-[10px] gap-1">
+                {t("chainLegacy")}
+              </Badge>
+            ) : entry.isHashValid ? (
+              <Badge variant="secondary" className="text-[10px] gap-1">
+                <ShieldCheck className="h-3 w-3" />
+                {t("chainValid")}
+              </Badge>
+            ) : (
+              <Badge variant="destructive" className="text-[10px] gap-1">
+                <ShieldAlert className="h-3 w-3" />
+                {t("chainInvalid")}
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>
@@ -107,6 +127,32 @@ export function CropLogCard({ entry }: CropLogCardProps) {
           </p>
           <ShareButton entityType="CROP_LOG" entityId={entry.id} size="sm" />
         </div>
+
+        <div className="flex flex-wrap items-center gap-2 border-t pt-2 text-xs">
+          <code className="text-muted-foreground">
+            {entry.contentHash.slice(0, 12)}...
+          </code>
+          {entry.anchorTransactionSignature ? (
+            <a
+              href={`https://explorer.solana.com/tx/${entry.anchorTransactionSignature}?cluster=${SOLANA_NETWORK}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-primary hover:underline"
+            >
+              {t("solanaAnchored")}
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          ) : (
+            <span className="text-amber-600 dark:text-amber-400">
+              {t("anchorPending")}
+            </span>
+          )}
+        </div>
+        <CropLogComments
+          cropLogId={entry.id}
+          comments={comments}
+          canComment={canComment}
+        />
       </CardContent>
     </Card>
   );

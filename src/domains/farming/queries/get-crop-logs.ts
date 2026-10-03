@@ -1,18 +1,12 @@
-import { eq, desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { cropLogs, users, products } from "@/shared/db/schema";
+import { cropLogs, products, users } from "@/shared/db/schema";
+import { verifyCropLogChain } from "../repository/postgres";
 
 export async function getCropLogsByFarmer(farmerId: string) {
-  return db
+  const rows = await db
     .select({
-      id: cropLogs.id,
-      type: cropLogs.type,
-      description: cropLogs.description,
-      images: cropLogs.images,
-      data: cropLogs.data,
-      contentHash: cropLogs.contentHash,
-      previousHash: cropLogs.previousHash,
-      createdAt: cropLogs.createdAt,
+      entry: cropLogs,
       product: {
         id: products.id,
         name: products.name,
@@ -22,19 +16,22 @@ export async function getCropLogsByFarmer(farmerId: string) {
     .leftJoin(products, eq(cropLogs.productId, products.id))
     .where(eq(cropLogs.farmerId, farmerId))
     .orderBy(desc(cropLogs.createdAt));
+
+  const verification = await verifyCropLogChain(
+    rows.map((row) => row.entry).reverse()
+  );
+
+  return rows.map(({ entry, product }) => ({
+    ...entry,
+    product,
+    isHashValid: verification.get(entry.id) ?? false,
+  }));
 }
 
 export async function getCropLogsByProduct(productId: string) {
-  return db
+  const rows = await db
     .select({
-      id: cropLogs.id,
-      type: cropLogs.type,
-      description: cropLogs.description,
-      images: cropLogs.images,
-      data: cropLogs.data,
-      contentHash: cropLogs.contentHash,
-      previousHash: cropLogs.previousHash,
-      createdAt: cropLogs.createdAt,
+      entry: cropLogs,
       farmer: {
         id: users.id,
         name: users.name,
@@ -45,6 +42,40 @@ export async function getCropLogsByProduct(productId: string) {
     .innerJoin(users, eq(cropLogs.farmerId, users.id))
     .where(eq(cropLogs.productId, productId))
     .orderBy(desc(cropLogs.createdAt));
+
+  const verification = await verifyCropLogChain(
+    rows.map((row) => row.entry).reverse()
+  );
+
+  return rows.map(({ entry, farmer }) => ({
+    ...entry,
+    farmer,
+    isHashValid: verification.get(entry.id) ?? false,
+  }));
+}
+
+export async function getCropLogsByCampaign(campaignId: string) {
+  const rows = await db
+    .select({
+      entry: cropLogs,
+      product: {
+        id: products.id,
+        name: products.name,
+      },
+    })
+    .from(cropLogs)
+    .leftJoin(products, eq(cropLogs.productId, products.id))
+    .where(eq(cropLogs.campaignId, campaignId))
+    .orderBy(desc(cropLogs.createdAt));
+
+  const verification = await verifyCropLogChain(
+    rows.map((row) => row.entry).reverse()
+  );
+  return rows.map(({ entry, product }) => ({
+    ...entry,
+    product,
+    isHashValid: verification.get(entry.id) ?? false,
+  }));
 }
 
 export type FarmerCropLog = Awaited<

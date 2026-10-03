@@ -1,6 +1,32 @@
 import { db } from "@/shared/db";
-import { crowdfundingCampaigns, users } from "@/shared/db/schema";
-import { desc, eq, and, or, sql } from "drizzle-orm";
+import {
+  crowdfundingCampaigns,
+  users,
+  type CrowdfundingCampaign,
+} from "@/shared/db/schema";
+import { desc, eq, and, or } from "drizzle-orm";
+
+const CAMPAIGN_STATUSES: readonly CrowdfundingCampaign["status"][] = [
+  "SETUP",
+  "ACTIVE",
+  "SUCCESSFUL",
+  "FAILED",
+  "FINALIZED",
+];
+
+const CAMPAIGN_CATEGORIES: readonly CrowdfundingCampaign["category"][] = [
+  "FARMER_INVESTMENT",
+  "GROUP_PRE_ORDER",
+  "COMMUNITY_PROJECT",
+];
+
+function isCampaignStatus(value: string): value is CrowdfundingCampaign["status"] {
+  return CAMPAIGN_STATUSES.some((status) => status === value);
+}
+
+function isCampaignCategory(value: string): value is CrowdfundingCampaign["category"] {
+  return CAMPAIGN_CATEGORIES.some((category) => category === value);
+}
 
 export async function getCampaigns(filters?: {
   status?: string;
@@ -11,15 +37,11 @@ export async function getCampaigns(filters?: {
 }) {
   const conditions = [];
 
-  if (filters?.status) {
-    conditions.push(
-      eq(crowdfundingCampaigns.status, filters.status as any)
-    );
+  if (filters?.status && isCampaignStatus(filters.status)) {
+    conditions.push(eq(crowdfundingCampaigns.status, filters.status));
   }
-  if (filters?.category) {
-    conditions.push(
-      eq(crowdfundingCampaigns.category, filters.category as any)
-    );
+  if (filters?.category && isCampaignCategory(filters.category)) {
+    conditions.push(eq(crowdfundingCampaigns.category, filters.category));
   }
   if (filters?.creatorId) {
     conditions.push(eq(crowdfundingCampaigns.creatorId, filters.creatorId));

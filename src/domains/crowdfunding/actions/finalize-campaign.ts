@@ -1,20 +1,20 @@
 "use server";
 
-import { db } from "@/shared/db";
-import {
-  crowdfundingCampaigns,
-} from "@/shared/db/schema";
-import { eq, and, lte } from "drizzle-orm";
+import { and, eq, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendNotification } from "@/domains/notifications/lib/send-notification";
 import { buildCampaignActivatedNotification } from "@/domains/notifications/lib/notification-types";
+import { db } from "@/shared/db";
+import { crowdfundingCampaigns } from "@/shared/db/schema";
+import {
+  readCampaignOnChain,
+  verifyProgramTransaction,
+} from "../lib/read-campaign-onchain";
 
-/**
- * Finalizes campaigns that have passed their deadline.
- * Can be called by anyone (cron job or manual trigger).
- * Determines SUCCESSFUL vs FAILED based on funding model and goal.
- */
-export async function finalizeCampaignAction(campaignId: string) {
+export async function finalizeCampaignAction(
+  campaignId: string,
+  receipt?: { signature: string }
+) {
   const [campaign] = await db
     .select()
     .from(crowdfundingCampaigns)
@@ -26,50 +26,58 @@ export async function finalizeCampaignAction(campaignId: string) {
     )
     .limit(1);
 
-  if (!campaign) {
-    return { error: "Zbiórka nie jest aktywna" };
+  if (!campaign?.campaignPubkey) {
+    return { error: "Campaign is not active on Solana" };
   }
-
   if (new Date(campaign.deadline).getTime() > Date.now()) {
-    return { error: "Termin zbiórki jeszcze nie upłynął" };
+    return { error: "Campaign deadline has not passed" };
   }
 
-  const raised = parseFloat(campaign.raisedAmount);
-  const goal = parseFloat(campaign.goalAmount);
-  const goalMet = raised >= goal;
+  if (receipt) {
+    try {
+      await verifyProgramTransaction(receipt.signature, [
+        campaign.campaignPubkey,
+      ]);
+    } catch {
+      return { error: "Finalization transaction could not be verified" };
+    }
+  }
 
-  let newStatus: "SUCCESSFUL" | "FAILED";
-  if (goalMet) {
-    newStatus = "SUCCESSFUL";
-  } else if (campaign.fundingModel === "KEEP_WHAT_YOU_RAISE") {
-    newStatus = "SUCCESSFUL";
-  } else {
-    // ALL_OR_NOTHING and goal not met
-    newStatus = "FAILED";
+  let onChain;
+  try {
+    onChain = await readCampaignOnChain(campaign.campaignPubkey);
+  } catch {
+    return { error: "Campaign account could not be read from Solana" };
+  }
+
+  if (onChain.status === "ACTIVE") {
+    return { error: "Campaign must be finalized with a wallet transaction" };
+  }
+  if (
+    onChain.status !== "SUCCESSFUL" &&
+    onChain.status !== "FAILED" &&
+    onChain.status !== "FINALIZED"
+  ) {
+    return { error: "Unexpected on-chain campaign status" };
   }
 
   await db
     .update(crowdfundingCampaigns)
-    .set({ status: newStatus })
+    .set({ status: onChain.status })
     .where(eq(crowdfundingCampaigns.id, campaignId));
 
-  // Notify creator of result
   sendNotification(
     campaign.creatorId,
     buildCampaignActivatedNotification(
-      `${campaign.title} — ${newStatus === "SUCCESSFUL" ? "Sukces!" : "Cel nie został osiągnięty"}`,
+      `${campaign.title} â€” ${onChain.status === "FAILED" ? "Cel nie zostaĹ‚ osiÄ…gniÄ™ty" : "Sukces!"}`,
       campaignId
     )
-  ).catch((err) => console.error("[finalize] notification failed:", err));
+  ).catch((error) => console.error("[finalize] notification failed:", error));
 
   revalidatePath(`/crowdfunding/${campaignId}`);
-  return { success: true, status: newStatus };
+  return { success: true, status: onChain.status };
 }
 
-/**
- * Batch finalization — finds all expired ACTIVE campaigns and finalizes them.
- * Intended for cron job usage.
- */
 export async function finalizeExpiredCampaigns() {
   const expired = await db
     .select({ id: crowdfundingCampaigns.id })
@@ -81,13 +89,12 @@ export async function finalizeExpiredCampaigns() {
       )
     );
 
-  const results = await Promise.allSettled(
-    expired.map((c) => finalizeCampaignAction(c.id))
+  const results = await Promise.all(
+    expired.map((campaign) => finalizeCampaignAction(campaign.id))
   );
-
   return {
     total: expired.length,
-    succeeded: results.filter((r) => r.status === "fulfilled").length,
-    failed: results.filter((r) => r.status === "rejected").length,
+    succeeded: results.filter((result) => result.success).length,
+    failed: results.filter((result) => result.error).length,
   };
 }

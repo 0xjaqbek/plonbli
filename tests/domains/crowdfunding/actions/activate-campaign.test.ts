@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { Keypair } from "@solana/web3.js";
 
 // Top-level mocks
 vi.mock("@/domains/auth/lib/auth", () => ({
@@ -26,6 +27,28 @@ vi.mock("@/domains/notifications/lib/notification-types", () => ({
   buildCampaignActivatedNotification: vi.fn().mockReturnValue({}),
 }));
 
+vi.mock("@/domains/crowdfunding/lib/read-campaign-onchain", () => ({
+  verifyProgramTransaction: vi.fn().mockResolvedValue(undefined),
+  readCampaignOnChain: vi.fn(),
+  readMilestoneOnChain: vi.fn().mockResolvedValue({
+    status: "PENDING",
+    milestoneIndex: 0,
+  }),
+  readRewardTierOnChain: vi.fn(),
+}));
+
+vi.mock("@/domains/crowdfunding/lib/pda", () => ({
+  findCampaignPda: vi.fn(() => ({
+    toBase58: () => "11111111111111111111111111111113",
+  })),
+  findMilestonePda: vi.fn(() => ({
+    toBase58: () => "11111111111111111111111111111114",
+  })),
+  findRewardTierPda: vi.fn(() => ({
+    toBase58: () => "11111111111111111111111111111115",
+  })),
+}));
+
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function mockDbChain(returnValue: any = []) {
@@ -45,8 +68,8 @@ function mockDbChain(returnValue: any = []) {
   return chain;
 }
 
-const futureDate = new Date(Date.now() + 86_400_000).toISOString();
-const pastDate = new Date(Date.now() - 86_400_000).toISOString();
+const futureDate = new Date(Date.now() + 86_400_000);
+const pastDate = new Date(Date.now() - 86_400_000);
 
 const setupCampaign = {
   id: "campaign-1",
@@ -55,13 +78,30 @@ const setupCampaign = {
   deadline: futureDate,
   goalAmount: "1000",
   title: "Test Campaign",
+  currencyMint: "So11111111111111111111111111111111111111112",
+  contentHash: "a".repeat(64),
 };
 
 // ── Tests ────────────────────────────────────────────────────────────
 
 describe("activateCampaignAction", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    const { readCampaignOnChain, readMilestoneOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain).mockResolvedValue({
+      status: "ACTIVE",
+      creator: "11111111111111111111111111111112",
+      currencyMint: setupCampaign.currencyMint,
+      goalAmount: "1000000000000",
+      deadline: Math.floor(futureDate.getTime() / 1000).toString(),
+      contentHash: setupCampaign.contentHash,
+    });
+    vi.mocked(readMilestoneOnChain).mockResolvedValue({
+      status: "PENDING",
+      milestoneIndex: 0,
+    });
   });
 
   it("returns error when not authenticated", async () => {
@@ -171,20 +211,34 @@ describe("activateCampaignAction", () => {
   });
 
   it("successfully activates campaign and sets status to ACTIVE", async () => {
+    const creator = Keypair.generate().publicKey;
     const { auth } = await import("@/domains/auth/lib/auth");
     vi.mocked(auth).mockResolvedValueOnce({
       user: { id: "user-1" },
     } as any);
 
     const { db } = await import("@/shared/db");
+    const { readCampaignOnChain } = await import(
+      "@/domains/crowdfunding/lib/read-campaign-onchain"
+    );
+    vi.mocked(readCampaignOnChain).mockResolvedValue({
+      status: "ACTIVE",
+      creator: creator.toBase58(),
+      currencyMint: setupCampaign.currencyMint,
+      goalAmount: "1000000000000",
+      deadline: Math.floor(futureDate.getTime() / 1000).toString(),
+      contentHash: setupCampaign.contentHash,
+    });
     const campaignChain = mockDbChain([{ ...setupCampaign }]);
     const countChain = mockDbChain([{ count: 1 }]);
     const totalChain = mockDbChain([{ total: "500" }]);
+    const rewardCountChain = mockDbChain([{ count: 0 }]);
 
     vi.mocked(db.select)
       .mockReturnValueOnce(campaignChain as any)
       .mockReturnValueOnce(countChain as any)
-      .mockReturnValueOnce(totalChain as any);
+      .mockReturnValueOnce(totalChain as any)
+      .mockReturnValueOnce(rewardCountChain as any);
 
     const updateChain = mockDbChain([]);
     vi.mocked(db.update).mockReturnValue(updateChain as any);
@@ -194,8 +248,20 @@ describe("activateCampaignAction", () => {
     );
     const result = await activateCampaignAction(
       "campaign-1",
-      "pubkey-abc",
-      "txsig-123"
+      {
+        campaignPubkey: "11111111111111111111111111111113",
+        creatorWalletAddress: creator.toBase58(),
+        createSignature: "create-txsig",
+        activationSignature: "activate-txsig",
+        milestoneReceipts: [
+          {
+            index: 0,
+            pubkey: "11111111111111111111111111111114",
+            signature: "milestone-txsig",
+          },
+        ],
+        rewardTierReceipts: [],
+      }
     );
     expect(result).toEqual({ success: true });
     expect(db.update).toHaveBeenCalled();

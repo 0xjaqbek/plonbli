@@ -4,6 +4,7 @@
 import { useTranslations } from "next-intl";
 import { Check, Clock } from "lucide-react";
 import type { OrderStatusHistory } from "@/shared/db/schema";
+import { ORDER_STATUS_TRANSLATION_KEYS } from "../../lib/translation-keys";
 
 interface OrderTimelineProps {
   history: OrderStatusHistory[];
@@ -16,8 +17,6 @@ export function OrderTimeline({ history }: OrderTimelineProps) {
     <div className="space-y-4">
       {history.map((entry, i) => {
         const isLast = i === history.length - 1;
-        const statusKey = `status${entry.status.charAt(0) + entry.status.slice(1).toLowerCase().replace(/_([a-z])/g, (_, c) => c.toUpperCase())}`;
-
         return (
           <div key={entry.id} className="flex gap-3">
             <div className="flex flex-col items-center">
@@ -27,7 +26,9 @@ export function OrderTimeline({ history }: OrderTimelineProps) {
               {i < history.length - 1 && <div className="w-px h-full bg-border" />}
             </div>
             <div className="pb-4">
-              <p className="font-medium text-sm">{t(statusKey as any)}</p>
+              <p className="font-medium text-sm">
+                {t(ORDER_STATUS_TRANSLATION_KEYS[entry.status])}
+              </p>
               {entry.note && <p className="text-sm text-muted-foreground">{entry.note}</p>}
               <p className="text-xs text-muted-foreground">
                 {new Date(entry.createdAt).toLocaleString("pl")}

@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { users } from "./users";
@@ -18,6 +19,8 @@ export const userWallets = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     publicKey: text("public_key").notNull(),
+    // Legacy columns retained for migration compatibility. New code is
+    // strictly non-custodial and never writes private key material here.
     encryptedSecretKey: text("encrypted_secret_key"),
     isCustodial: boolean("is_custodial").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -26,7 +29,7 @@ export const userWallets = pgTable(
   },
   (table) => [
     index("idx_user_wallets_user").on(table.userId),
-    index("idx_user_wallets_pubkey").on(table.publicKey),
+    uniqueIndex("idx_user_wallets_pubkey").on(table.publicKey),
   ]
 );
 

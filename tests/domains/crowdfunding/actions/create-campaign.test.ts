@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { WRAPPED_SOL_MINT_ADDRESS } from "@/domains/crowdfunding/lib/constants";
 
 // Top-level mocks
 vi.mock("@/domains/auth/lib/auth", () => ({
@@ -58,7 +59,7 @@ const validFields = () => ({
   description: "To jest opis testowej zbiórki z minimum znaków",
   category: "FARMER_INVESTMENT",
   fundingModel: "ALL_OR_NOTHING",
-  currencyMint: "SOL",
+  currencyMint: WRAPPED_SOL_MINT_ADDRESS,
   goalAmount: "1000",
   deadline: futureDate,
 });

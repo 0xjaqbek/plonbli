@@ -344,7 +344,24 @@
     "hashVerified": "Hash zweryfikowany",
     "hashChain": "Łańcuch hash",
     "entryCreated": "Wpis dodany",
-    "selectProduct": "Wybierz produkt (opcjonalnie)"
+    "selectProduct": "Wybierz produkt (opcjonalnie)",
+    "walletRequired": "Po\u0142\u0105cz portfel Solana, aby podpisa\u0107 i zakotwiczy\u0107 wpis.",
+    "anchorConfirm": "Ten wpis zostanie zapisany jako niezmienny rekord i zakotwiczony podpisem portfela na Solanie. Kontynuowa\u0107?",
+    "anchorFailed": "Wpis zapisano, ale kotwiczenie nie powiod\u0142o si\u0119: {error}",
+    "campaignLabel": "Powiązana kampania",
+    "campaignPlaceholder": "Wybierz kampanię (opcjonalnie)",
+    "chainValid": "\u0141a\u0144cuch poprawny",
+    "chainInvalid": "Wykryto zmian\u0119 danych",
+    "chainLegacy": "Starszy format hasha",
+    "solanaAnchored": "Zakotwiczone na Solanie",
+    "anchorPending": "Oczekuje na kotwiczenie",
+    "imageHashMissing": "Nie uda\u0142o si\u0119 obliczy\u0107 hasha jednego ze zdj\u0119\u0107.",
+    "entryComments": "Komentarze do wpisu",
+    "noEntryComments": "Brak komentarzy do tego etapu produkcji.",
+    "entryCommentPlaceholder": "Zapytaj o ten etap lub dodaj komentarz...",
+    "entryCommentSend": "Dodaj komentarz",
+    "entryCommentSending": "Dodawanie...",
+    "entryCommentError": "Nie udało się dodać komentarza."
   },
   "reputation": {
     "reviews": "Opinie",
@@ -361,7 +378,10 @@
     "reviewCount": "opinii",
     "reviewCreated": "Opinia dodana",
     "cannotReviewSelf": "Nie możesz ocenić siebie",
-    "stars": "gwiazdek"
+    "stars": "gwiazdek",
+    "verifiedPurchase": "Zweryfikowany zakup",
+    "verifiedBacker": "Zweryfikowany wspierający",
+    "legacyUnverified": "Starsza, niezweryfikowana opinia"
   },
   "logistics": {
     "pickupPoints": "Punkty odbioru",
@@ -827,6 +847,20 @@
     "backers": "Wspierających",
     "daysRemaining": "Dni do końca",
     "contribute": "Wesprzyj zbiórkę",
+    "productionTimeline": "Zweryfikowana oś produkcji",
+    "finalize": {
+      "action": "Rozlicz kampanię na Solanie",
+      "confirm": "Transakcja sprawdzi wynik kampanii po terminie i odblokuje wypłaty albo zwroty. Kontynuować?",
+      "pending": "Rozliczanie kampanii...",
+      "success": "Kampania została rozliczona.",
+      "failed": "Nie udało się rozliczyć kampanii."
+    },
+    "milestones": {
+      "approve": "Zatwierdź jako administrator",
+      "release": "Wypłać transzę z escrow",
+      "releaseConfirm": "Ta transakcja wypłaci zatwierdzoną transzę z escrow. Kontynuować?",
+      "processing": "Potwierdzanie na Solanie..."
+    },
     "onChainVerified": "Zweryfikowana na blockchainie Solana",
     "about": "O zbiórce",
     "backToList": "Wróć do zbiórek",
@@ -968,7 +1002,8 @@
       "refundConfirmTitle": "Potwierdzenie zwrotu",
       "refundSuccess": "Zwrot został zrealizowany",
       "refundSuccessAmount": "Zwrot w kwocie {amount} został zrealizowany",
-      "refundError": "Nie udało się zrealizować zwrotu"
+      "refundError": "Nie udało się zrealizować zwrotu",
+      "legacyRefundUnavailable": "Starsza wpłata wymaga synchronizacji z Solaną"
     },
     "updates": {
       "title": "Aktualności",

@@ -52,6 +52,9 @@ export const crowdfundingCampaigns = pgTable(
 
     // On-chain bridge
     campaignPubkey: text("campaign_pubkey").unique(),
+    creatorWalletAddress: text("creator_wallet_address"),
+    createTransactionSignature: text("create_transaction_signature"),
+    activationTransactionSignature: text("activation_transaction_signature"),
     currencyMint: text("currency_mint").notNull(),
     fundingModel: campaignFundingModelEnum("funding_model").notNull(),
     goalAmount: text("goal_amount").notNull(),

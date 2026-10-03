@@ -16,25 +16,18 @@ import { deleteMilestoneAction } from "../actions/delete-milestone";
 import { deleteRewardTierAction } from "../actions/delete-reward-tier";
 import { activateCampaignAction } from "../actions/activate-campaign";
 import { useCreateCampaignOnChain } from "../hooks/use-create-campaign-onchain";
+import { getCurrencyLabel } from "../lib/constants";
 
 type Props = {
   campaign: CrowdfundingCampaign;
   milestones: CrowdfundingMilestone[];
   rewardTiers: CrowdfundingRewardTier[];
-  campaignIndex: number;
 };
-
-function getCurrencyLabel(mint: string): string {
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
-  return mint.slice(0, 4);
-}
 
 export function CampaignManagement({
   campaign,
   milestones,
   rewardTiers,
-  campaignIndex,
 }: Props) {
   const t = useTranslations("crowdfunding.manage");
   const router = useRouter();
@@ -78,13 +71,27 @@ export function CampaignManagement({
 
     // Step 1: Create campaign on-chain
     const onChainResult = await createCampaign({
-      campaignIndex,
-      goalAmount: parseFloat(campaign.goalAmount),
+      campaignDatabaseId: campaign.id,
+      goalAmount: campaign.goalAmount,
       deadline: new Date(campaign.deadline),
       fundingModel: campaign.fundingModel as "ALL_OR_NOTHING" | "KEEP_WHAT_YOU_RAISE",
       currencyMint: campaign.currencyMint,
       title: campaign.title,
       description: campaign.description,
+      images: campaign.images,
+      category: campaign.category,
+      milestones: milestones.map((milestone) => ({
+        milestoneIndex: milestone.milestoneIndex,
+        description: milestone.description,
+        targetAmount: milestone.targetAmount,
+      })),
+      rewardTiers: rewardTiers.map((tier) => ({
+        tierIndex: tier.tierIndex,
+        description: tier.description,
+        price: tier.price,
+        maxBackers: tier.maxBackers,
+        isProductLinked: tier.isProductLinked,
+      })),
     });
 
     if (!onChainResult) {
@@ -94,11 +101,7 @@ export function CampaignManagement({
 
     // Step 2: Activate in DB and save pubkey
     startTransition(async () => {
-      const result = await activateCampaignAction(
-        campaign.id,
-        onChainResult.campaignPubkey,
-        onChainResult.signature
-      );
+      const result = await activateCampaignAction(campaign.id, onChainResult);
       if (result.error) {
         // On-chain succeeded but DB failed — inform user with pubkey for manual recovery
         setActivateError(

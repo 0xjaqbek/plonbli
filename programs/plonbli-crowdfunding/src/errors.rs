@@ -79,4 +79,10 @@ pub enum CrowdfundError {
 
     #[msg("Campaign must be Successful to release milestone funds")]
     CampaignNotSuccessful,
+
+    #[msg("A backer cannot change reward tiers after the first contribution")]
+    RewardTierMismatch,
+
+    #[msg("The immediately preceding milestone must be released first")]
+    PreviousMilestoneNotReleased,
 }

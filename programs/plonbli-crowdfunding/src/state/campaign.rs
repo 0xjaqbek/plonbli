@@ -39,19 +39,19 @@ impl CampaignStatus {
 
 #[account]
 pub struct Campaign {
-    pub creator: Pubkey,            // 32
-    pub campaign_id: u64,           // 8
-    pub goal_amount: u64,           // 8
-    pub raised_amount: u64,         // 8
-    pub currency_mint: Pubkey,      // 32
+    pub creator: Pubkey,             // 32
+    pub campaign_id: u64,            // 8
+    pub goal_amount: u64,            // 8
+    pub raised_amount: u64,          // 8
+    pub currency_mint: Pubkey,       // 32
     pub funding_model: FundingModel, // 1
-    pub deadline: i64,              // 8
-    pub status: CampaignStatus,     // 1
-    pub milestone_count: u8,        // 1
-    pub reward_tier_count: u8,      // 1
-    pub content_hash: [u8; 32],     // 32
-    pub backer_count: u32,          // 4
-    pub bump: u8,                   // 1
+    pub deadline: i64,               // 8
+    pub status: CampaignStatus,      // 1
+    pub milestone_count: u8,         // 1
+    pub reward_tier_count: u8,       // 1
+    pub content_hash: [u8; 32],      // 32
+    pub backer_count: u32,           // 4
+    pub bump: u8,                    // 1
 }
 
 impl Campaign {

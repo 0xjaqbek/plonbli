@@ -26,6 +26,8 @@ export function InstallPromptCard() {
 
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (isIOS) {
+      // This effect synchronizes client-only browser capability state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDeviceType("ios");
       setShow(true);
       return;

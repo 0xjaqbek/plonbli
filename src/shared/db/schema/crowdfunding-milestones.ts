@@ -31,6 +31,12 @@ export const crowdfundingMilestones = pgTable(
     description: text("description").notNull(),
     descriptionHash: text("description_hash"),
 
+    // On-chain bridge
+    milestonePubkey: text("milestone_pubkey").unique(),
+    createTransactionSignature: text("create_transaction_signature"),
+    approvalTransactionSignature: text("approval_transaction_signature"),
+    releaseTransactionSignature: text("release_transaction_signature"),
+
     // Financial
     targetAmount: text("target_amount").notNull(),
     status: milestoneStatusEnum("status").notNull().default("PENDING"),

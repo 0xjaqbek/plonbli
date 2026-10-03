@@ -49,12 +49,12 @@ export async function updateOrderStatus(input: UpdateOrderStatusInput): Promise<
   await db.transaction(async (tx) => {
     await tx
       .update(orders)
-      .set({ status: status as any, customerHasSeen: false })
+      .set({ status, customerHasSeen: false })
       .where(eq(orders.id, orderId));
 
     await tx.insert(orderStatusHistory).values({
       orderId,
-      status: status as any,
+      status,
       note: note ?? null,
       createdBy: session.user!.id!,
     });

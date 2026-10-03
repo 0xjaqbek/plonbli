@@ -1,8 +1,12 @@
 import { eq, desc, and } from "drizzle-orm";
 import { db } from "@/shared/db";
-import { orders, users } from "@/shared/db/schema";
+import { orders, users, type Order } from "@/shared/db/schema";
 
 const ITEMS_PER_PAGE = 10;
+
+function isOrderStatus(value: string): value is Order["status"] {
+  return orders.status.enumValues.some((status) => status === value);
+}
 
 export async function getCustomerOrders(
   userId: string,
@@ -10,8 +14,8 @@ export async function getCustomerOrders(
 ) {
   const conditions = [eq(orders.customerId, userId)];
 
-  if (filters?.status) {
-    conditions.push(eq(orders.status, filters.status as any));
+  if (filters?.status && isOrderStatus(filters.status)) {
+    conditions.push(eq(orders.status, filters.status));
   }
 
   const page = filters?.page ?? 1;

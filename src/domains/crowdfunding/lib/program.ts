@@ -1,5 +1,5 @@
-import { Program, AnchorProvider } from "@coral-xyz/anchor";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Program, AnchorProvider, type Idl } from "@coral-xyz/anchor";
+import { Connection } from "@solana/web3.js";
 import type { AnchorWallet } from "@solana/wallet-adapter-react";
 import IDL from "./idl.json";
 import { CROWDFUNDING_PROGRAM_ID, SOLANA_RPC_URL } from "./constants";
@@ -11,7 +11,7 @@ export function getProgram(wallet: AnchorWallet) {
   const provider = new AnchorProvider(connection, wallet, {
     commitment: "confirmed",
   });
-  return new Program(IDL as any, CROWDFUNDING_PROGRAM_ID, provider);
+  return new Program(IDL as unknown as Idl, CROWDFUNDING_PROGRAM_ID, provider);
 }
 
 export function getReadonlyProgram() {

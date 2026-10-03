@@ -85,8 +85,19 @@ export function ReviewCard({ review }: ReviewCardProps) {
               year: "numeric",
             })}
           </span>
-          <Badge variant="secondary" className="text-[10px] gap-1">
+          <Badge
+            variant={
+              review.verificationSource === "UNVERIFIED" ? "outline" : "secondary"
+            }
+            className="text-[10px] gap-1"
+          >
             <ShieldCheck className="h-3 w-3" />
+            {review.verificationSource === "ORDER"
+              ? t("verifiedPurchase")
+              : review.verificationSource === "CAMPAIGN"
+                ? t("verifiedBacker")
+                : t("legacyUnverified")}
+            {" · "}
             {review.contentHash.slice(0, 8)}...
           </Badge>
         </div>

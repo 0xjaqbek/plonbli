@@ -94,7 +94,12 @@ export {
   type NewCropLog,
 } from "./crop-logs";
 export {
+  cropLogComments,
+  type CropLogComment,
+} from "./crop-log-comments";
+export {
   reviews,
+  reviewVerificationSourceEnum,
   type Review,
   type NewReview,
 } from "./reviews";

@@ -9,14 +9,14 @@ pub enum MilestoneStatus {
 
 #[account]
 pub struct Milestone {
-    pub campaign: Pubkey,              // 32
-    pub milestone_index: u8,           // 1
-    pub target_amount: u64,            // 8
-    pub description_hash: [u8; 32],    // 32
-    pub status: MilestoneStatus,       // 1
-    pub approved_by: Option<Pubkey>,   // 1 + 32
-    pub approved_at: Option<i64>,      // 1 + 8
-    pub bump: u8,                      // 1
+    pub campaign: Pubkey,            // 32
+    pub milestone_index: u8,         // 1
+    pub target_amount: u64,          // 8
+    pub description_hash: [u8; 32],  // 32
+    pub status: MilestoneStatus,     // 1
+    pub approved_by: Option<Pubkey>, // 1 + 32
+    pub approved_at: Option<i64>,    // 1 + 8
+    pub bump: u8,                    // 1
 }
 
 impl Milestone {

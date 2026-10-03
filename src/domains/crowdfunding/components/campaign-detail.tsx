@@ -22,18 +22,16 @@ import type { CrowdfundingMilestone } from "@/shared/db/schema/crowdfunding-mile
 import type { CrowdfundingRewardTier } from "@/shared/db/schema/crowdfunding-reward-tiers";
 import { ContributeDialog } from "./contribute-dialog";
 import { ActionBlink } from "./action-blink";
-
-function getCurrencyLabel(mint: string): string {
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
-  return mint.slice(0, 4);
-}
+import { FinalizeCampaignButton } from "./finalize-campaign-button";
+import { MilestoneOnChainControls } from "./milestone-onchain-controls";
+import { getCurrencyLabel } from "../lib/constants";
 
 type Props = {
   campaign: CrowdfundingCampaign;
   milestones: CrowdfundingMilestone[];
   rewardTiers: CrowdfundingRewardTier[];
   isCreator: boolean;
+  currentTime: number;
   creatorName?: string;
   creatorAvatar?: string | null;
   contributions?: Array<{
@@ -50,6 +48,7 @@ export function CampaignDetail({
   milestones,
   rewardTiers,
   isCreator,
+  currentTime,
   creatorName,
   contributions,
 }: Props) {
@@ -63,7 +62,7 @@ export function CampaignDetail({
   const daysLeft = Math.max(
     0,
     Math.ceil(
-      (new Date(campaign.deadline).getTime() - Date.now()) /
+      (new Date(campaign.deadline).getTime() - currentTime) /
         (1000 * 60 * 60 * 24)
     )
   );
@@ -206,6 +205,15 @@ export function CampaignDetail({
             rewardTiers={rewardTiers}
           />
         )}
+
+        {isActive &&
+          campaign.campaignPubkey &&
+          new Date(campaign.deadline).getTime() <= currentTime && (
+            <FinalizeCampaignButton
+              campaignId={campaign.id}
+              campaignPubkey={campaign.campaignPubkey}
+            />
+          )}
       </div>
 
       {/* Alternative: contribute via Solana Action (no wallet connection needed) */}
@@ -267,6 +275,18 @@ export function CampaignDetail({
                     {t("backer.target")}:{" "}
                     {parseFloat(ms.targetAmount).toLocaleString()} {currencyLabel}
                   </p>
+                  {campaign.campaignPubkey && ms.milestonePubkey && (
+                    <MilestoneOnChainControls
+                      milestoneId={ms.id}
+                      milestonePubkey={ms.milestonePubkey}
+                      milestoneIndex={ms.milestoneIndex}
+                      campaignPubkey={campaign.campaignPubkey}
+                      currencyMint={campaign.currencyMint}
+                      status={ms.status}
+                      campaignStatus={campaign.status}
+                      isCreator={isCreator}
+                    />
+                  )}
                 </div>
                 {ms.status !== "PENDING" && (
                   <span

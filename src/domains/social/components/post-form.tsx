@@ -38,8 +38,6 @@ export function PostForm({ groupId, shareType, shareId }: PostFormProps) {
       getSharedEntity(attachedShare.type, attachedShare.id).then(
         setSharedEntity
       );
-    } else {
-      setSharedEntity(null);
     }
   }, [attachedShare]);
 

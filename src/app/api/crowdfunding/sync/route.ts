@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { BorshCoder, BorshAccountsCoder } from "@coral-xyz/anchor";
+import { BorshCoder, BorshAccountsCoder, type Idl } from "@coral-xyz/anchor";
+import BN from "bn.js";
+import { getMint } from "@solana/spl-token";
 import { db } from "@/shared/db";
 import {
   crowdfundingCampaigns,
@@ -14,8 +16,15 @@ import {
   SOLANA_RPC_URL,
 } from "@/domains/crowdfunding/lib/constants";
 import IDL from "@/domains/crowdfunding/lib/idl.json";
+import { formatTokenAmount } from "@/domains/crowdfunding/lib/token-amount";
 
-const coder = new BorshCoder(IDL as any);
+const coder = new BorshCoder(IDL as unknown as Idl);
+
+type ContributionAccount = {
+  backer: PublicKey;
+  amount: BN;
+  rewardTier: number | null;
+};
 
 // Contribution account discriminator (first 8 bytes of sha256("account:Contribution"))
 const CONTRIBUTION_DISCRIMINATOR = Buffer.from(
@@ -68,6 +77,10 @@ export async function GET(request: Request) {
     const campaignPubkey = new PublicKey(campaign.campaignPubkey);
 
     try {
+      const mint = await getMint(
+        connection,
+        new PublicKey(campaign.currencyMint)
+      );
       // Find all on-chain Contribution PDAs for this campaign
       // Filter by: discriminator + campaign pubkey at offset 8 (after discriminator)
       const accounts = await connection.getProgramAccounts(
@@ -84,15 +97,18 @@ export async function GET(request: Request) {
         const contributionPubkeyStr = pubkey.toBase58();
 
         // Decode on-chain data
-        let data: any;
+        let data: ContributionAccount;
         try {
-          data = coder.accounts.decode("contribution", account.data);
+          data = coder.accounts.decode(
+            "contribution",
+            account.data
+          ) as ContributionAccount;
         } catch {
           continue; // Skip malformed accounts
         }
 
         const backerPubkey = (data.backer as PublicKey).toBase58();
-        const amountHuman = (Number(data.amount.toString()) / 1_000_000_000).toString();
+        const amountHuman = formatTokenAmount(data.amount as BN, mint.decimals);
         const rewardTierIndex =
           data.rewardTier !== null && data.rewardTier !== undefined
             ? Number(data.rewardTier)
@@ -171,13 +187,19 @@ export async function GET(request: Request) {
       const onChainBackerCount = accounts.length;
       const onChainRaisedAmount = accounts.reduce((sum, { account: acc }) => {
         try {
-          const d = coder.accounts.decode("contribution", acc.data);
-          return sum + Number(d.amount.toString());
+          const decoded = coder.accounts.decode(
+            "contribution",
+            acc.data
+          ) as ContributionAccount;
+          return sum.add(decoded.amount);
         } catch {
           return sum;
         }
-      }, 0);
-      const raisedHuman = (onChainRaisedAmount / 1_000_000_000).toString();
+      }, new BN(0));
+      const raisedHuman = formatTokenAmount(
+        onChainRaisedAmount,
+        mint.decimals
+      );
 
       await db
         .update(crowdfundingCampaigns)

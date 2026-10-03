@@ -1,4 +1,4 @@
-import { eq, avg, count, sql } from "drizzle-orm";
+import { and, eq, avg, count, ne, sql } from "drizzle-orm";
 import { db } from "@/shared/db";
 import { reviews } from "@/shared/db/schema";
 import type { ReputationStats } from "../types";
@@ -18,7 +18,12 @@ export async function getReputation(userId: string): Promise<ReputationStats> {
       accuracyAvg: sql<string | null>`AVG((${reviews.dimensions}->>'accuracy')::numeric)`,
     })
     .from(reviews)
-    .where(eq(reviews.targetId, userId));
+    .where(
+      and(
+        eq(reviews.targetId, userId),
+        ne(reviews.verificationSource, "UNVERIFIED")
+      )
+    );
 
   return {
     averageRating: stats.averageRating ? parseFloat(stats.averageRating) : 0,
@@ -45,7 +50,12 @@ export async function getProxyFarmerReputation(
       accuracyAvg: sql<string | null>`AVG((${reviews.dimensions}->>'accuracy')::numeric)`,
     })
     .from(reviews)
-    .where(eq(reviews.proxyFarmerId, proxyFarmerId));
+    .where(
+      and(
+        eq(reviews.proxyFarmerId, proxyFarmerId),
+        ne(reviews.verificationSource, "UNVERIFIED")
+      )
+    );
 
   return {
     averageRating: stats.averageRating ? parseFloat(stats.averageRating) : 0,

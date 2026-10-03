@@ -37,6 +37,8 @@ export async function getBackedCampaigns(userId: string) {
         id: crowdfundingContributions.id,
         amount: crowdfundingContributions.amount,
         refunded: crowdfundingContributions.refunded,
+        walletAddress: crowdfundingContributions.walletAddress,
+        contributionPubkey: crowdfundingContributions.contributionPubkey,
         createdAt: crowdfundingContributions.createdAt,
       },
       campaign: {
@@ -48,6 +50,7 @@ export async function getBackedCampaigns(userId: string) {
         raisedAmount: crowdfundingCampaigns.raisedAmount,
         deadline: crowdfundingCampaigns.deadline,
         currencyMint: crowdfundingCampaigns.currencyMint,
+        campaignPubkey: crowdfundingCampaigns.campaignPubkey,
       },
       rewardTier: {
         title: crowdfundingRewardTiers.title,

@@ -2,13 +2,16 @@
 
 **Program ID:** `63fEfSpaubSMFFvGVo5ALKye38XACxTCwBtL1rR1beRX`
 **Framework:** Anchor 0.29.0
-**Cluster:** Devnet (configurable via `NEXT_PUBLIC_SOLANA_RPC_URL`)
+**Configured cluster:** Devnet by default (configurable via `NEXT_PUBLIC_SOLANA_RPC_URL`)
+**Deployment status:** devnet target configured; deployment must be verified on-chain before it is described as live
 
 ---
 
 ## Overview
 
-The `plonbli_crowdfunding` Solana program implements a fully on-chain crowdfunding system with milestone-gated fund release, reward tiers, platform fees, and refund mechanisms. It integrates with the Plonbli Next.js frontend through a hybrid architecture where wallet-connected users execute on-chain transactions while others fall back to database-only operations.
+The `plonbli_crowdfunding` Solana program implements crowdfunding with on-chain escrow, platform-verified milestone-gated fund release, reward tiers, platform fees, and refunds. Financial state changes require wallet-signed Solana transactions; PostgreSQL is a searchable application cache and never substitutes a database-only contribution, refund, activation, finalization, approval, or release.
+
+This is deliberately described as **platform-verified milestone escrow**, not fully trustless governance. A single configured platform admin approves milestones on-chain. The program still enforces custody, authorization, release order, fee calculation, and refund rules independently of the web database.
 
 ## Architecture
 
@@ -38,6 +41,33 @@ The `plonbli_crowdfunding` Solana program implements a fully on-chain crowdfundi
 ```
 
 The off-chain database stores rich metadata (titles, descriptions, images) while the on-chain program stores financial state (amounts, statuses, hashes). A SHA-256 `contentHash` bridges both: the hash of off-chain content is stored on-chain to prove integrity.
+
+## End-to-end trust flow
+
+1. A farmer drafts a campaign, milestones, and reward tiers in PostgreSQL.
+2. Activation creates the Campaign PDA, vault, every Milestone PDA, and every RewardTier PDA, then activates the campaign. Each step is retry-safe: a retry reads and validates existing deterministic PDAs, skips matching accounts, creates only missing sequential accounts, and activates only while the campaign remains in Setup. The server derives the expected addresses and verifies account contents before marking the database campaign active; recovered steps may have no new transaction signature.
+3. A backer contributes SPL tokens (including wrapped native SOL) to the campaign vault. Amounts use the mint's real decimal precision. The selected reward tier and cumulative contribution are stored in the wallet-specific Contribution PDA.
+4. After the deadline, any wallet can finalize the campaign. The server reads the resulting on-chain status instead of calculating a separate database result.
+5. The platform admin approves milestones on-chain. The campaign creator then releases each approved tranche from escrow. Milestone zero is released first; every later release must include the immediately preceding Milestone PDA and the program verifies that it is already Released. Only after this sequential proof can the final milestone drain the remaining vault balance, so the final tranche cannot bypass earlier milestones.
+6. Backers of a failed all-or-nothing campaign claim refunds from the program. The database records a refund only after the Contribution PDA says it is refunded.
+
+Every client transaction is simulated before the wallet signs it. Every server reconciliation verifies that the transaction invoked this program and referenced the expected campaign, milestone, or contribution account. Contribution confirmation also verifies that the expected backer wallet was one of the transaction's required signers, that the deterministic Contribution PDA is owned by this program, and that its decoded campaign/backer fields match.
+
+## Network and currency configuration
+
+The selected Solana cluster and accepted currency mints are coupled. Devnet uses the devnet USDC mint `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`; mainnet-beta uses `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`. Wrapped SOL uses `So11111111111111111111111111111111111111112` on both clusters. `NEXT_PUBLIC_USDC_MINT_ADDRESS` may override the default for a controlled deployment, and campaign validation rejects other mints.
+
+## Production provenance
+
+Campaigns can link to farming timeline entries. A version 2 entry hash commits to the farmer, campaign, product, entry type, note, structured production data, timestamp, previous entry hash, image URLs, and SHA-256 hashes of the uploaded image bytes. This makes edits, deletions, reordering, and replacement of image content detectable.
+
+After creating an entry, the farmer signs a Solana Memo transaction containing the entry ID, content hash, and campaign address. The server confirms the signer and exact memo before storing the anchor signature. The UI verifies the complete farmer chain and displays valid, tampered, legacy, or awaiting-anchor states. Corrections are appended as new entries; historical entries are not edited in place. Customer comments have a direct foreign-key relationship to the production entry they discuss.
+
+This mechanism proves integrity and authorship of the recorded history. It does not independently prove that a farmer's original statement or photograph was truthful.
+
+## Verified ratings
+
+New ratings require evidence of either a completed marketplace order with the farmer or a non-refunded contribution to one of the farmer's successful campaigns. Each order or contribution can support one rating. Rating hashes form a versioned append-only chain that includes the score, dimensions, comment, target, evidence, timestamp, and previous hash. Older ratings remain visible as legacy unverified records but do not contribute to verified reputation aggregates.
 
 ---
 
@@ -253,6 +283,7 @@ Releases funds for an approved milestone to the campaign creator.
 
 - Campaign must be Successful
 - Milestone must be Approved
+- Milestone zero requires no predecessor; every later milestone requires the immediately preceding Milestone PDA in Released status
 - Calculates platform fee: `amount * fee_basis_points / 10000`
 - Transfers fee to treasury, remainder to creator
 - Uses PDA-signed CPI transfers (campaign account is vault authority)
@@ -332,7 +363,7 @@ All arithmetic uses checked operations to prevent overflow.
 
 ---
 
-## Error Codes (26 variants)
+## Error Codes (28 variants)
 
 | Error                       | When                                          |
 |-----------------------------|-----------------------------------------------|
@@ -351,6 +382,7 @@ All arithmetic uses checked operations to prevent overflow.
 | `InsufficientForRewardTier` | Amount < tier price                           |
 | `MilestoneNotPending`       | Approving non-pending milestone               |
 | `MilestoneNotApproved`      | Releasing non-approved milestone              |
+| `PreviousMilestoneNotReleased` | Releasing a later milestone before its predecessor |
 | `RefundNotAvailable`        | Refunding from non-Failed campaign            |
 | `AlreadyRefunded`           | Double-claiming refund                        |
 | `CannotFinalize`            | Finalizing non-Active campaign                |
@@ -371,23 +403,20 @@ The `SolanaWalletProvider` wraps all `/crowdfunding` routes, providing wallet co
 
 ### Hooks
 
-**`useCreateCampaignOnChain`** — builds and sends the `create_campaign` instruction:
-- Derives campaign PDA from wallet + campaign_id
-- Converts goal to lamports, deadline to unix timestamp
-- Returns `{ signature, campaignPubkey }` for DB storage
+**`useCreateCampaignOnChain`** builds the complete activation sequence:
+- Derives deterministic campaign, vault, milestone, and reward-tier PDAs
+- Reads and validates any accounts left by an interrupted earlier attempt
+- Creates only missing sequential accounts and simulates every new instruction
+- Returns nullable per-step signatures plus all canonical account addresses for reconciliation
 
-**`useContributeOnChain`** — builds and sends the `contribute` instruction:
-- Gets backer's associated token account
-- Returns `{ signature, contributionPubkey }`
+**`useContributeOnChain`** builds and simulates the contribution transaction:
+- Creates the backer's associated token account when needed
+- Wraps native SOL atomically when SOL is selected
+- Returns the signature and deterministic Contribution PDA
 
-### Hybrid Flow
+### On-chain-required financial flow
 
-The frontend uses a graceful degradation pattern:
-
-1. **Wallet connected + campaign has on-chain pubkey:** Execute blockchain transaction first, then record in DB
-2. **No wallet / no pubkey:** Record directly in DB only
-
-This ensures the platform works for all users while providing blockchain benefits (transparency, immutability) for those with wallets.
+Campaign activation, contribution, finalization, milestone approval/release, and refunds require the corresponding Solana account and wallet transaction. The application does not provide a database-only fallback for those financial state changes. Database rows are drafts, searchable metadata, and reconciled cache records; Solana accounts are authoritative for escrow and lifecycle state.
 
 ### Content Hash Bridge
 

@@ -6,6 +6,7 @@ import {
   addRewardTierSchema,
   contributeSchema,
 } from "@/domains/crowdfunding/schemas/validation";
+import { WRAPPED_SOL_MINT_ADDRESS } from "@/domains/crowdfunding/lib/constants";
 
 describe("createCampaignSchema", () => {
   const FIXED_NOW = new Date("2026-06-01T12:00:00Z");
@@ -17,7 +18,7 @@ describe("createCampaignSchema", () => {
     description: "Opis kampanii, który ma co najmniej 10 znaków",
     category: "FARMER_INVESTMENT" as const,
     fundingModel: "ALL_OR_NOTHING" as const,
-    currencyMint: "SOL",
+    currencyMint: WRAPPED_SOL_MINT_ADDRESS,
     goalAmount: 1000,
     deadline: FUTURE_DATE,
   };
@@ -103,6 +104,14 @@ describe("createCampaignSchema", () => {
     const result = createCampaignSchema.safeParse({
       ...validInput,
       currencyMint: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("fails when currencyMint is not supported on the configured network", () => {
+    const result = createCampaignSchema.safeParse({
+      ...validInput,
+      currencyMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     });
     expect(result.success).toBe(false);
   });

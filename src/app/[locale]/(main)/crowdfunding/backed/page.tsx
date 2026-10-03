@@ -9,12 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Target } from "lucide-react";
 import { ClaimRefundButton } from "./claim-refund-button";
-
-function getCurrencyLabel(mint: string): string {
-  if (mint === "So11111111111111111111111111111111111111112") return "SOL";
-  if (mint === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") return "USDC";
-  return mint.slice(0, 4);
-}
+import { getCurrencyLabel } from "@/domains/crowdfunding/lib/constants";
 
 export default async function BackedCampaignsPage() {
   const session = await auth();
@@ -122,10 +117,20 @@ export default async function BackedCampaignsPage() {
                           {t("backed.refundClaimed")}
                         </Badge>
                       ) : (
-                        <ClaimRefundButton
-                          contributionId={item.contribution.id}
-                          amount={item.contribution.amount}
-                        />
+                        item.campaign.campaignPubkey &&
+                        item.contribution.contributionPubkey ? (
+                          <ClaimRefundButton
+                            contributionId={item.contribution.id}
+                            amount={item.contribution.amount}
+                            campaignPubkey={item.campaign.campaignPubkey}
+                            contributionPubkey={item.contribution.contributionPubkey}
+                            currencyMint={item.campaign.currencyMint}
+                          />
+                        ) : (
+                          <Badge variant="outline">
+                            {t("backed.legacyRefundUnavailable")}
+                          </Badge>
+                        )
                       )}
                     </div>
                   )}

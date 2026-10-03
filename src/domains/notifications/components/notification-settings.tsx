@@ -27,6 +27,8 @@ export function NotificationSettings({ preferences }: Props) {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
+      // Notification.permission is a browser-only external state snapshot.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPushGranted(Notification.permission === "granted");
     }
   }, []);

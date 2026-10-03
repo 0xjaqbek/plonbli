@@ -1,8 +1,8 @@
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use crate::errors::CrowdfundError;
 use crate::events::ContributionMade;
 use crate::state::{Campaign, CampaignStatus, Contribution, RewardTier};
+use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 #[derive(Accounts)]
 pub struct Contribute<'info> {
@@ -47,11 +47,7 @@ pub struct Contribute<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(
-    ctx: Context<Contribute>,
-    amount: u64,
-    reward_tier: Option<u8>,
-) -> Result<()> {
+pub fn handler(ctx: Context<Contribute>, amount: u64, reward_tier: Option<u8>) -> Result<()> {
     require!(amount > 0, CrowdfundError::ZeroContribution);
 
     let clock = Clock::get()?;
@@ -60,6 +56,16 @@ pub fn handler(
         clock.unix_timestamp < campaign.deadline,
         CrowdfundError::CampaignExpired
     );
+
+    let contribution = &ctx.accounts.contribution;
+    let is_new = contribution.amount == 0 && contribution.campaign == Pubkey::default();
+
+    if !is_new {
+        require!(
+            contribution.reward_tier == reward_tier,
+            CrowdfundError::RewardTierMismatch
+        );
+    }
 
     // Validate reward tier if specified
     if let Some(tier_index) = reward_tier {
@@ -93,11 +99,13 @@ pub fn handler(
             );
         }
 
-        // Increment backer count on tier
-        tier_account.current_backers = tier_account
-            .current_backers
-            .checked_add(1)
-            .ok_or(error!(CrowdfundError::Overflow))?;
+        // Capacity counts unique backers, not repeated contributions.
+        if is_new {
+            tier_account.current_backers = tier_account
+                .current_backers
+                .checked_add(1)
+                .ok_or(error!(CrowdfundError::Overflow))?;
+        }
     }
 
     // Transfer tokens from backer to vault
@@ -115,7 +123,6 @@ pub fn handler(
 
     // Update contribution (init_if_needed handles first-time creation)
     let contribution = &mut ctx.accounts.contribution;
-    let is_new = contribution.amount == 0 && contribution.campaign == Pubkey::default();
 
     if is_new {
         contribution.campaign = ctx.accounts.campaign.key();

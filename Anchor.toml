@@ -7,6 +7,9 @@ skip-lint = false
 [programs.localnet]
 plonbli_crowdfunding = "63fEfSpaubSMFFvGVo5ALKye38XACxTCwBtL1rR1beRX"
 
+[programs.devnet]
+plonbli_crowdfunding = "63fEfSpaubSMFFvGVo5ALKye38XACxTCwBtL1rR1beRX"
+
 [registry]
 url = "https://api.apr.dev"
 

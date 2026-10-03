@@ -221,6 +221,12 @@
           "isSigner": false
         },
         {
+          "name": "rewardTierAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "vault",
           "isMut": true,
           "isSigner": false
@@ -1012,6 +1018,26 @@
       "code": 6023,
       "name": "MilestoneAmountsExceedGoal",
       "msg": "Milestone target amounts must sum to at most the campaign goal"
+    },
+    {
+      "code": 6024,
+      "name": "ZeroRewardTierPrice",
+      "msg": "Reward tier price must be greater than zero"
+    },
+    {
+      "code": 6025,
+      "name": "CampaignNotSuccessful",
+      "msg": "Campaign must be Successful to release milestone funds"
+    },
+    {
+      "code": 6026,
+      "name": "RewardTierMismatch",
+      "msg": "A backer cannot change reward tiers after the first contribution"
+    },
+    {
+      "code": 6027,
+      "name": "PreviousMilestoneNotReleased",
+      "msg": "The immediately preceding milestone must be released first"
     }
   ],
   "metadata": {

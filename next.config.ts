@@ -1,5 +1,6 @@
 import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -13,6 +14,12 @@ const withPWA = require("next-pwa")({
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  turbopack: {
+    // This repository uses a Git worktree with its own lockfile. Without an
+    // explicit root, Turbopack can select the parent checkout and serve a
+    // different route tree.
+    root: path.resolve(__dirname),
+  },
   images: {
     remotePatterns: [
       {

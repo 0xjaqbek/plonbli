@@ -23,7 +23,7 @@ export default async function CheckoutPage({
   const pickupSlots = await getGlobalPickupSlots(farmerId);
 
   const allDeliveryOptions = cartGroup.items.flatMap(
-    (item) => (item.listing.deliveryOptions as any[]) ?? []
+    (item) => item.listing.deliveryOptions ?? []
   );
   const availableMethods =
     allDeliveryOptions.length > 0

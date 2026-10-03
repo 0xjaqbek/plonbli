@@ -5,6 +5,7 @@ import {
   timestamp,
   boolean,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { crowdfundingCampaigns } from "./crowdfunding-campaigns";
@@ -41,6 +42,7 @@ export const crowdfundingContributions = pgTable(
     walletAddress: text("wallet_address"),
     contributionPubkey: text("contribution_pubkey"),
     transactionSignature: text("transaction_signature"),
+    refundTransactionSignature: text("refund_transaction_signature"),
     source: contributionSourceEnum("source").notNull().default("APP"),
 
     refunded: boolean("refunded").notNull().default(false),
@@ -53,6 +55,7 @@ export const crowdfundingContributions = pgTable(
     index("idx_cf_contributions_campaign").on(table.campaignId),
     index("idx_cf_contributions_backer").on(table.backerId),
     index("idx_cf_contributions_wallet").on(table.walletAddress),
+    uniqueIndex("idx_cf_contributions_pubkey").on(table.contributionPubkey),
   ]
 );
 
